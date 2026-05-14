@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>How to Use Scripts — ScriptHub</title>
+  <title>How to Run Scripts — ScriptHub</title>
   <link rel="stylesheet" href="style.css" />
   <style>
     .guide-wrap { max-width: 780px; margin: 2.5rem auto; padding: 0 2rem 4rem; }
     .guide-wrap h1 { font-size: 1.75rem; margin-bottom: 0.4rem; }
-    .guide-wrap .subtitle { color: #8b949e; font-size: 0.9rem; margin-bottom: 2.5rem; }
+    .subtitle { color: #8b949e; font-size: 0.9rem; margin-bottom: 2rem; }
 
     .os-tabs { display: flex; gap: 8px; margin-bottom: 2rem; flex-wrap: wrap; }
     .os-tab {
@@ -22,43 +22,50 @@
     .os-section { display: none; }
     .os-section.active { display: block; }
 
-    .step { display: flex; gap: 1rem; margin-bottom: 1.75rem; align-items: flex-start; }
+    .step { display: flex; gap: 1rem; margin-bottom: 2rem; align-items: flex-start; }
     .step-num {
       background: #161b22; border: 1px solid #30363d; color: #58a6ff;
-      width: 32px; height: 32px; border-radius: 50%; display: flex;
+      min-width: 32px; height: 32px; border-radius: 50%; display: flex;
       align-items: center; justify-content: center; font-size: 0.85rem;
       flex-shrink: 0; margin-top: 2px;
     }
-    .step-content h3 { font-size: 1rem; margin-bottom: 0.3rem; color: #e6edf3; }
-    .step-content p { color: #8b949e; font-size: 0.875rem; line-height: 1.65; margin-bottom: 0.5rem; }
+    .step-content h3 { font-size: 1rem; margin-bottom: 0.4rem; color: #e6edf3; }
+    .step-content p { color: #8b949e; font-size: 0.875rem; line-height: 1.7; margin-bottom: 0.5rem; }
+    .step-content p b { color: #e6edf3; }
 
     .cmd {
-      display: inline-block; background: #161b22; border: 1px solid #30363d;
+      display: block; background: #161b22; border: 1px solid #30363d;
       border-radius: 6px; padding: 10px 14px; font-size: 0.82rem;
-      color: #3fb950; width: 100%; margin-top: 4px;
+      color: #3fb950; width: 100%; margin-top: 6px; font-family: 'Courier New', monospace;
     }
 
     .note {
       background: #0d2137; border: 1px solid #1f3a5f; border-radius: 8px;
       padding: 0.9rem 1.1rem; color: #8b949e; font-size: 0.83rem;
-      line-height: 1.65; margin-top: 0.5rem;
+      line-height: 1.65; margin-top: 8px;
     }
-    .note span { color: #58a6ff; }
+    .note b { color: #58a6ff; }
 
-    .tip {
-      background: #0d2110; border: 1px solid #1a3a1f; border-radius: 8px;
+    .warn {
+      background: #2a1f00; border: 1px solid #4a3800; border-radius: 8px;
       padding: 0.9rem 1.1rem; color: #8b949e; font-size: 0.83rem;
-      line-height: 1.65; margin-bottom: 2rem;
+      line-height: 1.65; margin-top: 8px;
     }
-    .tip span { color: #3fb950; }
+    .warn b { color: #e3b341; }
 
-    .divider { border: none; border-top: 1px solid #30363d; margin: 2.5rem 0; }
+    .img-placeholder {
+      background: #161b22; border: 1px dashed #30363d; border-radius: 8px;
+      padding: 1.5rem; text-align: center; color: #484f58; font-size: 0.8rem;
+      margin-top: 8px;
+    }
+
+    hr { border: none; border-top: 1px solid #30363d; margin: 2.5rem 0; }
 
     .faq-item { margin-bottom: 1.5rem; }
     .faq-item h3 { font-size: 0.95rem; color: #e6edf3; margin-bottom: 0.35rem; }
     .faq-item p { color: #8b949e; font-size: 0.875rem; line-height: 1.65; }
+    .faq-item code { color: #58a6ff; }
     .faq-item a { color: #58a6ff; text-decoration: none; }
-    .faq-item a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
@@ -74,32 +81,31 @@
 
   <div class="guide-wrap">
     <a class="back-link" href="index.html">← back to browse</a>
-    <h1>how to <span class="green">use</span> scripts</h1>
-    <p class="subtitle">pick your operating system below to get started</p>
+    <h1>how to run a <span class="green">script</span></h1>
+    <p class="subtitle">follow the steps for your operating system — takes about 5 minutes the first time</p>
 
     <div class="os-tabs">
-      <button class="os-tab active" onclick="switchOS('windows')">🪟 Windows</button>
-      <button class="os-tab" onclick="switchOS('mac')">🍎 Mac</button>
-      <button class="os-tab" onclick="switchOS('linux')">🐧 Linux</button>
+      <button class="os-tab active" onclick="switchOS('windows', this)">🪟 Windows</button>
+      <button class="os-tab" onclick="switchOS('mac', this)">🍎 Mac</button>
+      <button class="os-tab" onclick="switchOS('linux', this)">🐧 Linux</button>
     </div>
 
     <!-- WINDOWS -->
     <div class="os-section active" id="os-windows">
-      <div class="tip"><span>tip:</span> Python scripts end in .py — they're just text files with code inside. You run them from a window called the "terminal" or "command prompt".</div>
 
       <div class="step">
         <div class="step-num">1</div>
         <div class="step-content">
-          <h3>install Python</h3>
-          <p>Go to <a href="https://python.org/downloads" style="color:#58a6ff;" target="_blank">python.org/downloads</a> and download the latest version. Run the installer — <strong>make sure to check "Add Python to PATH"</strong> before clicking install.</p>
+          <h3>copy the script</h3>
+          <p>On any script page, click the <b>copy code</b> button in the top right of the code box. The whole script is now on your clipboard.</p>
         </div>
       </div>
 
       <div class="step">
         <div class="step-num">2</div>
         <div class="step-content">
-          <h3>copy the script</h3>
-          <p>Find a script on ScriptHub, click it, and hit the <strong>copy code</strong> button.</p>
+          <h3>open Notepad and paste</h3>
+          <p>Press <b>Windows key</b>, type <b>Notepad</b>, and open it. Then press <b>Ctrl + V</b> to paste the code.</p>
         </div>
       </div>
 
@@ -107,147 +113,173 @@
         <div class="step-num">3</div>
         <div class="step-content">
           <h3>save it as a .py file</h3>
-          <p>Open Notepad, paste the code, then go to File → Save As. Name your file something like <code style="color:#58a6ff;">myscript.py</code> and make sure to set "Save as type" to <strong>All Files</strong> so it doesn't add .txt to the end.</p>
-          <div class="note"><span>example:</span> save to your Desktop as <code>myscript.py</code></div>
+          <p>Go to <b>File → Save As</b>. At the bottom where it says "Save as type", change it to <b>All Files</b>. Then name your file something like <b>myscript.py</b> and save it to your Desktop.</p>
+          <div class="warn"><b>important:</b> if you skip changing "Save as type" to All Files, Windows will save it as myscript.py.txt and it won't work.</div>
         </div>
       </div>
 
       <div class="step">
         <div class="step-num">4</div>
         <div class="step-content">
-          <h3>open the terminal</h3>
-          <p>Press <strong>Windows + R</strong>, type <code style="color:#58a6ff;">cmd</code>, and hit Enter. A black window will open — that's your terminal.</p>
+          <h3>install Python (first time only)</h3>
+          <p>Go to <a href="https://python.org/downloads" target="_blank" style="color:#58a6ff;">python.org/downloads</a> and download Python. Run the installer and <b>check the box that says "Add Python to PATH"</b> before clicking Install.</p>
+          <div class="note"><b>already installed?</b> skip this step.</div>
         </div>
       </div>
 
       <div class="step">
         <div class="step-num">5</div>
         <div class="step-content">
-          <h3>navigate to your file</h3>
-          <p>Type the following to go to your Desktop (or wherever you saved it):</p>
-          <div class="cmd">cd %USERPROFILE%\Desktop</div>
+          <h3>open Command Prompt</h3>
+          <p>Press <b>Windows key + R</b>, type <b>cmd</b>, and press Enter. A black window will pop up — that's the command prompt.</p>
         </div>
       </div>
 
       <div class="step">
         <div class="step-num">6</div>
         <div class="step-content">
-          <h3>run the script</h3>
-          <p>Type this and hit Enter (replace <code style="color:#58a6ff;">myscript.py</code> with your actual filename):</p>
-          <div class="cmd">python myscript.py</div>
-          <div class="note" style="margin-top:8px;"><span>note:</span> some scripts need extra libraries. if you see an error like "ModuleNotFoundError: No module named X", run <code>pip install X</code> first.</div>
+          <h3>go to your Desktop</h3>
+          <p>Type this and press Enter:</p>
+          <div class="cmd">cd %USERPROFILE%\Desktop</div>
         </div>
       </div>
+
+      <div class="step">
+        <div class="step-num">7</div>
+        <div class="step-content">
+          <h3>run the script!</h3>
+          <p>Type this (swap in your actual filename) and press Enter:</p>
+          <div class="cmd">python myscript.py</div>
+          <p style="margin-top:10px;">The script will start running and ask you for any input it needs. That's it — you're done! 🎉</p>
+          <div class="note" style="margin-top:8px;"><b>error: ModuleNotFoundError?</b> A library is missing. Run <code style="color:#58a6ff;">pip install libraryname</code> (replace libraryname with whatever it says), then try again.</div>
+        </div>
+      </div>
+
     </div>
 
     <!-- MAC -->
     <div class="os-section" id="os-mac">
-      <div class="tip"><span>tip:</span> Macs come with a built-in terminal app. Python 3 may already be installed — we'll check in step 1.</div>
 
       <div class="step">
         <div class="step-num">1</div>
         <div class="step-content">
-          <h3>check if Python is installed</h3>
-          <p>Open Terminal (press <strong>Cmd + Space</strong>, type "Terminal", hit Enter). Then type:</p>
-          <div class="cmd">python3 --version</div>
-          <p style="margin-top:8px;">If you see a version number, you're good. If not, go to <a href="https://python.org/downloads" style="color:#58a6ff;" target="_blank">python.org/downloads</a> and install it.</p>
+          <h3>copy the script</h3>
+          <p>On any script page, click the <b>copy code</b> button. The whole script is now on your clipboard.</p>
         </div>
       </div>
 
       <div class="step">
         <div class="step-num">2</div>
         <div class="step-content">
-          <h3>copy the script</h3>
-          <p>Find a script on ScriptHub, click it, and hit the <strong>copy code</strong> button.</p>
+          <h3>open Terminal</h3>
+          <p>Press <b>Cmd + Space</b>, type <b>Terminal</b>, and press Enter to open it.</p>
         </div>
       </div>
 
       <div class="step">
         <div class="step-num">3</div>
         <div class="step-content">
-          <h3>save it as a .py file</h3>
-          <p>Open TextEdit, paste the code. Go to Format → Make Plain Text. Then File → Save, name it <code style="color:#58a6ff;">myscript.py</code> and save it to your Desktop.</p>
-          <div class="note"><span>tip:</span> You can also use VS Code or any code editor — much easier than TextEdit.</div>
+          <h3>check if Python is installed</h3>
+          <p>Type this and press Enter:</p>
+          <div class="cmd">python3 --version</div>
+          <p style="margin-top:8px;">If you see a version number like <b>Python 3.x.x</b> you're good. If not, go to <a href="https://python.org/downloads" target="_blank" style="color:#58a6ff;">python.org/downloads</a> and install it.</p>
         </div>
       </div>
 
       <div class="step">
         <div class="step-num">4</div>
         <div class="step-content">
-          <h3>navigate to your file in Terminal</h3>
-          <p>In your Terminal window, type:</p>
-          <div class="cmd">cd ~/Desktop</div>
+          <h3>create and save the script</h3>
+          <p>In Terminal, type this to create a new file on your Desktop:</p>
+          <div class="cmd">nano ~/Desktop/myscript.py</div>
+          <p style="margin-top:8px;">A text editor opens inside Terminal. Press <b>Cmd + V</b> to paste your code. Then press <b>Ctrl + X</b>, then <b>Y</b>, then <b>Enter</b> to save and exit.</p>
         </div>
       </div>
 
       <div class="step">
         <div class="step-num">5</div>
         <div class="step-content">
-          <h3>run the script</h3>
-          <p>Type this and hit Enter:</p>
-          <div class="cmd">python3 myscript.py</div>
-          <div class="note" style="margin-top:8px;"><span>note:</span> if you get a "ModuleNotFoundError", install the missing library with <code>pip3 install libraryname</code>.</div>
+          <h3>run the script!</h3>
+          <p>Type this and press Enter:</p>
+          <div class="cmd">python3 ~/Desktop/myscript.py</div>
+          <p style="margin-top:10px;">The script will run and ask you for any input it needs. 🎉</p>
+          <div class="note" style="margin-top:8px;"><b>error: ModuleNotFoundError?</b> Run <code style="color:#58a6ff;">pip3 install libraryname</code>, then try again.</div>
         </div>
       </div>
+
     </div>
 
     <!-- LINUX -->
     <div class="os-section" id="os-linux">
-      <div class="tip"><span>tip:</span> Python 3 is usually pre-installed on Linux. Let's verify and get you running.</div>
 
       <div class="step">
         <div class="step-num">1</div>
         <div class="step-content">
-          <h3>check Python</h3>
-          <p>Open a terminal and run:</p>
-          <div class="cmd">python3 --version</div>
-          <p style="margin-top:8px;">If it's not installed, run:</p>
-          <div class="cmd">sudo apt install python3</div>
+          <h3>copy the script</h3>
+          <p>On any script page, click the <b>copy code</b> button. The whole script is now on your clipboard.</p>
         </div>
       </div>
 
       <div class="step">
         <div class="step-num">2</div>
         <div class="step-content">
-          <h3>copy and save the script</h3>
-          <p>Copy the code from ScriptHub, then create a file with nano or any editor:</p>
-          <div class="cmd">nano myscript.py</div>
-          <p style="margin-top:8px;">Paste the code, then press <strong>Ctrl+X → Y → Enter</strong> to save.</p>
+          <h3>open a terminal</h3>
+          <p>Right-click your desktop and select <b>Open Terminal</b>, or press <b>Ctrl + Alt + T</b>.</p>
         </div>
       </div>
 
       <div class="step">
         <div class="step-num">3</div>
         <div class="step-content">
-          <h3>run the script</h3>
-          <div class="cmd">python3 myscript.py</div>
-          <div class="note" style="margin-top:8px;"><span>note:</span> missing a library? Install it with <code>pip3 install libraryname</code>.</div>
+          <h3>check Python</h3>
+          <div class="cmd">python3 --version</div>
+          <p style="margin-top:8px;">If it's not installed:</p>
+          <div class="cmd">sudo apt install python3</div>
         </div>
       </div>
+
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <h3>create the script file</h3>
+          <div class="cmd">nano ~/Desktop/myscript.py</div>
+          <p style="margin-top:8px;">Paste your code, then press <b>Ctrl + X → Y → Enter</b> to save.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <h3>run the script!</h3>
+          <div class="cmd">python3 ~/Desktop/myscript.py</div>
+          <div class="note" style="margin-top:8px;"><b>ModuleNotFoundError?</b> Run <code style="color:#58a6ff;">pip3 install libraryname</code> and try again.</div>
+        </div>
+      </div>
+
     </div>
 
-    <hr class="divider" />
+    <hr />
 
-    <h2 style="font-size:1.2rem; margin-bottom:1.25rem;">common questions</h2>
+    <h2 style="font-size:1.2rem; margin-bottom:1.25rem;">something went wrong?</h2>
 
     <div class="faq-item">
-      <h3>it says "python is not recognized"</h3>
-      <p>Python isn't added to your PATH. Re-run the Python installer and check the "Add Python to PATH" box, or download it from <a href="https://python.org/downloads" target="_blank">python.org</a>.</p>
+      <h3>"python is not recognized as a command"</h3>
+      <p>Python isn't set up in your PATH. Re-run the Python installer from <a href="https://python.org/downloads" target="_blank">python.org</a> and make sure to check <b>"Add Python to PATH"</b>.</p>
     </div>
 
     <div class="faq-item">
-      <h3>i get a "ModuleNotFoundError"</h3>
-      <p>The script needs an extra library. Install it by running <code style="color:#58a6ff;">pip install modulename</code> (Windows) or <code style="color:#58a6ff;">pip3 install modulename</code> (Mac/Linux) in your terminal.</p>
+      <h3>"ModuleNotFoundError: No module named X"</h3>
+      <p>The script needs a library that isn't installed. Run <code>pip install X</code> (Windows) or <code>pip3 install X</code> (Mac/Linux) where X is the name from the error message.</p>
     </div>
 
     <div class="faq-item">
-      <h3>nothing happens when i run it</h3>
-      <p>Make sure you're in the same folder as the file. Use <code style="color:#58a6ff;">cd</code> to navigate there first, then try running it again.</p>
+      <h3>the script opened and closed instantly</h3>
+      <p>You probably double-clicked the .py file instead of running it from the terminal. Always run scripts using the terminal with the <code>python myscript.py</code> command.</p>
     </div>
 
     <div class="faq-item">
-      <h3>what editor should i use to write scripts?</h3>
-      <p>We recommend <a href="https://code.visualstudio.com" target="_blank">VS Code</a> — it's free, works on all platforms, and makes writing and saving .py files super easy.</p>
+      <h3>i saved it but it says .py.txt</h3>
+      <p>When saving in Notepad, you need to change "Save as type" to <b>All Files</b> first. Otherwise Windows adds .txt automatically. Rename the file and remove the .txt part.</p>
     </div>
 
   </div>
@@ -257,11 +289,11 @@
   </footer>
 
   <script>
-    function switchOS(os) {
+    function switchOS(os, btn) {
       document.querySelectorAll('.os-section').forEach(s => s.classList.remove('active'));
       document.querySelectorAll('.os-tab').forEach(t => t.classList.remove('active'));
       document.getElementById('os-' + os).classList.add('active');
-      event.target.classList.add('active');
+      btn.classList.add('active');
     }
   </script>
 </body>
