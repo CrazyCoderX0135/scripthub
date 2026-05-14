@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ScriptHub</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <nav>
+    <a class="logo" href="index.html">script<span>hub</span>.dev</a>
+    <div class="nav-links">
+      <a href="index.html">browse</a>
+      <a href="submit.html">submit</a>
+    </div>
+  </nav>
+
+  <div class="detail-wrap" id="detail">
+    <p style="color:#8b949e;">loading...</p>
+  </div>
+
+  <footer>
+    <p>scripthub &mdash; scripts for everything</p>
+  </footer>
+
+  <script src="scripts.js"></script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+    const script = SCRIPTS.find(s => s.id === id);
+    const detail = document.getElementById("detail");
+    const langBadge = { python: "badge-py", javascript: "badge-js", shell: "badge-sh", powershell: "badge-ps" };
+
+    if (!script) {
+      detail.innerHTML = `<p style="color:#8b949e;">Script not found. <a href="index.html" style="color:#58a6ff;">go back</a></p>`;
+    } else {
+      document.title = `${script.name} — ScriptHub`;
+      detail.innerHTML = `
+        <a class="back-link" href="index.html">
+          ← back to browse
+        </a>
+        <div class="detail-header">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:0.5rem;">
+            <span style="font-size:2rem;">${script.icon}</span>
+            <h1 class="detail-title">${script.name}</h1>
+          </div>
+          <p class="detail-desc">${script.desc}</p>
+          <div class="detail-meta">
+            <span class="badge ${langBadge[script.lang] || 'badge-py'}">${script.lang}</span>
+            <span class="badge" style="color:#8b949e;border-color:#30363d;background:transparent;">${script.tag}</span>
+          </div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-toolbar">
+            <span class="code-lang">${script.lang}</span>
+            <button class="copy-btn" id="copy-btn">copy code</button>
+          </div>
+          <pre id="code-pre">${escapeHtml(script.code)}</pre>
+        </div>
+
+        <div style="margin-top:1.5rem;padding:1rem;background:#161b22;border:1px solid #30363d;border-radius:8px;">
+          <p style="color:#8b949e;font-size:0.82rem;line-height:1.6;">
+            <span style="color:#3fb950;">how to use:</span> copy the code above, paste it into a file named <code style="color:#58a6ff;">${script.name}.${script.lang === 'python' ? 'py' : script.lang === 'javascript' ? 'js' : 'sh'}</code>, then run it from your terminal.
+          </p>
+        </div>
+      `;
+
+      document.getElementById("copy-btn").addEventListener("click", () => {
+        navigator.clipboard.writeText(script.code).then(() => {
+          const btn = document.getElementById("copy-btn");
+          btn.textContent = "copied!";
+          btn.classList.add("copied");
+          setTimeout(() => {
+            btn.textContent = "copy code";
+            btn.classList.remove("copied");
+          }, 2000);
+        });
+      });
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    }
+  </script>
+</body>
+</html>

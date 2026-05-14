@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Submit a Script — ScriptHub</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <nav>
+    <a class="logo" href="index.html">script<span>hub</span>.dev</a>
+    <div class="nav-links">
+      <a href="index.html">browse</a>
+      <a href="submit.html">submit</a>
+    </div>
+  </nav>
+
+  <div class="submit-wrap">
+    <a class="back-link" href="index.html">← back to browse</a>
+    <h1>submit a <span class="green">script</span></h1>
+    <p>share a script you built. once reviewed it'll show up on the site.</p>
+
+    <div id="form-wrap">
+      <div class="form-group">
+        <label for="s-name">script name</label>
+        <input type="text" id="s-name" placeholder="e.g. bulk-rename" />
+      </div>
+
+      <div class="form-group">
+        <label for="s-desc">description</label>
+        <input type="text" id="s-desc" placeholder="what does it do? (one sentence)" />
+      </div>
+
+      <div class="form-group">
+        <label for="s-lang">language</label>
+        <select id="s-lang">
+          <option value="python">python</option>
+          <option value="javascript">javascript</option>
+          <option value="shell">shell</option>
+          <option value="powershell">powershell</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="s-tag">category</label>
+        <select id="s-tag">
+          <option value="automation">automation</option>
+          <option value="utilities">utilities</option>
+          <option value="web">web</option>
+          <option value="file tools">file tools</option>
+          <option value="games">games</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="s-code">paste your code</label>
+        <textarea id="s-code" placeholder="# paste your script here..."></textarea>
+      </div>
+
+      <button class="submit-btn" id="submit-btn">submit script →</button>
+    </div>
+
+    <div id="success-msg" style="display:none; margin-top:2rem; padding:1.25rem; background:#0d2110; border:1px solid #1a3a1f; border-radius:8px;">
+      <p style="color:#3fb950; margin-bottom:0.4rem;">✓ script submitted!</p>
+      <p style="color:#8b949e; font-size:0.85rem;">thanks for contributing. submissions are reviewed before going live.</p>
+    </div>
+  </div>
+
+  <footer>
+    <p>scripthub &mdash; scripts for everything</p>
+  </footer>
+
+  <script>
+    document.getElementById("submit-btn").addEventListener("click", () => {
+      const name = document.getElementById("s-name").value.trim();
+      const desc = document.getElementById("s-desc").value.trim();
+      const code = document.getElementById("s-code").value.trim();
+
+      if (!name || !desc || !code) {
+        alert("please fill in all fields before submitting.");
+        return;
+      }
+
+      document.getElementById("form-wrap").style.display = "none";
+      document.getElementById("success-msg").style.display = "block";
+    });
+  </script>
+</body>
+</html>

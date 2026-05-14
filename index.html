@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ScriptHub — scripts for everything</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <nav>
+    <div class="logo">script<span>hub</span>.dev</div>
+    <div class="nav-links">
+      <a href="index.html">browse</a>
+      <a href="submit.html">submit</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="grid-dots"></div>
+    <h1>find a <span class="green">script</span> for anything</h1>
+    <p>browse, copy, and run scripts built by the community</p>
+    <div class="search-wrap">
+      <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="search" placeholder="search scripts..." autocomplete="off" />
+    </div>
+    <div class="tags" id="tags">
+      <button class="tag active" data-tag="all">all</button>
+      <button class="tag" data-tag="automation">automation</button>
+      <button class="tag" data-tag="utilities">utilities</button>
+      <button class="tag" data-tag="web">web</button>
+      <button class="tag" data-tag="file tools">file tools</button>
+      <button class="tag" data-tag="games">games</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="grid" id="grid"></div>
+    <p class="no-results" id="no-results" style="display:none;">no scripts found — try a different search</p>
+  </main>
+
+  <footer>
+    <p>scripthub &mdash; scripts for everything</p>
+  </footer>
+
+  <script src="scripts.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
