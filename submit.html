@@ -72,15 +72,85 @@
   </footer>
 
   <script>
+    const BAD_WORDS = [
+      "fuck","shit","ass","bitch","cunt","dick","cock","pussy","bastard","damn",
+      "asshole","motherfucker","faggot","nigger","nigga","whore","slut","retard",
+      "piss","crap","bollocks","wanker","twat","prick","arse","dumbass","jackass",
+      "dipshit","shithead","bullshit","douchebag","fucker","fuckhead","moron",
+      "idiot","stupid","hate","kill","murder","rape","porn","sex","nude","naked",
+      "xxx","hentai","drugs","weed","cocaine","meth","heroin","hack","exploit",
+      "cheat","bypass","crack","malware","virus","ddos","keylogger","phish"
+    ];
+
+    const ERROR_STYLES = `
+      border-color: #993535 !important;
+      background: #1a0d0d !important;
+    `;
+
+    function containsBadWord(text) {
+      const lower = text.toLowerCase().replace(/[^a-z0-9\s]/g, ' ');
+      return BAD_WORDS.some(word => {
+        const regex = new RegExp(`\\b${word}\\b`, 'i');
+        return regex.test(lower);
+      });
+    }
+
+    function showError(inputId, msg) {
+      const el = document.getElementById(inputId);
+      el.style.cssText += ERROR_STYLES;
+      let err = el.parentElement.querySelector('.field-error');
+      if (!err) {
+        err = document.createElement('p');
+        err.className = 'field-error';
+        err.style.cssText = 'color:#ff6b6b;font-size:0.8rem;margin-top:5px;';
+        el.parentElement.appendChild(err);
+      }
+      err.textContent = msg;
+    }
+
+    function clearErrors() {
+      document.querySelectorAll('.field-error').forEach(e => e.remove());
+      ['s-name','s-desc','s-code'].forEach(id => {
+        const el = document.getElementById(id);
+        el.style.borderColor = '';
+        el.style.background = '';
+      });
+    }
+
     document.getElementById("submit-btn").addEventListener("click", () => {
+      clearErrors();
+
       const name = document.getElementById("s-name").value.trim();
       const desc = document.getElementById("s-desc").value.trim();
       const code = document.getElementById("s-code").value.trim();
 
-      if (!name || !desc || !code) {
-        alert("please fill in all fields before submitting.");
-        return;
+      let hasError = false;
+
+      if (!name) {
+        showError("s-name", "please enter a script name.");
+        hasError = true;
+      } else if (containsBadWord(name)) {
+        showError("s-name", "script name contains inappropriate content.");
+        hasError = true;
       }
+
+      if (!desc) {
+        showError("s-desc", "please enter a description.");
+        hasError = true;
+      } else if (containsBadWord(desc)) {
+        showError("s-desc", "description contains inappropriate content.");
+        hasError = true;
+      }
+
+      if (!code) {
+        showError("s-code", "please paste your script code.");
+        hasError = true;
+      } else if (containsBadWord(code)) {
+        showError("s-code", "script contains inappropriate content or flagged keywords.");
+        hasError = true;
+      }
+
+      if (hasError) return;
 
       document.getElementById("form-wrap").style.display = "none";
       document.getElementById("success-msg").style.display = "block";
