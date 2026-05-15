@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Request a Script — ScriptHub</title>
+  <link rel="stylesheet" href="style.css" />
+  <script>(function(){var t=localStorage.getItem('sh-theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
+</head>
+<body>
+  <nav>
+    <a class="logo" href="index.html">script<span>hub</span>.dev</a>
+    <div class="nav-right">
+      <div class="nav-links">
+        <a href="index.html">browse</a>
+        <a href="submit.html">submit</a>
+        <a href="about.html">about</a>
+        <a href="changelog.html">changelog</a>
+        <a href="request.html" class="active">request</a>
+      </div>
+      <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
+    </div>
+  </nav>
+
+  <div class="submit-wrap">
+    <a class="back-link" href="index.html">← back to browse</a>
+    <h1>request a <span class="green">script</span></h1>
+    <p>don't see a script you need? tell us what you want and we'll try to build it.</p>
+
+    <div id="form-wrap">
+      <div class="form-group">
+        <label for="r-title">what should the script do?</label>
+        <input type="text" id="r-title" placeholder="e.g. resize all images in a folder to 800px wide" />
+      </div>
+
+      <div class="form-group">
+        <label for="r-detail">any extra details? (optional)</label>
+        <textarea id="r-detail" style="min-height:120px;" placeholder="describe what you want in more detail, what OS you're on, etc..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="r-lang">preferred language</label>
+        <select id="r-lang">
+          <option value="any">any — whatever works best</option>
+          <option value="python">python</option>
+          <option value="javascript">javascript</option>
+          <option value="shell">shell</option>
+          <option value="powershell">powershell</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="r-cat">category</label>
+        <select id="r-cat">
+          <option value="utilities">utilities</option>
+          <option value="automation">automation</option>
+          <option value="file tools">file tools</option>
+          <option value="web">web</option>
+          <option value="games">games</option>
+          <option value="other">other</option>
+        </select>
+      </div>
+
+      <button class="submit-btn" id="req-btn">submit request →</button>
+    </div>
+
+    <div id="success-msg" style="display:none;margin-top:2rem;padding:1.25rem;background:#0d2110;border:1px solid #1a3a1f;border-radius:8px;">
+      <p style="color:#3fb950;margin-bottom:0.4rem;">✓ request submitted!</p>
+      <p style="color:var(--muted);font-size:0.85rem;">thanks! we'll look into building this. check the changelog for updates.</p>
+    </div>
+  </div>
+
+  <footer><p>scripthub — scripts for everything</p></footer>
+
+  <script>
+    function toggleTheme() {
+      const curr = document.documentElement.getAttribute('data-theme');
+      const next = curr === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('sh-theme', next);
+      document.getElementById('theme-btn').textContent = next === 'dark' ? '🌙' : '☀️';
+    }
+    document.getElementById('theme-btn').textContent = (localStorage.getItem('sh-theme')||'dark')==='dark'?'🌙':'☀️';
+
+    document.getElementById('req-btn').addEventListener('click', () => {
+      const title = document.getElementById('r-title').value.trim();
+      if (!title) { alert('please describe what you want the script to do.'); return; }
+      document.getElementById('form-wrap').style.display = 'none';
+      document.getElementById('success-msg').style.display = 'block';
+    });
+  </script>
+</body>
+</html>

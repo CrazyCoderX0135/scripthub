@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Changelog — ScriptHub</title>
+  <link rel="stylesheet" href="style.css" />
+  <script>(function(){var t=localStorage.getItem('sh-theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
+</head>
+<body>
+  <nav>
+    <a class="logo" href="index.html">script<span>hub</span>.dev</a>
+    <div class="nav-right">
+      <div class="nav-links">
+        <a href="index.html">browse</a>
+        <a href="submit.html">submit</a>
+        <a href="about.html">about</a>
+        <a href="changelog.html" class="active">changelog</a>
+        <a href="request.html">request</a>
+      </div>
+      <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
+    </div>
+  </nav>
+
+  <div class="page-wrap">
+    <a class="back-link" href="index.html">← back to browse</a>
+    <h1>changelog</h1>
+    <p class="subtitle">everything that's been added or updated</p>
+
+    <div class="log-item">
+      <div class="log-date">v2.0 — May 2026</div>
+      <div class="log-title">🚀 major update — 30 scripts + full site redesign</div>
+      <div class="log-desc">Launched with 30 scripts across 5 categories. Added light/dark mode, syntax highlighting, difficulty badges, library requirements, script ratings, copy link button, featured section, random script button, typing animation, and this changelog. Also added the about, request, and guide pages.</div>
+      <div class="log-tags">
+        <span class="badge diff-beginner">new feature</span>
+        <span class="badge diff-intermediate">redesign</span>
+      </div>
+    </div>
+
+    <div class="log-item">
+      <div class="log-date">scripts added</div>
+      <div class="log-title">📁 file tools (8 scripts)</div>
+      <div class="log-desc">bulk-rename, img-crush, csv-to-json, json-to-csv, duplicate-finder, folder-size, pdf-merger, text-search</div>
+    </div>
+
+    <div class="log-item">
+      <div class="log-date">scripts added</div>
+      <div class="log-title">🛠 utilities (11 scripts)</div>
+      <div class="log-desc">sysmon, remind-me, password-gen, countdown-timer, net-scan, weather, qr-gen, ip-info, stopwatch, unit-converter, clipboard-saver</div>
+    </div>
+
+    <div class="log-item">
+      <div class="log-date">scripts added</div>
+      <div class="log-title">⚙️ automation (6 scripts)</div>
+      <div class="log-desc">auto-backup, file-organizer, screenshot-taker, email-sender, rename-by-date, website-monitor</div>
+    </div>
+
+    <div class="log-item">
+      <div class="log-date">scripts added</div>
+      <div class="log-title">🌐 web (4 scripts)</div>
+      <div class="log-desc">webpage-to-pdf, broken-link-checker, json-formatter, url-shortener</div>
+    </div>
+
+    <div class="log-item">
+      <div class="log-date">scripts added</div>
+      <div class="log-title">🎮 games (5 scripts)</div>
+      <div class="log-desc">number-guesser, hangman, rock-paper-scissors, trivia-quiz, word-scramble</div>
+    </div>
+
+    <div class="log-item">
+      <div class="log-date">v1.0 — launch</div>
+      <div class="log-title">✨ scripthub goes live</div>
+      <div class="log-desc">Initial launch with 8 scripts, search and filter by category, and a copy button on each script. The beginning of something great.</div>
+      <div class="log-tags">
+        <span class="badge diff-beginner">launch</span>
+      </div>
+    </div>
+
+  </div>
+
+  <footer><p>scripthub — scripts for everything</p></footer>
+
+  <script>
+    function toggleTheme() {
+      const curr = document.documentElement.getAttribute('data-theme');
+      const next = curr === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('sh-theme', next);
+      document.getElementById('theme-btn').textContent = next === 'dark' ? '🌙' : '☀️';
+    }
+    document.getElementById('theme-btn').textContent = (localStorage.getItem('sh-theme')||'dark')==='dark'?'🌙':'☀️';
+  </script>
+</body>
+</html>

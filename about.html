@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About — ScriptHub</title>
+  <link rel="stylesheet" href="style.css" />
+  <script>(function(){var t=localStorage.getItem('sh-theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
+</head>
+<body>
+  <nav>
+    <a class="logo" href="index.html">script<span>hub</span>.dev</a>
+    <div class="nav-right">
+      <div class="nav-links">
+        <a href="index.html">browse</a>
+        <a href="submit.html">submit</a>
+        <a href="about.html" class="active">about</a>
+        <a href="changelog.html">changelog</a>
+        <a href="request.html">request</a>
+      </div>
+      <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
+    </div>
+  </nav>
+
+  <div class="page-wrap">
+    <a class="back-link" href="index.html">← back to browse</a>
+    <h1>about <span class="green">scripthub</span></h1>
+    <p class="subtitle">a home for useful, runnable scripts anyone can pick up and use</p>
+
+    <p style="color:var(--muted);font-size:0.9rem;line-height:1.75;margin-bottom:2rem;">
+      ScriptHub is a free collection of scripts for everyday tasks — automating your files,
+      monitoring your system, generating passwords, building games, and more. Every script
+      is copy-paste ready and works right from your terminal with Python, JavaScript, or Shell.
+      No signup, no login, no nonsense.
+    </p>
+
+    <div class="about-grid">
+      <div class="about-card">
+        <div class="icon">📋</div>
+        <h3>copy & run</h3>
+        <p>Every script is ready to go. Copy the code, save it, and run it — that's it.</p>
+      </div>
+      <div class="about-card">
+        <div class="icon">🆓</div>
+        <h3>completely free</h3>
+        <p>No accounts. No paywalls. No ads. Just scripts.</p>
+      </div>
+      <div class="about-card">
+        <div class="icon">🌍</div>
+        <h3>cross-platform</h3>
+        <p>Scripts work on Windows, Mac, and Linux. The guide covers all three.</p>
+      </div>
+      <div class="about-card">
+        <div class="icon">📤</div>
+        <h3>community-driven</h3>
+        <p>Anyone can submit a script. Good ones get featured on the homepage.</p>
+      </div>
+      <div class="about-card">
+        <div class="icon">🔰</div>
+        <h3>beginner friendly</h3>
+        <p>Every script has a difficulty rating and shows what libraries you need to install.</p>
+      </div>
+      <div class="about-card">
+        <div class="icon">🚀</div>
+        <h3>always growing</h3>
+        <p>New scripts get added regularly. Check the changelog to see what's new.</p>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <h2 style="font-size:1.1rem;margin-bottom:1rem;">how to contribute</h2>
+    <p style="color:var(--muted);font-size:0.88rem;line-height:1.75;margin-bottom:1rem;">
+      Have a useful script you built? Submit it using the
+      <a href="submit.html" style="color:var(--blue);">submit page</a>. We review every
+      submission before it goes live to make sure it's safe, useful, and works.
+      Good scripts get added to the collection — great ones get featured.
+    </p>
+    <p style="color:var(--muted);font-size:0.88rem;line-height:1.75;">
+      Want a script that doesn't exist yet? Head to the
+      <a href="request.html" style="color:var(--blue);">request page</a> and tell us what you need.
+    </p>
+  </div>
+
+  <footer><p>scripthub — scripts for everything</p></footer>
+
+  <script>
+    function toggleTheme() {
+      const curr = document.documentElement.getAttribute('data-theme');
+      const next = curr === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('sh-theme', next);
+      document.getElementById('theme-btn').textContent = next === 'dark' ? '🌙' : '☀️';
+    }
+    document.getElementById('theme-btn').textContent = (localStorage.getItem('sh-theme')||'dark')==='dark'?'🌙':'☀️';
+  </script>
+</body>
+</html>
