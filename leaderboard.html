@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-mode="">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Top Scripts — ScriptHub</title>
+  <link rel="stylesheet" href="style.css" />
+  <script>(function(){var t=localStorage.getItem('sh-theme')||'dark';var m=localStorage.getItem('sh-mode')||'';document.documentElement.setAttribute('data-theme',t);document.documentElement.setAttribute('data-mode',m);})();</script>
+</head>
+<body>
+  <nav>
+    <a class="logo" href="index.html">script<span>hub</span>.dev</a>
+    <div class="nav-right">
+      <div class="nav-links">
+        <a href="index.html">browse</a>
+        <a href="beginner.html">🔰 beginner</a>
+        <a href="leaderboard.html" class="active">🏆 top</a>
+        <a href="submit.html">submit</a>
+        <a href="about.html">about</a>
+        <a href="changelog.html">changelog</a>
+      </div>
+      <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
+    </div>
+  </nav>
+
+  <div class="page-wrap">
+    <a class="back-link" href="index.html">← back to browse</a>
+    <h1>🏆 top <span class="green">scripts</span></h1>
+    <p class="subtitle">ranked by community likes — your votes count!</p>
+
+    <div id="lb-list"></div>
+  </div>
+
+  <footer><p>scripthub &nbsp;·&nbsp; <a href="about.html">about</a></p></footer>
+
+  <script src="scripts.js"></script>
+  <script src="meta.js"></script>
+  <script>
+    function toggleTheme() {
+      const curr = document.documentElement.getAttribute('data-theme');
+      const next = curr==='dark'?'light':'dark';
+      document.documentElement.setAttribute('data-theme',next);
+      localStorage.setItem('sh-theme',next);
+      document.getElementById('theme-btn').textContent=next==='dark'?'🌙':'☀️';
+    }
+    document.getElementById('theme-btn').textContent=(localStorage.getItem('sh-theme')||'dark')==='dark'?'🌙':'☀️';
+
+    const list = document.getElementById('lb-list');
+    const medals = ['🥇','🥈','🥉'];
+
+    const scored = SCRIPTS.map(s=>({
+      ...s,
+      likes: parseInt(localStorage.getItem(`sh-likes-${s.id}`)||'0')
+    })).sort((a,b)=>b.likes-a.likes);
+
+    const hasAny = scored.some(s=>s.likes>0);
+
+    if (!hasAny) {
+      list.innerHTML=`<div class="lb-empty">
+        <p style="font-size:1.5rem;margin-bottom:0.5rem;">🤷</p>
+        <p>no likes yet — go heart some scripts!</p>
+        <p style="margin-top:0.5rem;font-size:0.78rem;">click the ♥ button on any script page to vote.</p>
+      </div>`;
+    } else {
+      scored.forEach((s,i)=>{
+        const rank = i<3 ? medals[i] : `#${i+1}`;
+        const row = document.createElement('a');
+        row.className='lb-row';
+        row.href=`script.html?id=${s.id}`;
+        row.innerHTML=`
+          <div class="lb-rank ${i<3?'top3':''}">${rank}</div>
+          <div class="lb-icon">${s.icon}</div>
+          <div class="lb-name">${s.name}<br><span style="font-size:0.72rem;color:var(--muted);font-weight:normal;">${s.desc.slice(0,60)}...</span></div>
+          <div class="lb-likes">♥ ${s.likes}</div>`;
+        list.appendChild(row);
+      });
+    }
+  </script>
+</body>
+</html>

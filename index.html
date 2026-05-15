@@ -1,44 +1,63 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="dark" data-mode="">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ScriptHub — scripts for everything</title>
   <link rel="stylesheet" href="style.css" />
   <script>
-    (function() {
-      var t = localStorage.getItem('sh-theme') || 'dark';
-      document.documentElement.setAttribute('data-theme', t);
+    (function(){
+      var t=localStorage.getItem('sh-theme')||'dark';
+      var m=localStorage.getItem('sh-mode')||'';
+      document.documentElement.setAttribute('data-theme',t);
+      document.documentElement.setAttribute('data-mode',m);
     })();
   </script>
 </head>
 <body>
+
+  <!-- BOOT LOADER -->
+  <div id="loader">
+    <div id="loader-lines"></div>
+  </div>
+
+  <!-- EASTER EGG OVERLAY -->
+  <div id="easter-egg">
+    <canvas id="easter-canvas"></canvas>
+    <div id="easter-egg-msg">🟢 MATRIX MODE — click anywhere to exit</div>
+  </div>
 
   <nav>
     <a class="logo" href="index.html">script<span>hub</span>.dev</a>
     <div class="nav-right">
       <div class="nav-links">
         <a href="index.html" class="active">browse</a>
+        <a href="beginner.html">🔰 beginner</a>
+        <a href="leaderboard.html">🏆 top</a>
         <a href="submit.html">submit</a>
         <a href="about.html">about</a>
         <a href="changelog.html">changelog</a>
         <a href="request.html">request</a>
       </div>
-      <button class="nav-btn" onclick="goRandom()" title="Random script">🎲 random</button>
-      <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+      <button class="nav-btn" onclick="goRandom()">🎲 random</button>
+      <button class="terminal-btn" id="terminal-btn" onclick="toggleTerminal()" title="Terminal mode">💻</button>
+      <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
     </div>
   </nav>
 
   <header class="hero">
-    <div class="grid-dots"></div>
+    <canvas id="matrix-canvas"></canvas>
     <h1>find a <span class="green" id="type-word">script</span><span class="cursor"></span> for anything</h1>
-    <p>browse, copy, and run scripts built for the community</p>
-    <div class="count-badge" id="count-badge">loading scripts...</div>
-    <div class="search-wrap">
-      <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input type="text" id="search" placeholder="search scripts..." autocomplete="off" />
+    <p>browse, copy, and run scripts — no signup, no login, no nonsense</p>
+    <div class="count-badge" id="count-badge">loading...</div>
+    <div class="search-container">
+      <div class="search-wrap">
+        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="search" placeholder="search scripts... (press / to focus)" autocomplete="off" />
+      </div>
+      <div class="search-history" id="search-history"></div>
     </div>
-    <div class="tags" id="tags">
+    <div class="tags">
       <button class="tag active" data-tag="all">all</button>
       <button class="tag" data-tag="automation">automation</button>
       <button class="tag" data-tag="utilities">utilities</button>
@@ -53,8 +72,12 @@
   </header>
 
   <main>
+    <div id="sotd-section" style="margin-bottom:1.5rem;">
+      <div class="section-label">⭐ script of the day</div>
+      <div id="sotd-wrap"></div>
+    </div>
     <div id="featured-section" style="margin-bottom:2rem;">
-      <div class="section-label">⭐ featured scripts</div>
+      <div class="section-label">🔥 featured</div>
       <div class="grid" id="featured-grid"></div>
     </div>
     <div class="section-label" id="all-label">all scripts</div>
@@ -62,8 +85,10 @@
     <p class="no-results" id="no-results" style="display:none;">no scripts found — try a different search</p>
   </main>
 
+  <button id="back-top">↑ top</button>
+
   <footer>
-    <p>scripthub — scripts for everything &nbsp;·&nbsp; <a href="about.html" style="color:var(--muted);text-decoration:none;">about</a> &nbsp;·&nbsp; <a href="changelog.html" style="color:var(--muted);text-decoration:none;">changelog</a></p>
+    <p>scripthub &nbsp;·&nbsp; <a href="about.html">about</a> &nbsp;·&nbsp; <a href="changelog.html">changelog</a> &nbsp;·&nbsp; <a href="request.html">request a script</a> &nbsp;·&nbsp; <a href="leaderboard.html">🏆 top scripts</a></p>
   </footer>
 
   <!-- GUIDE MODAL -->
@@ -78,26 +103,23 @@
         <button class="os-tab" onclick="switchOS('linux',this)">🐧 Linux</button>
       </div>
       <div class="os-section active" id="os-windows">
-        <div class="step"><div class="step-num">1</div><div class="step-content"><h3>copy the script</h3><p>Click the <b>copy code</b> button on any script page.</p></div></div>
-        <div class="step"><div class="step-num">2</div><div class="step-content"><h3>open Notepad and paste</h3><p>Press <b>Windows key</b>, type <b>Notepad</b>, open it, press <b>Ctrl+V</b>.</p></div></div>
-        <div class="step"><div class="step-num">3</div><div class="step-content"><h3>save as a .py file</h3><p>File → Save As → change "Save as type" to <b>All Files</b> → name it <b>myscript.py</b> → save to Desktop.</p><div class="warn"><b>important:</b> skip this step and it saves as .py.txt and won't work.</div></div></div>
-        <div class="step"><div class="step-num">4</div><div class="step-content"><h3>install Python (first time only)</h3><p>Go to <a href="https://python.org/downloads" target="_blank">python.org/downloads</a> and install. <b>Check "Add Python to PATH"</b> during install.</p></div></div>
-        <div class="step"><div class="step-num">5</div><div class="step-content"><h3>open Command Prompt</h3><p>Press <b>Windows+R</b>, type <b>cmd</b>, press Enter.</p></div></div>
-        <div class="step"><div class="step-num">6</div><div class="step-content"><h3>navigate to Desktop</h3><div class="cmd">cd %USERPROFILE%\Desktop</div></div></div>
-        <div class="step"><div class="step-num">7</div><div class="step-content"><h3>run it! 🎉</h3><div class="cmd">python myscript.py</div><div class="note" style="margin-top:8px;"><b>ModuleNotFoundError?</b> Run <code style="color:#58a6ff;">pip install libraryname</code> then try again.</div></div></div>
+        <div class="step"><div class="step-num">1</div><div class="step-content"><h3>copy the script</h3><p>Click <b>copy code</b> on any script page.</p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content"><h3>open Notepad and paste</h3><p>Windows key → type Notepad → open → <b>Ctrl+V</b></p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content"><h3>save as .py</h3><p>File → Save As → "Save as type" = <b>All Files</b> → name it <b>myscript.py</b> → save to Desktop.</p><div class="warn"><b>important:</b> must change "Save as type" to All Files or it saves as .txt.</div></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-content"><h3>install Python</h3><p><a href="https://python.org/downloads" target="_blank">python.org/downloads</a> — check <b>"Add Python to PATH"</b>.</p></div></div>
+        <div class="step"><div class="step-num">5</div><div class="step-content"><h3>run it</h3><p><b>Windows+R</b> → cmd → Enter, then:</p><div class="cmd">cd %USERPROFILE%\Desktop</div><div class="cmd" style="margin-top:5px;">python myscript.py</div><div class="note" style="margin-top:8px;"><b>ModuleNotFoundError?</b> Run <code style="color:#58a6ff;">pip install X</code></div></div></div>
       </div>
       <div class="os-section" id="os-mac">
-        <div class="step"><div class="step-num">1</div><div class="step-content"><h3>copy the script</h3><p>Click the <b>copy code</b> button on any script page.</p></div></div>
-        <div class="step"><div class="step-num">2</div><div class="step-content"><h3>open Terminal</h3><p>Press <b>Cmd+Space</b>, type <b>Terminal</b>, press Enter.</p></div></div>
-        <div class="step"><div class="step-num">3</div><div class="step-content"><h3>check Python</h3><div class="cmd">python3 --version</div><p style="margin-top:6px;">No version? Install from <a href="https://python.org/downloads" target="_blank">python.org/downloads</a>.</p></div></div>
-        <div class="step"><div class="step-num">4</div><div class="step-content"><h3>create the file</h3><div class="cmd">nano ~/Desktop/myscript.py</div><p style="margin-top:6px;">Paste with <b>Cmd+V</b>, then <b>Ctrl+X → Y → Enter</b> to save.</p></div></div>
-        <div class="step"><div class="step-num">5</div><div class="step-content"><h3>run it! 🎉</h3><div class="cmd">python3 ~/Desktop/myscript.py</div><div class="note" style="margin-top:8px;"><b>ModuleNotFoundError?</b> Run <code style="color:#58a6ff;">pip3 install libraryname</code>.</div></div></div>
+        <div class="step"><div class="step-num">1</div><div class="step-content"><h3>copy the script</h3><p>Click <b>copy code</b> on any script page.</p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content"><h3>open Terminal</h3><p><b>Cmd+Space</b> → Terminal → Enter.</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content"><h3>check Python</h3><div class="cmd">python3 --version</div><p style="margin-top:6px;">No version? Download from <a href="https://python.org/downloads" target="_blank">python.org</a>.</p></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-content"><h3>in VS Code (easiest)</h3><p>Open VS Code → new file → paste code → <b>Cmd+Shift+S</b> (Save As) → navigate to Desktop → name it <b>myscript.py</b> → Save.</p></div></div>
+        <div class="step"><div class="step-num">5</div><div class="step-content"><h3>run it</h3><div class="cmd">cd ~/Desktop</div><div class="cmd" style="margin-top:5px;">python3 myscript.py</div><div class="note" style="margin-top:8px;"><b>ModuleNotFoundError?</b> Run <code style="color:#58a6ff;">pip3 install X</code></div></div></div>
       </div>
       <div class="os-section" id="os-linux">
-        <div class="step"><div class="step-num">1</div><div class="step-content"><h3>copy + open terminal</h3><p>Click copy code, then press <b>Ctrl+Alt+T</b> to open terminal.</p></div></div>
-        <div class="step"><div class="step-num">2</div><div class="step-content"><h3>check Python</h3><div class="cmd">python3 --version</div><p style="margin-top:6px;">Not installed? Run: <code style="color:#58a6ff;">sudo apt install python3</code></p></div></div>
-        <div class="step"><div class="step-num">3</div><div class="step-content"><h3>create file + paste</h3><div class="cmd">nano ~/Desktop/myscript.py</div><p style="margin-top:6px;"><b>Ctrl+X → Y → Enter</b> to save.</p></div></div>
-        <div class="step"><div class="step-num">4</div><div class="step-content"><h3>run it! 🎉</h3><div class="cmd">python3 ~/Desktop/myscript.py</div></div></div>
+        <div class="step"><div class="step-num">1</div><div class="step-content"><h3>copy + open terminal</h3><p>Copy the script, press <b>Ctrl+Alt+T</b>.</p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content"><h3>create the file</h3><div class="cmd">nano ~/Desktop/myscript.py</div><p style="margin-top:6px;">Paste, then <b>Ctrl+X → Y → Enter</b>.</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content"><h3>run it</h3><div class="cmd">python3 ~/Desktop/myscript.py</div></div></div>
       </div>
     </div>
   </div>
@@ -106,53 +128,49 @@
   <script src="meta.js"></script>
   <script src="app.js"></script>
   <script>
-    // Theme
-    function toggleTheme() {
-      const curr = document.documentElement.getAttribute('data-theme');
-      const next = curr === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', next);
-      localStorage.setItem('sh-theme', next);
-      document.getElementById('theme-btn').textContent = next === 'dark' ? '🌙' : '☀️';
-    }
-    document.getElementById('theme-btn').textContent =
-      (localStorage.getItem('sh-theme') || 'dark') === 'dark' ? '🌙' : '☀️';
+    // ── BOOT LOADER ───────────────────────────────────────────
+    (function() {
+      if (sessionStorage.getItem('sh-booted')) {
+        document.getElementById('loader').style.display = 'none';
+        return;
+      }
+      sessionStorage.setItem('sh-booted', '1');
+      const lines = [
+        '> SCRIPTHUB v2.0',
+        '> LOADING CORE MODULES...',
+        '> CONNECTING TO SCRIPT DATABASE...',
+        '> ' + SCRIPTS.length + ' SCRIPTS FOUND',
+        '> RENDERING INTERFACE...',
+        '> READY.',
+      ];
+      const el = document.getElementById('loader-lines');
+      let i = 0;
+      function nextLine() {
+        if (i >= lines.length) {
+          setTimeout(() => {
+            document.getElementById('loader').classList.add('fade-out');
+            setTimeout(() => document.getElementById('loader').style.display = 'none', 500);
+          }, 300);
+          return;
+        }
+        el.innerHTML += lines[i] + '<br>';
+        i++;
+        setTimeout(nextLine, i === lines.length ? 600 : 280);
+      }
+      nextLine();
+    })();
 
-    // Typing animation
+    // ── TYPING ANIMATION ──────────────────────────────────────
     const words = ["script","tool","utility","automation","shortcut","solution","game"];
-    let wi = 0, ci = 0, deleting = false;
+    let wi=0, ci=0, del=false;
     const typeEl = document.getElementById('type-word');
     function type() {
-      const word = words[wi];
-      if (deleting) {
-        ci--;
-        typeEl.textContent = word.slice(0, ci);
-        if (ci === 0) { deleting = false; wi = (wi + 1) % words.length; setTimeout(type, 400); return; }
-      } else {
-        ci++;
-        typeEl.textContent = word.slice(0, ci);
-        if (ci === word.length) { deleting = true; setTimeout(type, 1600); return; }
-      }
-      setTimeout(type, deleting ? 55 : 100);
+      const w = words[wi];
+      if (del) { ci--; typeEl.textContent=w.slice(0,ci); if(ci===0){del=false;wi=(wi+1)%words.length;setTimeout(type,400);return;} }
+      else { ci++; typeEl.textContent=w.slice(0,ci); if(ci===w.length){del=true;setTimeout(type,1800);return;} }
+      setTimeout(type, del?55:100);
     }
-    setTimeout(type, 1000);
-
-    // Guide modal
-    function openGuide()  { document.getElementById('guide-modal').classList.add('open'); document.body.style.overflow='hidden'; }
-    function closeGuide() { document.getElementById('guide-modal').classList.remove('open'); document.body.style.overflow=''; }
-    function closeOnOverlay(e) { if (e.target === document.getElementById('guide-modal')) closeGuide(); }
-    function switchOS(os, btn) {
-      document.querySelectorAll('.os-section').forEach(s => s.classList.remove('active'));
-      document.querySelectorAll('.os-tab').forEach(t => t.classList.remove('active'));
-      document.getElementById('os-'+os).classList.add('active');
-      btn.classList.add('active');
-    }
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeGuide(); });
-
-    // Random script
-    function goRandom() {
-      const s = SCRIPTS[Math.floor(Math.random() * SCRIPTS.length)];
-      window.location.href = `script.html?id=${s.id}`;
-    }
+    setTimeout(type, 2000);
   </script>
 </body>
 </html>

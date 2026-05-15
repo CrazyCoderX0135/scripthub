@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-mode="">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Beginner's Corner — ScriptHub</title>
+  <link rel="stylesheet" href="style.css" />
+  <script>(function(){var t=localStorage.getItem('sh-theme')||'dark';var m=localStorage.getItem('sh-mode')||'';document.documentElement.setAttribute('data-theme',t);document.documentElement.setAttribute('data-mode',m);})();</script>
+</head>
+<body>
+  <nav>
+    <a class="logo" href="index.html">script<span>hub</span>.dev</a>
+    <div class="nav-right">
+      <div class="nav-links">
+        <a href="index.html">browse</a>
+        <a href="beginner.html" class="active">🔰 beginner</a>
+        <a href="leaderboard.html">🏆 top</a>
+        <a href="submit.html">submit</a>
+        <a href="about.html">about</a>
+        <a href="changelog.html">changelog</a>
+      </div>
+      <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
+    </div>
+  </nav>
+
+  <div class="page-wrap">
+    <a class="back-link" href="index.html">← back to browse</a>
+    <h1>🔰 beginner's <span class="green">corner</span></h1>
+    <p class="subtitle">new to scripting? start here — every script on this page is easy to run</p>
+
+    <div class="bc-header">
+      <h2>what makes a script "beginner"?</h2>
+      <p>These scripts only use Python's built-in features — no extra libraries to install. Just copy, save as a .py file, and run with <code style="color:var(--blue)">python myscript.py</code>. Not sure how? Hit the guide button on the homepage.</p>
+    </div>
+
+    <div class="grid" id="beginner-grid"></div>
+  </div>
+
+  <footer><p>scripthub &nbsp;·&nbsp; <a href="about.html">about</a></p></footer>
+
+  <script src="scripts.js"></script>
+  <script src="meta.js"></script>
+  <script>
+    function toggleTheme() {
+      const curr = document.documentElement.getAttribute('data-theme');
+      const next = curr==='dark'?'light':'dark';
+      document.documentElement.setAttribute('data-theme',next);
+      localStorage.setItem('sh-theme',next);
+      document.getElementById('theme-btn').textContent=next==='dark'?'🌙':'☀️';
+    }
+    document.getElementById('theme-btn').textContent=(localStorage.getItem('sh-theme')||'dark')==='dark'?'🌙':'☀️';
+
+    const langBadge={python:'badge-py',javascript:'badge-js',shell:'badge-sh',powershell:'badge-ps'};
+    const grid = document.getElementById('beginner-grid');
+    const beginners = SCRIPTS.filter(s=>{
+      const m=SCRIPT_META&&SCRIPT_META[s.id];
+      return !m||m.difficulty==='beginner';
+    });
+
+    beginners.forEach(s=>{
+      const a=document.createElement('a');
+      a.className='card';
+      a.href=`script.html?id=${s.id}`;
+      a.innerHTML=`
+        <div class="card-top"><span class="card-icon">${s.icon}</span><span class="card-name">${s.name}</span></div>
+        <div class="card-desc">${s.desc}</div>
+        <div class="card-footer">
+          <span class="badge ${langBadge[s.lang]||'badge-py'}">${s.lang}</span>
+          <span class="badge diff-beginner">beginner</span>
+        </div>`;
+      grid.appendChild(a);
+    });
+  </script>
+</body>
+</html>

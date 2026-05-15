@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="dark" data-mode="">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,9 +7,11 @@
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
   <script>
-    (function() {
-      var t = localStorage.getItem('sh-theme') || 'dark';
-      document.documentElement.setAttribute('data-theme', t);
+    (function(){
+      var t=localStorage.getItem('sh-theme')||'dark';
+      var m=localStorage.getItem('sh-mode')||'';
+      document.documentElement.setAttribute('data-theme',t);
+      document.documentElement.setAttribute('data-mode',m);
     })();
   </script>
 </head>
@@ -20,73 +22,121 @@
     <div class="nav-right">
       <div class="nav-links">
         <a href="index.html">browse</a>
+        <a href="beginner.html">🔰 beginner</a>
+        <a href="leaderboard.html">🏆 top</a>
         <a href="submit.html">submit</a>
         <a href="about.html">about</a>
         <a href="changelog.html">changelog</a>
         <a href="request.html">request</a>
       </div>
-      <button class="nav-btn" onclick="goRandom()" title="Random script">🎲 random</button>
+      <button class="nav-btn" onclick="goRandom()">🎲 random</button>
+      <button class="terminal-btn" id="terminal-btn" onclick="toggleTerminal()">💻</button>
       <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
     </div>
   </nav>
 
   <div class="detail-wrap" id="detail">
-    <p style="color:var(--muted);">loading...</p>
+    <p style="color:var(--muted)">loading...</p>
   </div>
 
-  <footer>
-    <p>scripthub — scripts for everything</p>
-  </footer>
+  <!-- REPORT BUG MODAL -->
+  <div class="modal-overlay" id="bug-modal" onclick="if(event.target===this)closeBug()">
+    <div class="modal">
+      <button class="modal-close" onclick="closeBug()">✕</button>
+      <h2>report a <span class="red">bug</span></h2>
+      <p class="subtitle">something not working? let us know.</p>
+      <div id="bug-form">
+        <div class="form-group">
+          <label>what went wrong?</label>
+          <textarea id="bug-desc" style="min-height:120px;" placeholder="describe the problem..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>your OS</label>
+          <select id="bug-os"><option>Windows</option><option>Mac</option><option>Linux</option></select>
+        </div>
+        <button class="submit-btn" onclick="submitBug()">send report →</button>
+      </div>
+      <div id="bug-thanks" style="display:none;color:var(--green);font-size:0.88rem;">✓ thanks for the report! we'll look into it.</div>
+    </div>
+  </div>
+
+  <button id="back-top">↑ top</button>
+
+  <footer><p>scripthub &nbsp;·&nbsp; <a href="about.html">about</a> &nbsp;·&nbsp; <a href="changelog.html">changelog</a></p></footer>
 
   <script src="scripts.js"></script>
   <script src="meta.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
   <script>
     // Theme
     function toggleTheme() {
       const curr = document.documentElement.getAttribute('data-theme');
-      const next = curr === 'dark' ? 'light' : 'dark';
+      const next = curr==='dark'?'light':'dark';
       document.documentElement.setAttribute('data-theme', next);
       localStorage.setItem('sh-theme', next);
-      document.getElementById('theme-btn').textContent = next === 'dark' ? '🌙' : '☀️';
+      document.getElementById('theme-btn').textContent = next==='dark'?'🌙':'☀️';
     }
-    document.getElementById('theme-btn').textContent =
-      (localStorage.getItem('sh-theme') || 'dark') === 'dark' ? '🌙' : '☀️';
+    function toggleTerminal() {
+      const curr = document.documentElement.getAttribute('data-mode');
+      const next = curr==='terminal'?'':'terminal';
+      document.documentElement.setAttribute('data-mode', next);
+      localStorage.setItem('sh-mode', next);
+      document.getElementById('terminal-btn').classList.toggle('active', next==='terminal');
+    }
+    document.getElementById('theme-btn').textContent = (localStorage.getItem('sh-theme')||'dark')==='dark'?'🌙':'☀️';
+    document.getElementById('terminal-btn').classList.toggle('active', (localStorage.getItem('sh-mode')||'')==='terminal');
 
     function goRandom() {
-      const s = SCRIPTS[Math.floor(Math.random() * SCRIPTS.length)];
+      const s = SCRIPTS[Math.floor(Math.random()*SCRIPTS.length)];
       window.location.href = `script.html?id=${s.id}`;
     }
 
-    const langMap = { python:'python', javascript:'javascript', shell:'bash', powershell:'powershell' };
-    const langBadge = { python:'badge-py', javascript:'badge-js', shell:'badge-sh', powershell:'badge-ps' };
-    const diffLabel = { beginner:'beginner', intermediate:'intermediate', advanced:'advanced' };
-
-    function escapeHtml(str) {
-      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    // Back to top
+    const bt = document.getElementById('back-top');
+    if (bt) {
+      window.addEventListener('scroll', () => bt.classList.toggle('visible', window.scrollY>400));
+      bt.addEventListener('click', () => window.scrollTo({top:0,behavior:'smooth'}));
     }
 
+    function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    const langMap = {python:'python',javascript:'javascript',shell:'bash',powershell:'powershell'};
+    const langBadge = {python:'badge-py',javascript:'badge-js',shell:'badge-sh',powershell:'badge-ps'};
+
     const params = new URLSearchParams(window.location.search);
-    const id     = params.get('id');
-    const script = SCRIPTS.find(s => s.id === id);
+    const id = params.get('id');
+    const script = SCRIPTS.find(s=>s.id===id);
     const detail = document.getElementById('detail');
 
     if (!script) {
-      detail.innerHTML = `<p style="color:var(--muted);">Script not found. <a href="index.html" style="color:var(--blue);">go back</a></p>`;
+      detail.innerHTML = `<p style="color:var(--muted)">Script not found. <a href="index.html" style="color:var(--blue)">go back</a></p>`;
     } else {
       document.title = `${script.name} — ScriptHub`;
-      const meta = (SCRIPT_META && SCRIPT_META[script.id]) || { difficulty: 'beginner', requires: [] };
-      const likeKey  = `sh-likes-${script.id}`;
+      const meta = (SCRIPT_META&&SCRIPT_META[script.id])||{difficulty:'beginner',requires:[],version:'1.0'};
+      const likeKey = `sh-likes-${script.id}`;
       const likedKey = `sh-liked-${script.id}`;
-      const likes    = parseInt(localStorage.getItem(likeKey) || '0');
-      const liked    = localStorage.getItem(likedKey) === '1';
+      const likes = parseInt(localStorage.getItem(likeKey)||'0');
+      const liked = localStorage.getItem(likedKey)==='1';
+      const ext = script.lang==='python'?'py':script.lang==='javascript'?'js':'sh';
 
-      const requiresHtml = meta.requires.length > 0
-        ? `<div class="requires-box">
-            <b>requires:</b> install these before running:
-            ${meta.requires.map(r => `<code>pip install ${r}</code>`).join('  ')}
-           </div>`
+      const reqHtml = meta.requires&&meta.requires.length>0
+        ? `<div class="requires-box"><b>requires:</b> install before running: ${meta.requires.map(r=>`<code>pip install ${r}</code>`).join('  ')}</div>`
         : '';
+
+      // Similar scripts (same tag, different id, up to 3)
+      const similar = SCRIPTS.filter(s=>s.tag===script.tag&&s.id!==script.id).slice(0,3);
+      const simHtml = similar.length>0 ? `
+        <div class="similar-section">
+          <div class="section-label" style="margin-bottom:0.6rem;">similar scripts</div>
+          <div class="similar-grid">
+            ${similar.map(s=>`
+              <a class="card" href="script.html?id=${s.id}" style="text-decoration:none;">
+                <div class="card-top"><span class="card-icon">${s.icon}</span><span class="card-name">${s.name}</span></div>
+                <div class="card-desc">${s.desc}</div>
+              </a>`).join('')}
+          </div>
+        </div>` : '';
 
       detail.innerHTML = `
         <a class="back-link" href="index.html">← back to browse</a>
@@ -100,17 +150,18 @@
             <span class="badge ${langBadge[script.lang]||'badge-py'}">${script.lang}</span>
             <span class="badge" style="color:var(--muted);border-color:var(--border);background:transparent;">${script.tag}</span>
             <span class="badge diff-${meta.difficulty}">${meta.difficulty}</span>
+            <span class="badge badge-ver">v${meta.version||'1.0'}</span>
           </div>
         </div>
 
-        ${requiresHtml}
+        ${reqHtml}
 
         <div class="rating-box">
-          <span>was this helpful?</span>
-          <button class="like-btn ${liked ? 'liked' : ''}" id="like-btn">
-            ♥ <span id="like-count">${likes}</span> likes
-          </button>
+          <span>was this useful?</span>
+          <button class="like-btn ${liked?'liked':''}" id="like-btn">♥ <span id="like-count">${likes}</span> likes</button>
           <button class="link-btn" id="link-btn" style="margin-left:auto;">🔗 copy link</button>
+          <button class="print-btn" onclick="window.print()">🖨 print</button>
+          <button class="bug-btn" onclick="openBug()">🐛 bug?</button>
         </div>
 
         <div class="code-block">
@@ -120,15 +171,15 @@
               <button class="copy-btn" id="copy-btn">copy code</button>
             </div>
           </div>
-          <pre><code class="language-${langMap[script.lang]||'python'}" id="code-el">${escapeHtml(script.code)}</code></pre>
+          <pre><code class="language-${langMap[script.lang]||'python'}" id="code-el">${escHtml(script.code)}</code></pre>
         </div>
 
-        <div class="usage-tip">
-          <b>how to use:</b> copy the code above, save it as
-          <code style="color:var(--blue);">${script.name}.${script.lang==='python'?'py':script.lang==='javascript'?'js':'sh'}</code>,
-          then run it from your terminal. Not sure how?
-          <a href="index.html" style="color:var(--blue);" onclick="localStorage.setItem('open-guide','1')">see the guide →</a>
+        <div class="usage-tip" style="margin-bottom:1.5rem;">
+          <b>how to use:</b> copy the code, save it as <code style="color:var(--blue)">${script.name}.${ext}</code>, then run it from your terminal.
+          <a href="index.html#guide" onclick="localStorage.setItem('open-guide','1')" style="color:var(--blue);">need help? see the guide →</a>
         </div>
+
+        ${simHtml}
       `;
 
       // Syntax highlight
@@ -138,9 +189,8 @@
       document.getElementById('copy-btn').addEventListener('click', () => {
         navigator.clipboard.writeText(script.code).then(() => {
           const btn = document.getElementById('copy-btn');
-          btn.textContent = 'copied!';
-          btn.classList.add('copied');
-          setTimeout(() => { btn.textContent = 'copy code'; btn.classList.remove('copied'); }, 2000);
+          btn.textContent='copied!'; btn.classList.add('copied');
+          setTimeout(()=>{btn.textContent='copy code';btn.classList.remove('copied');},2000);
         });
       });
 
@@ -148,30 +198,35 @@
       document.getElementById('link-btn').addEventListener('click', () => {
         navigator.clipboard.writeText(window.location.href).then(() => {
           const btn = document.getElementById('link-btn');
-          btn.textContent = '✓ link copied!';
-          setTimeout(() => { btn.textContent = '🔗 copy link'; }, 2000);
+          btn.textContent='✓ copied!';
+          setTimeout(()=>btn.textContent='🔗 copy link',2000);
         });
       });
 
-      // Like button
+      // Like
       document.getElementById('like-btn').addEventListener('click', () => {
-        const btn   = document.getElementById('like-btn');
-        const count = document.getElementById('like-count');
+        const btn = document.getElementById('like-btn');
+        const cnt = document.getElementById('like-count');
         if (btn.classList.contains('liked')) {
-          const n = Math.max(0, parseInt(count.textContent) - 1);
-          count.textContent = n;
-          localStorage.setItem(likeKey, n);
-          localStorage.removeItem(likedKey);
-          btn.classList.remove('liked');
+          const n = Math.max(0,parseInt(cnt.textContent)-1);
+          cnt.textContent=n; localStorage.setItem(likeKey,n); localStorage.removeItem(likedKey); btn.classList.remove('liked');
         } else {
-          const n = parseInt(count.textContent) + 1;
-          count.textContent = n;
-          localStorage.setItem(likeKey, n);
-          localStorage.setItem(likedKey, '1');
-          btn.classList.add('liked');
+          const n = parseInt(cnt.textContent)+1;
+          cnt.textContent=n; localStorage.setItem(likeKey,n); localStorage.setItem(likedKey,'1'); btn.classList.add('liked');
         }
       });
     }
+
+    // Bug modal
+    function openBug()  { document.getElementById('bug-modal').classList.add('open'); document.body.style.overflow='hidden'; }
+    function closeBug() { document.getElementById('bug-modal').classList.remove('open'); document.body.style.overflow=''; }
+    function submitBug() {
+      const desc = document.getElementById('bug-desc').value.trim();
+      if (!desc) { alert('please describe the bug.'); return; }
+      document.getElementById('bug-form').style.display='none';
+      document.getElementById('bug-thanks').style.display='block';
+    }
+    document.addEventListener('keydown', e=>{ if(e.key==='Escape'){closeBug();} });
   </script>
 </body>
 </html>
