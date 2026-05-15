@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-mode="">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Collections — ScriptHub</title>
+  <link rel="stylesheet" href="style.css" />
+  <script>(function(){var t=localStorage.getItem('sh-theme')||'dark';var m=localStorage.getItem('sh-mode')||'';document.documentElement.setAttribute('data-theme',t);document.documentElement.setAttribute('data-mode',m);})();</script>
+</head>
+<body>
+  <nav>
+    <a class="logo" href="index.html">script<span>hub</span>.dev</a>
+    <div class="nav-right">
+      <div class="nav-links">
+        <a href="index.html">browse</a>
+        <a href="beginner.html">🔰 beginner</a>
+        <a href="leaderboard.html">🏆 top</a>
+        <a href="collections.html" class="active">📦 collections</a>
+        <a href="submit.html">submit</a>
+        <a href="about.html">about</a>
+        <a href="changelog.html">changelog</a>
+      </div>
+      <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
+    </div>
+  </nav>
+
+  <div class="page-wrap">
+    <a class="back-link" href="index.html">← back to browse</a>
+    <h1>📦 <span class="green">collections</span></h1>
+    <p class="subtitle">curated packs of scripts for every kind of task</p>
+
+    <div id="coll-view"></div>
+  </div>
+
+  <footer><p>scripthub &nbsp;·&nbsp; <a href="about.html">about</a></p></footer>
+
+  <script src="scripts.js"></script>
+  <script src="meta.js"></script>
+  <script src="collections.js"></script>
+  <script>
+    function toggleTheme() {
+      document.documentElement.classList.add('theme-transitioning');
+      const curr = document.documentElement.getAttribute('data-theme');
+      const next = curr==='dark'?'light':'dark';
+      document.documentElement.setAttribute('data-theme',next);
+      localStorage.setItem('sh-theme',next);
+      document.getElementById('theme-btn').textContent=next==='dark'?'🌙':'☀️';
+      setTimeout(()=>document.documentElement.classList.remove('theme-transitioning'),420);
+    }
+    document.getElementById('theme-btn').textContent=(localStorage.getItem('sh-theme')||'dark')==='dark'?'🌙':'☀️';
+
+    const langBadge={python:'badge-py',javascript:'badge-js',shell:'badge-sh',powershell:'badge-ps'};
+    const view = document.getElementById('coll-view');
+    const params = new URLSearchParams(window.location.search);
+    const collId = params.get('id');
+
+    if (collId) {
+      // Detail view — show scripts in this collection
+      const coll = COLLECTIONS.find(c=>c.id===collId);
+      if (!coll) {
+        view.innerHTML = `<p style="color:var(--muted)">Collection not found. <a href="collections.html" style="color:var(--blue)">go back</a></p>`;
+      } else {
+        document.title = `${coll.name} — ScriptHub`;
+        const scripts = coll.ids.map(id=>SCRIPTS.find(s=>s.id===id)).filter(Boolean);
+        view.innerHTML = `
+          <div class="coll-detail-header">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:0.4rem;">
+              <span style="font-size:2rem;">${coll.icon}</span>
+              <h2>${coll.name}</h2>
+            </div>
+            <p>${coll.desc}</p>
+            <div style="margin-top:0.5rem;">
+              <span class="coll-count">${scripts.length} scripts</span>
+            </div>
+          </div>
+          <div class="grid" id="coll-script-grid"></div>`;
+
+        const grid = document.getElementById('coll-script-grid');
+        scripts.forEach(s => {
+          const meta = (SCRIPT_META&&SCRIPT_META[s.id])||{difficulty:'beginner'};
+          const a = document.createElement('a');
+          a.className = 'card';
+          a.href = `script.html?id=${s.id}`;
+          const preview = s.code.split('\n').slice(0,6).join('\n').slice(0,220);
+          a.innerHTML = `
+            <div class="card-top">
+              <span class="card-icon">${s.icon}</span>
+              <span class="card-name">${s.name}</span>
+            </div>
+            <div class="card-desc">${s.desc}</div>
+            <div class="card-footer">
+              <span class="badge ${langBadge[s.lang]||'badge-py'}">${s.lang}</span>
+              <span class="badge diff-${meta.difficulty}">${meta.difficulty}</span>
+            </div>
+            <div class="card-preview">${s.code.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').split('\n').slice(0,6).join('\n').slice(0,220)}</div>`;
+          grid.appendChild(a);
+        });
+      }
+    } else {
+      // Browse all collections
+      const grid = document.createElement('div');
+      grid.className = 'coll-grid';
+
+      COLLECTIONS.forEach(coll => {
+        const count = coll.ids.filter(id=>SCRIPTS.find(s=>s.id===id)).length;
+        const a = document.createElement('a');
+        a.className = 'coll-card';
+        a.href = `collections.html?id=${coll.id}`;
+        a.innerHTML = `
+          <div class="coll-card-top">
+            <span class="coll-icon">${coll.icon}</span>
+            <span class="coll-name">${coll.name}</span>
+          </div>
+          <div class="coll-desc">${coll.desc}</div>
+          <span class="coll-count">${count} scripts</span>`;
+        grid.appendChild(a);
+      });
+
+      view.appendChild(grid);
+    }
+  </script>
+</body>
+</html>

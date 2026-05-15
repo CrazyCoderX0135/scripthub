@@ -236,12 +236,14 @@ if (backTop) {
 
 // ── THEME & TERMINAL MODE ─────────────────────────────────────
 function toggleTheme() {
+  document.documentElement.classList.add('theme-transitioning');
   const curr = document.documentElement.getAttribute('data-theme');
   const next = curr === 'dark' ? 'light' : 'dark';
   document.documentElement.setAttribute('data-theme', next);
   localStorage.setItem('sh-theme', next);
   const btn = document.getElementById('theme-btn');
   if (btn) btn.textContent = next === 'dark' ? '🌙' : '☀️';
+  setTimeout(() => document.documentElement.classList.remove('theme-transitioning'), 420);
 }
 function toggleTerminal() {
   const curr = document.documentElement.getAttribute('data-mode');

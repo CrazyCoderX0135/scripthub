@@ -15,6 +15,7 @@
         <a href="index.html">browse</a>
         <a href="beginner.html" class="active">🔰 beginner</a>
         <a href="leaderboard.html">🏆 top</a>
+        <a href="collections.html">📦 collections</a>
         <a href="submit.html">submit</a>
         <a href="about.html">about</a>
         <a href="changelog.html">changelog</a>
@@ -28,9 +29,18 @@
     <h1>🔰 beginner's <span class="green">corner</span></h1>
     <p class="subtitle">new to scripting? start here — every script on this page is easy to run</p>
 
+    <!-- NEW TO SCRIPTING BANNER -->
+    <div style="background:var(--bg2);border:1px solid var(--yellow);border-radius:10px;padding:1.25rem 1.5rem;margin-bottom:1.75rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+      <div style="flex:1;min-width:200px;">
+        <div style="font-size:0.95rem;font-weight:bold;margin-bottom:0.3rem;">🆕 never run a script before?</div>
+        <div style="color:var(--muted);font-size:0.8rem;line-height:1.6;">Our complete beginner's guide walks you through everything — including which editor to use (VS Code vs IDLE), how to install Python, and how to actually run a script on Windows, Mac, or Linux.</div>
+      </div>
+      <a href="start-guide.html" style="display:inline-block;background:var(--yellow);color:#0d1117;padding:0.55rem 1.4rem;border-radius:6px;font-size:0.82rem;font-weight:bold;text-decoration:none;white-space:nowrap;flex-shrink:0;">📖 read the guide →</a>
+    </div>
+
     <div class="bc-header">
       <h2>what makes a script "beginner"?</h2>
-      <p>These scripts only use Python's built-in features — no extra libraries to install. Just copy, save as a .py file, and run with <code style="color:var(--blue)">python myscript.py</code>. Not sure how? Hit the guide button on the homepage.</p>
+      <p>These scripts only use Python's built-in features — no extra libraries to install. Just copy, save as a .py file, and run with <code style="color:var(--blue)">python myscript.py</code>. Never done that before? <a href="start-guide.html" style="color:var(--blue)">read the beginner's guide →</a></p>
     </div>
 
     <div class="grid" id="beginner-grid"></div>
@@ -42,11 +52,13 @@
   <script src="meta.js"></script>
   <script>
     function toggleTheme() {
+      document.documentElement.classList.add('theme-transitioning');
       const curr = document.documentElement.getAttribute('data-theme');
       const next = curr==='dark'?'light':'dark';
       document.documentElement.setAttribute('data-theme',next);
       localStorage.setItem('sh-theme',next);
       document.getElementById('theme-btn').textContent=next==='dark'?'🌙':'☀️';
+      setTimeout(()=>document.documentElement.classList.remove('theme-transitioning'),420);
     }
     document.getElementById('theme-btn').textContent=(localStorage.getItem('sh-theme')||'dark')==='dark'?'🌙':'☀️';
 

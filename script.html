@@ -24,6 +24,7 @@
         <a href="index.html">browse</a>
         <a href="beginner.html">🔰 beginner</a>
         <a href="leaderboard.html">🏆 top</a>
+        <a href="collections.html">📦 collections</a>
         <a href="submit.html">submit</a>
         <a href="about.html">about</a>
         <a href="changelog.html">changelog</a>
@@ -71,11 +72,13 @@
   <script>
     // Theme
     function toggleTheme() {
+      document.documentElement.classList.add('theme-transitioning');
       const curr = document.documentElement.getAttribute('data-theme');
       const next = curr==='dark'?'light':'dark';
       document.documentElement.setAttribute('data-theme', next);
       localStorage.setItem('sh-theme', next);
       document.getElementById('theme-btn').textContent = next==='dark'?'🌙':'☀️';
+      setTimeout(() => document.documentElement.classList.remove('theme-transitioning'), 420);
     }
     function toggleTerminal() {
       const curr = document.documentElement.getAttribute('data-mode');
@@ -100,6 +103,76 @@
     }
 
     function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    // ── TERMINAL DEMO BUILDER ─────────────────────────────────
+    function buildTermDemo(meta, script) {
+      if (!meta.demo || meta.demo.length === 0) return '';
+      return `
+        <div class="term-demo" id="term-demo">
+          <div class="term-demo-bar">
+            <div class="term-dots"><span></span><span></span><span></span></div>
+            <span class="term-demo-title">▶ demo</span>
+            <button class="term-replay-btn" id="term-replay-btn" onclick="replayDemo()">↺ replay</button>
+          </div>
+          <div class="term-demo-body" id="term-demo-body"></div>
+        </div>`;
+    }
+
+    function runTermDemo() {
+      const body = document.getElementById('term-demo-body');
+      if (!body) return;
+      const meta = (SCRIPT_META&&SCRIPT_META[script.id])||{};
+      const demo = meta.demo || [];
+      body.innerHTML = '';
+      let lineIndex = 0;
+
+      function nextLine() {
+        if (lineIndex >= demo.length) {
+          // blinking cursor at end
+          const cur = document.createElement('span');
+          cur.className = 'term-cursor';
+          cur.textContent = '█';
+          body.appendChild(cur);
+          return;
+        }
+        const item = demo[lineIndex++];
+        const row = document.createElement('div');
+        row.className = 'term-line';
+
+        if (item.t === 'cmd') {
+          row.innerHTML = '<span class="term-prompt">$ </span><span class="term-cmd"></span>';
+          body.appendChild(row);
+          typeText(row.querySelector('.term-cmd'), item.v, 38, () => {
+            setTimeout(nextLine, 180);
+          });
+        } else if (item.t === 'in') {
+          row.innerHTML = `<span class="term-input">${escHtml(item.v)}</span>`;
+          body.appendChild(row);
+          setTimeout(nextLine, 220);
+        } else {
+          row.innerHTML = `<span class="term-output">${escHtml(item.v)}</span>`;
+          body.appendChild(row);
+          setTimeout(nextLine, item.v === '' ? 80 : 160);
+        }
+        body.scrollTop = body.scrollHeight;
+      }
+
+      function typeText(el, text, speed, done) {
+        let i = 0;
+        function tick() {
+          if (i >= text.length) { done && done(); return; }
+          el.textContent += text[i++];
+          setTimeout(tick, speed + Math.random() * 20);
+        }
+        tick();
+      }
+
+      setTimeout(nextLine, 300);
+    }
+
+    function replayDemo() {
+      runTermDemo();
+    }
 
     const langMap = {python:'python',javascript:'javascript',shell:'bash',powershell:'powershell'};
     const langBadge = {python:'badge-py',javascript:'badge-js',shell:'badge-sh',powershell:'badge-ps'};
@@ -179,11 +252,16 @@
           <a href="index.html#guide" onclick="localStorage.setItem('open-guide','1')" style="color:var(--blue);">need help? see the guide →</a>
         </div>
 
+        ${buildTermDemo(meta, script)}
+
         ${simHtml}
       `;
 
       // Syntax highlight
       document.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
+
+      // Run terminal demo
+      runTermDemo();
 
       // Copy code
       document.getElementById('copy-btn').addEventListener('click', () => {

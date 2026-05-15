@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-mode="">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Beginner's Guide — ScriptHub</title>
+  <link rel="stylesheet" href="style.css" />
+  <script>(function(){var t=localStorage.getItem('sh-theme')||'dark';var m=localStorage.getItem('sh-mode')||'';document.documentElement.setAttribute('data-theme',t);document.documentElement.setAttribute('data-mode',m);})();</script>
+  <style>
+    /* ── GUIDE PAGE SPECIFIC STYLES ───────────────────────── */
+    .guide-wrap { max-width:820px; margin:2rem auto; padding:0 2rem 5rem; }
+    .guide-wrap h1 { font-size:1.6rem; margin-bottom:0.3rem; }
+    .guide-wrap > .subtitle { color:var(--muted); font-size:0.87rem; margin-bottom:2.5rem; }
+
+    /* SECTION HEADERS */
+    .guide-section { margin-bottom:2.5rem; }
+    .guide-section-title {
+      font-size:1.05rem; margin-bottom:0.2rem; color:var(--text);
+      display:flex; align-items:center; gap:8px;
+    }
+    .guide-section-sub { color:var(--muted); font-size:0.8rem; margin-bottom:1.25rem; }
+
+    /* EDITOR PICKER CARDS */
+    .editor-pick { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:0.75rem; }
+    @media(max-width:580px){ .editor-pick { grid-template-columns:1fr; } }
+
+    .editor-card {
+      background:var(--bg2); border:2px solid var(--border); border-radius:10px;
+      padding:1.4rem 1.5rem; cursor:pointer; transition:all 0.18s;
+      display:flex; flex-direction:column; gap:0.85rem;
+    }
+    .editor-card:hover { border-color:var(--blue); }
+    .editor-card.selected-vscode { border-color:#007ACC; background:rgba(0,122,204,0.06); }
+    .editor-card.selected-idle   { border-color:#3fb950; background:rgba(63,185,80,0.06); }
+
+    .editor-card-top { display:flex; align-items:center; gap:12px; }
+    .editor-logo { font-size:2rem; }
+    .editor-name { font-size:1.05rem; font-weight:bold; }
+    .editor-tagline { font-size:0.77rem; color:var(--muted); margin-top:1px; }
+
+    .editor-badge {
+      display:inline-block; font-size:0.68rem; padding:2px 9px;
+      border-radius:20px; border:1px solid; margin-bottom:0.2rem;
+    }
+    .badge-recommended { color:#e3b341; border-color:#4a3800; background:#2a1f00; }
+    .badge-builtin     { color:#3fb950; border-color:#1a3a1f; background:#0d2110; }
+
+    .pro-con-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .pro-list, .con-list { display:flex; flex-direction:column; gap:5px; }
+    .pro-list-title { font-size:0.72rem; color:var(--green); margin-bottom:4px; font-weight:bold; }
+    .con-list-title { font-size:0.72rem; color:var(--red);   margin-bottom:4px; font-weight:bold; }
+    .pro-item, .con-item {
+      font-size:0.76rem; color:var(--muted); line-height:1.5;
+      display:flex; gap:6px;
+    }
+    .pro-item::before { content:'✓'; color:var(--green); flex-shrink:0; }
+    .con-item::before { content:'✗'; color:var(--red);   flex-shrink:0; }
+
+    .editor-pick-hint {
+      text-align:center; font-size:0.77rem; color:var(--muted); margin-bottom:2rem;
+    }
+    .editor-pick-hint span { color:var(--blue); cursor:pointer; }
+    .editor-pick-hint span:hover { text-decoration:underline; }
+
+    /* GUIDE CONTENT (shown after picking) */
+    #guide-content { display:none; }
+    #guide-content.visible { display:block; }
+
+    .chosen-banner {
+      display:flex; align-items:center; gap:10px;
+      background:var(--bg2); border:1px solid var(--border);
+      border-radius:8px; padding:0.75rem 1.1rem; margin-bottom:1.75rem;
+      font-size:0.83rem;
+    }
+    .chosen-banner strong { color:var(--text); }
+    .chosen-banner a { color:var(--blue); cursor:pointer; font-size:0.75rem; margin-left:auto; text-decoration:none; }
+    .chosen-banner a:hover { text-decoration:underline; }
+
+    /* OS TABS */
+    .os-tabs-row { display:flex; gap:8px; margin-bottom:1.5rem; flex-wrap:wrap; }
+    .os-pill {
+      background:var(--bg2); border:1px solid var(--border); color:var(--muted);
+      font-family:var(--font); font-size:0.78rem; padding:5px 14px;
+      border-radius:20px; cursor:pointer; transition:all 0.15s;
+    }
+    .os-pill:hover { border-color:var(--blue); color:var(--blue); }
+    .os-pill.active { border-color:var(--green); color:var(--green); background:rgba(63,185,80,0.06); }
+
+    .os-block { display:none; }
+    .os-block.active { display:block; }
+
+    /* STEPS */
+    .steps-list { display:flex; flex-direction:column; gap:0; }
+    .guide-step {
+      display:flex; gap:1rem; padding:1.1rem 0;
+      border-bottom:1px solid var(--border);
+    }
+    .guide-step:last-child { border-bottom:none; }
+    .step-num-circle {
+      width:30px; height:30px; min-width:30px; border-radius:50%;
+      background:var(--bg2); border:2px solid var(--blue);
+      display:flex; align-items:center; justify-content:center;
+      font-size:0.8rem; color:var(--blue); font-weight:bold; flex-shrink:0;
+      margin-top:2px;
+    }
+    .step-body { flex:1; }
+    .step-title { font-size:0.95rem; font-weight:bold; margin-bottom:0.35rem; }
+    .step-desc { color:var(--muted); font-size:0.82rem; line-height:1.7; }
+    .step-desc b { color:var(--text); }
+    .step-desc a { color:var(--blue); text-decoration:none; }
+    .step-desc a:hover { text-decoration:underline; }
+    .step-img { margin-top:0.75rem; }
+
+    .cmd-block {
+      display:block; background:#0d1117; border:1px solid #30363d;
+      border-radius:6px; padding:8px 14px; font-size:0.8rem;
+      color:#3fb950; margin-top:8px; font-family:'Courier New',monospace;
+    }
+    .cmd-label { font-size:0.68rem; color:var(--muted); margin-top:8px; margin-bottom:2px; }
+
+    .tip-box {
+      margin-top:0.75rem; background:#0d2137; border:1px solid #1f3a5f;
+      border-radius:6px; padding:0.65rem 1rem; font-size:0.78rem;
+      color:#8b949e; line-height:1.65;
+    }
+    .tip-box b { color:#58a6ff; }
+    .tip-box.warn-box { background:#2a1f00; border-color:#4a3800; }
+    .tip-box.warn-box b { color:#e3b341; }
+    .tip-box.good-box { background:#0d2110; border-color:#1a3a1f; }
+    .tip-box.good-box b { color:#3fb950; }
+
+    /* COMMON ERRORS */
+    .error-list { display:flex; flex-direction:column; gap:10px; margin-top:1rem; }
+    .error-card {
+      background:var(--bg2); border:1px solid var(--border);
+      border-left:3px solid var(--red); border-radius:0 8px 8px 0;
+      padding:0.85rem 1.1rem;
+    }
+    .error-code {
+      font-family:'Courier New',monospace; font-size:0.8rem;
+      color:var(--red); margin-bottom:0.4rem;
+    }
+    .error-fix { font-size:0.8rem; color:var(--muted); line-height:1.65; }
+    .error-fix b { color:var(--text); }
+    .error-fix code { color:var(--blue); font-family:'Courier New',monospace; }
+
+    /* TIPS SECTION */
+    .tips-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:10px; margin-top:1rem; }
+    .tip-card {
+      background:var(--bg2); border:1px solid var(--border); border-radius:8px;
+      padding:0.9rem 1rem;
+    }
+    .tip-card .tip-icon { font-size:1.1rem; margin-bottom:0.4rem; }
+    .tip-card h4 { font-size:0.85rem; margin-bottom:0.3rem; }
+    .tip-card p { font-size:0.76rem; color:var(--muted); line-height:1.55; }
+
+    .divider { border:none; border-top:1px solid var(--border); margin:2.5rem 0; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a class="logo" href="index.html">script<span>hub</span>.dev</a>
+    <div class="nav-right">
+      <div class="nav-links">
+        <a href="index.html">browse</a>
+        <a href="beginner.html" class="active">🔰 beginner</a>
+        <a href="leaderboard.html">🏆 top</a>
+        <a href="collections.html">📦 collections</a>
+        <a href="submit.html">submit</a>
+        <a href="about.html">about</a>
+        <a href="changelog.html">changelog</a>
+      </div>
+      <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
+    </div>
+  </nav>
+
+  <div class="guide-wrap">
+    <a class="back-link" href="beginner.html">← back to beginner's corner</a>
+    <h1>🔰 complete <span class="green">beginner's guide</span></h1>
+    <p class="subtitle">everything you need to go from zero to running your first script</p>
+
+    <!-- ── STEP 0: PICK YOUR EDITOR ──────────────────────── -->
+    <div class="guide-section">
+      <div class="guide-section-title">⬇ step 0 — pick your editor</div>
+      <p class="guide-section-sub">An editor is the app you use to write and run scripts. Pick one below — the rest of the guide will adjust for your choice.</p>
+
+      <div class="editor-pick">
+
+        <!-- VS CODE -->
+        <div class="editor-card" id="card-vscode" onclick="pickEditor('vscode')">
+          <div class="editor-card-top">
+            <span class="editor-logo">🖥️</span>
+            <div>
+              <div class="editor-name">VS Code</div>
+              <div class="editor-tagline">Visual Studio Code by Microsoft</div>
+            </div>
+          </div>
+          <span class="editor-badge badge-recommended">⭐ recommended for most people</span>
+          <div class="pro-con-grid">
+            <div class="pro-list">
+              <div class="pro-list-title">✓ pros</div>
+              <div class="pro-item">Colorful syntax highlighting — code is color-coded so it's easier to read</div>
+              <div class="pro-item">Built-in terminal — run scripts without leaving the editor</div>
+              <div class="pro-item">Catches errors before you run with red underlines</div>
+              <div class="pro-item">Auto-complete — suggests code as you type</div>
+              <div class="pro-item">Line numbers — makes finding errors easy</div>
+              <div class="pro-item">Used by real developers — skills transfer directly</div>
+              <div class="pro-item">Free forever</div>
+            </div>
+            <div class="con-list">
+              <div class="con-list-title">✗ cons</div>
+              <div class="con-item">Bigger download (~100 MB)</div>
+              <div class="con-item">Requires installing a Python extension separately (one click, easy)</div>
+              <div class="con-item">More buttons and menus than IDLE — can feel like a lot at first</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PYTHON IDLE -->
+        <div class="editor-card" id="card-idle" onclick="pickEditor('idle')">
+          <div class="editor-card-top">
+            <span class="editor-logo">🐍</span>
+            <div>
+              <div class="editor-name">Python IDLE</div>
+              <div class="editor-tagline">Comes free with Python</div>
+            </div>
+          </div>
+          <span class="editor-badge badge-builtin">✓ built into Python — nothing extra to install</span>
+          <div class="pro-con-grid">
+            <div class="pro-list">
+              <div class="pro-list-title">✓ pros</div>
+              <div class="pro-item">Already installed — if you have Python, you have IDLE</div>
+              <div class="pro-item">Simple and clean — almost nothing to figure out</div>
+              <div class="pro-item">Built specifically for learning Python</div>
+              <div class="pro-item">Has a built-in Python shell to test one line at a time</div>
+              <div class="pro-item">Very small — launches in seconds</div>
+            </div>
+            <div class="con-list">
+              <div class="con-list-title">✗ cons</div>
+              <div class="con-item">Basic interface — limited colors and features</div>
+              <div class="con-item">No built-in terminal — you run scripts from the menu</div>
+              <div class="con-item">No extensions or plugins</div>
+              <div class="con-item">Looks old — some people find it discouraging</div>
+              <div class="con-item">Not used professionally — you'll have to learn a new tool later</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <p class="editor-pick-hint" id="pick-hint">👆 click a card to pick your editor and see the full guide</p>
+    </div>
+
+    <!-- ── GUIDE CONTENT (shown after pick) ─────────────── -->
+    <div id="guide-content">
+
+      <div class="chosen-banner" id="chosen-banner">
+        <span id="chosen-icon"></span>
+        <span>Following the <strong id="chosen-name"></strong> guide</span>
+        <a onclick="resetPick()">change editor</a>
+      </div>
+
+      <!-- OS PICKER -->
+      <div class="guide-section">
+        <div class="guide-section-title">💻 what operating system are you on?</div>
+        <div class="os-tabs-row">
+          <button class="os-pill active" onclick="pickOS('windows',this)">🪟 Windows</button>
+          <button class="os-pill" onclick="pickOS('mac',this)">🍎 Mac</button>
+          <button class="os-pill" onclick="pickOS('linux',this)">🐧 Linux</button>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════
+           VS CODE GUIDE
+      ════════════════════════════════════════════════════ -->
+      <div id="vscode-guide" style="display:none;">
+
+        <!-- WINDOWS -->
+        <div class="os-block active" id="vscode-windows">
+          <div class="guide-section">
+            <div class="guide-section-title">🪟 VS Code on Windows — step by step</div>
+            <div class="steps-list">
+
+              <div class="guide-step">
+                <div class="step-num-circle">1</div>
+                <div class="step-body">
+                  <div class="step-title">Install Python</div>
+                  <div class="step-desc">
+                    Go to <a href="https://python.org/downloads" target="_blank">python.org/downloads</a> and click the big yellow <b>"Download Python"</b> button. Run the installer you download.<br><br>
+                    <b>⚠ Critical:</b> On the very first screen of the installer, check the box that says <b>"Add Python to PATH"</b> before clicking Install Now. If you miss this, your scripts won't run from the terminal.
+                    <div class="tip-box warn-box"><b>Important:</b> The "Add Python to PATH" checkbox is at the <b>bottom</b> of the first installer screen. It is NOT checked by default. Don't skip this!</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="guide-step">
+                <div class="step-num-circle">2</div>
+                <div class="step-body">
+                  <div class="step-title">Install VS Code</div>
+                  <div class="step-desc">
+                    Go to <a href="https://code.visualstudio.com" target="_blank">code.visualstudio.com</a> and click <b>"Download for Windows"</b>. Run the installer — the defaults are fine, just click Next through everything.
+                    <div class="tip-box"><b>Tip:</b> On the "Select Additional Tasks" screen, check <b>"Add to PATH"</b> and <b>"Add 'Open with Code' to context menu"</b> — these are handy extras.</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="guide-step">
+                <div class="step-num-circle">3</div>
+                <div class="step-body">
+                  <div class="step-title">Install the Python extension in VS Code</div>
+                  <div class="step-desc">
+                    Open VS Code. On the left sidebar, click the <b>four-square icon</b> (Extensions). In the search bar, type <b>Python</b>. The first result will be "Python" by Microsoft — click <b>Install</b>. This is what makes VS Code understand Python code.
+                    <div class="tip-box good-box"><b>✓ You only need to do this once</b> — after it's installed, VS Code will automatically use it for every .py file you open.</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="guide-step">
+                <div class="step-num-circle">4</div>
+                <div class="step-body">
+                  <div class="step-title">Copy a script from ScriptHub</div>
+                  <div class="step-desc">
+                    Go to <a href="index.html">ScriptHub's browse page</a>, pick a script you want to try (start with something from the <a href="beginner.html">Beginner's Corner</a>), and click <b>"copy code"</b> on the script page.
+                    <div class="tip-box"><b>Tip:</b> Try <a href="script.html?id=password-gen">password-gen</a> or <a href="script.html?id=number-guesser">number-guesser</a> — they're fun and have no extra installs required.</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="guide-step">
+                <div class="step-num-circle">5</div>
+                <div class="step-body">
+                  <div class="step-title">Create a new file and paste the code</div>
+                  <div class="step-desc">
+                    In VS Code: go to <b>File → New File</b> (or press <b>Ctrl+N</b>). Paste the code with <b>Ctrl+V</b>. Then save it: <b>File → Save As</b> (or <b>Ctrl+Shift+S</b>). Navigate to your <b>Desktop</b>, and name the file something like <b>myscript.py</b>.
+                    <div class="tip-box warn-box"><b>Critical: the file MUST end in .py</b> — if you accidentally save it as "myscript.py.txt" it won't work. VS Code will warn you if this happens.</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="guide-step">
+                <div class="step-num-circle">6</div>
+                <div class="step-body">
+                  <div class="step-title">Open the built-in terminal</div>
+                  <div class="step-desc">
+                    In VS Code: go to <b>View → Terminal</b>, or press <b>Ctrl+`</b> (that's the backtick key, top-left of your keyboard). A panel will open at the bottom — this is your terminal. It should say something like <code style="color:var(--blue)">PS C:\Users\YourName\Desktop&gt;</code> if you saved to the Desktop.
+                    <div class="tip-box"><b>Tip:</b> If the terminal is showing a different folder, type: <span class="cmd-block">cd %USERPROFILE%\Desktop</span> and press Enter to navigate to your Desktop.</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="guide-step">
+                <div class="step-num-circle">7</div>
+                <div class="step-body">
+                  <div class="step-title">Run the script!</div>
+                  <div class="step-desc">
+                    In the terminal, type the following and press Enter:
+                    <span class="cmd-block">python myscript.py</span>
+                    Replace <b>myscript</b> with whatever you named your file. The script will start running right there in the terminal.
+                    <div class="tip-box good-box"><b>🎉 That's it!</b> If you see output in the terminal, your script is working. If the script asks for input, just type your answer and press Enter.</div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- MAC -->
+        <div class="os-block" id="vscode-mac">
+          <div class="guide-section">
+            <div class="guide-section-title">🍎 VS Code on Mac — step by step</div>
+            <div class="steps-list">
+
+              <div class="guide-step">
+                <div class="step-num-circle">1</div>
+                <div class="step-body">
+                  <div class="step-title">Check if Python is installed</div>
+                  <div class="step-desc">
+                    Press <b>Cmd+Space</b>, type <b>Terminal</b>, press Enter. In the terminal, type:
+                    <span class="cmd-block">python3 --version</span>
+                    If you see a version number (like <code style="color:var(--green)">Python 3.12.0</code>), you're good. If you see "command not found," go to <a href="https://python.org/downloads" target="_blank">python.org/downloads</a> and download the Mac installer.
+                  </div>
+                </div>
+              </div>
+
+              <div class="guide-step">
+                <div class="step-num-circle">2</div>
+                <div class="step-body">
+                  <div class="step-title">Install VS Code</div>
+                  <div class="step-desc">
+                    Go to <a href="https://code.visualstudio.com" target="_blank">code.visualstudio.com</a> and click <b>"Download for Mac"</b>. It downloads a .zip — double-click it to unzip, then drag <b>Visual Studio Code.app</b> into your <b>Applications</b> folder.
+                    <div class="tip-box"><b>Tip:</b> Open VS Code, then open the Command Palette with <b>Cmd+Shift+P</b>, type "shell command" and select <b>"Install 'code' command in PATH"</b>. This lets you open VS Code from your terminal later.</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="guide-step">
+                <div class="step-num-circle">3</div>
+                <div class="step-body">
+                  <div class="step-title">Install the Python extension</div>
+                  <div class="step-desc">
+                    In VS Code, click the <b>four-square icon</b> on the left sidebar (Extensions). Search for <b>Python</b> and install the one by Microsoft. VS Code may also prompt you at the bottom-right to install it when you open a .py file — you can click that prompt too.
+                  </div>
+                </div>
+              </div>
+
+              <div class="guide-step">
+                <div class="step-num-circle">4</div>
+                <div class="step-body">
+                  <div class="step-title">Copy a script from ScriptHub</div>
+                  <div class="step-desc">
+                    Browse <a href="beginner.html">Beginner's Corner</a> and pick a script. Click <b>"copy code"</b> on the script page.
+                    <div class="tip-box"><b>Good starters:</b> <a href="script.html?id=password-gen">password-gen</a>, <a href="script.html?id=weather">weather</a>, or <a href="script.html?id=number-guesser">number-guesser</a>.</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="guide-step">
+                <div class="step-num-circle">5</div>
+                <div class="step-body">
+                  <div class="step-title">Create a new file and paste the code</div>
+                  <div class="step-desc">
+                    In VS Code: <b>File → New File</b> (or <b>Cmd+N</b>). Paste with <b>Cmd+V</b>. Then <b>File → Save As</b> (<b>Cmd+Shift+S</b>). In the save dialog, navigate to your <b>Desktop</b> and name the file <b>myscript.py</b>.
+                    <div class="tip-box warn-box"><b>Important:</b> Make sure the filename ends with <b>.py</b> — not .txt or .py.txt. VS Code will highlight Python code once you save with the .py extension.</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="guide-step">
+                <div class="step-num-circle">6</div>
+                <div class="step-body">
+                  <div class="step-title">Open the built-in terminal</div>
+                  <div class="step-desc">
+                    Go to <b>View → Terminal</b> in VS Code, or press <b>Ctrl+`</b>. A panel opens at the bottom. Navigate to your Desktop:
+                    <span class="cmd-block">cd ~/Desktop</span>
+                    Press Enter.
+                  </div>
+                </div>
+              </div>
+
+              <div class="guide-step">
+                <div class="step-num-circle">7</div>
+                <div class="step-body">
+                  <div class="step-title">Run the script!</div>
+                  <div class="step-desc">
+                    Type this and press Enter:
+                    <span class="cmd-block">python3 myscript.py</span>
+                    <div class="tip-box good-box"><b>🎉 You're running a script!</b> On Mac, use <b>python3</b> instead of <b>python</b> — it's the same thing, just the Mac version.</div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- LINUX -->
+        <div class="os-block" id="vscode-linux">
+          <div class="guide-section">
+            <div class="guide-section-title">🐧 VS Code on Linux — step by step</div>
+            <div class="steps-list">
+
+              <div class="guide-step">
+                <div class="step-num-circle">1</div>
+                <div class="step-body">
+                  <div class="step-title">Install Python (if not already)</div>
+                  <div class="step-desc">
+                    Open a terminal (<b>Ctrl+Alt+T</b>) and run:
+                    <span class="cmd-block">sudo apt install python3 python3-pip</span>
+                    On Fedora/RHEL use <code style="color:var(--blue)">dnf</code> instead of <code style="color:var(--blue)">apt</code>.
+                  </div>
+                </div>
+              </div>
+
+              <div class="guide-step">
+                <div class="step-num-circle">2</div>
+                <div class="step-body">
+                  <div class="step-title">Install VS Code</div>
+                  <div class="step-desc">
+                    Go to <a href="https://code.visualstudio.com" target="_blank">code.visualstudio.com</a>, download the <b>.deb</b> (for Ubuntu/Debian) or <b>.rpm</b> (for Fedora) package and install it. Or install via snap:
+                    <span class="cmd-block">sudo snap install --classic code</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="guide-step">
+                <div class="step-num-circle">3</div>
+                <div class="step-body">
+                  <div class="step-title">Install the Python extension, copy script, paste, save, and run</div>
+                  <div class="step-desc">
+                    Same as Mac — install the Python extension via the Extensions panel, copy a script from ScriptHub, paste into a new file, save as <b>myscript.py</b>, open the terminal (<b>Ctrl+`</b>), and run:
+                    <span class="cmd-block">python3 myscript.py</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div><!-- end vscode-guide -->
+
+
+      <!-- ═══════════════════════════════════════════════════
+           IDLE GUIDE
+      ════════════════════════════════════════════════════ -->
+      <div id="idle-guide" style="display:none;">
+
+        <!-- WINDOWS -->
+        <div class="os-block active" id="idle-windows">
+          <div class="guide-section">
+            <div class="guide-section-title">🪟 Python IDLE on Windows — step by step</div>
+            <div class="steps-list">
+
+              <div class="guide-step">
+                <div class="step-num-circle">1</div>
+                <div class="step-body">
+                  <div class="step-title">Install Python (IDLE comes included!)</div>
+                  <div class="step-desc">
+                    Go to <a href="https://python.org/downloads" target="_blank">python.org/downloads</a> and download the Windows installer. Run it.<br><br>
+                    <b>⚠ Critical:</b> Check <b>"Add Python to PATH"</b> at the bottom of the first screen before installing. IDLE is automatically installed along with Python — you don't need to install it separately.
+                    <div class="tip-box good-box"><b>✓ IDLE is free and comes with Python.</b> You get both in one installer — no extra steps needed.</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="guide-step">
+                <div class="step-num-circle">2</div>
+                <div class="step-body">
+                  <div class="step-title">Open IDLE</div>
+                  <div class="step-desc">
+                    Press the <b>Windows key</b>, type <b>IDLE</b>, and press Enter. You'll see the Python Shell window — this is the IDLE interface. It shows a <code style="color:var(--green)">&gt;&gt;&gt;</code> prompt where you can type Python one line at a time.
+                    <div class="tip-box"><b>Tip:</b> The Shell window is for testing quick commands. For running a full script file, you need to create a new file (next step).</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="guide-step">
+                <div class="step-num-circle">3</div>
+                <div class="step-body">
+                  <div class="step-title">Create a new script file</div>
+                  <div class="step-desc">
+                    In the IDLE Shell window, go to <b>File → New File</b> (or press <b>Ctrl+N</b>). A blank editor window opens — this is separate from the Shell. This is where you paste your script.
+                  </div>
+                </div>
+              </div>
+
+              <div class="guide-step">
+                <div class="step-num-circle">4</div>
+                <div class="step-body">
+                  <div class="step-title">Copy a script from ScriptHub and paste it</div>
+                  <div class="step-desc">
+                    Go to <a href="beginner.html">Beginner's Corner</a>, pick a script, and click <b>"copy code"</b>. Go back to your IDLE editor window and paste with <b>Ctrl+V</b>.
+                  </div>
+                </div>
+              </div>
+
+              <div class="guide-step">
+                <div class="step-num-circle">5</div>
+                <div class="step-body">
+                  <div class="step-title">Save the file as a .py file</div>
+                  <div class="step-desc">
+                    Go to <b>File → Save As</b> (or <b>Ctrl+Shift+S</b>). Navigate to your <b>Desktop</b>. In the <b>File name</b> box, type something like <b>myscript.py</b>. Make sure <b>"Save as type"</b> says <b>Python files (*.py)</b> or <b>All Files</b>. Click Save.
+                    <div class="tip-box warn-box"><b>Important:</b> If "Save as type" is set to "Text Documents," change it to "All Files" and make sure your filename ends with <b>.py</b>. Otherwise Windows will save it as .py.txt and it won't work.</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="guide-step">
+                <div class="step-num-circle">6</div>
+                <div class="step-body">
+                  <div class="step-title">Run the script!</div>
+                  <div class="step-desc">
+                    In your IDLE editor window, go to <b>Run → Run Module</b> — or just press <b>F5</b>. The Shell window will pop to the front and your script will start running there.
+                    <div class="tip-box good-box"><b>🎉 That's all it takes with IDLE!</b> No terminal commands needed — just F5 to run. Output (and any input prompts) will appear in the Shell window.</div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- MAC -->
+        <div class="os-block" id="idle-mac">
+          <div class="guide-section">
+            <div class="guide-section-title">🍎 Python IDLE on Mac — step by step</div>
+            <div class="steps-list">
+
+              <div class="guide-step">
+                <div class="step-num-circle">1</div>
+                <div class="step-body">
+                  <div class="step-title">Install Python from python.org</div>
+                  <div class="step-desc">
+                    Mac comes with a very old version of Python that doesn't include IDLE properly. Download the latest from <a href="https://python.org/downloads" target="_blank">python.org/downloads</a> and run the installer. IDLE is included.
+                    <div class="tip-box warn-box"><b>Don't use the Mac's built-in Python</b> — it's outdated. Always install the fresh one from python.org to get IDLE and the newest Python features.</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="guide-step">
+                <div class="step-num-circle">2</div>
+                <div class="step-body">
+                  <div class="step-title">Open IDLE</div>
+                  <div class="step-desc">
+                    Press <b>Cmd+Space</b>, type <b>IDLE</b>, and press Enter. If multiple results appear, pick the one with the highest Python version number. The Shell window will open.
+                    <div class="tip-box"><b>Can't find IDLE?</b> Open Finder → Applications → Python 3.x folder → IDLE.app</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="guide-step">
+                <div class="step-num-circle">3</div>
+                <div class="step-body">
+                  <div class="step-title">Create a new file, paste, save, and run</div>
+                  <div class="step-desc">
+                    In IDLE: <b>File → New File</b> (<b>Cmd+N</b>). Copy a script from <a href="beginner.html">ScriptHub</a> and paste with <b>Cmd+V</b>. Save with <b>File → Save As</b> (<b>Cmd+Shift+S</b>) — navigate to Desktop, name it <b>myscript.py</b> and click Save.<br><br>
+                    To run: press <b>F5</b>, or go to <b>Run → Run Module</b>. Output appears in the Shell window.
+                    <div class="tip-box good-box"><b>✓ On Mac, IDLE works exactly the same as on Windows</b> — File → New, paste, save as .py, F5 to run.</div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- LINUX -->
+        <div class="os-block" id="idle-linux">
+          <div class="guide-section">
+            <div class="guide-section-title">🐧 Python IDLE on Linux — step by step</div>
+            <div class="steps-list">
+
+              <div class="guide-step">
+                <div class="step-num-circle">1</div>
+                <div class="step-body">
+                  <div class="step-title">Install Python and IDLE</div>
+                  <div class="step-desc">
+                    Open a terminal (<b>Ctrl+Alt+T</b>) and run:
+                    <span class="cmd-block">sudo apt install python3 idle3</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="guide-step">
+                <div class="step-num-circle">2</div>
+                <div class="step-body">
+                  <div class="step-title">Open IDLE</div>
+                  <div class="step-desc">
+                    Search your app launcher for <b>IDLE</b>, or run in terminal:
+                    <span class="cmd-block">idle3</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="guide-step">
+                <div class="step-num-circle">3</div>
+                <div class="step-body">
+                  <div class="step-title">Create a file, paste, save, run</div>
+                  <div class="step-desc">
+                    <b>File → New File</b> → paste your script → <b>File → Save As</b> → save as <b>myscript.py</b> → press <b>F5</b> to run.
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div><!-- end idle-guide -->
+
+      <hr class="divider">
+
+      <!-- ── INSTALLING EXTRA LIBRARIES ──────────────────── -->
+      <div class="guide-section">
+        <div class="guide-section-title">📦 installing extra libraries</div>
+        <p class="guide-section-sub">Some scripts on ScriptHub need extra libraries (like <code style="color:var(--blue)">Pillow</code> or <code style="color:var(--blue)">psutil</code>). The script page will tell you what's needed in a yellow "requires" box. Here's how to install them.</p>
+
+        <div class="steps-list">
+          <div class="guide-step">
+            <div class="step-num-circle">!</div>
+            <div class="step-body">
+              <div class="step-title">Open a terminal (command prompt)</div>
+              <div class="step-desc">
+                <b>Windows:</b> Press <b>Windows+R</b>, type <b>cmd</b>, press Enter.<br>
+                <b>Mac/Linux:</b> Open <b>Terminal</b> from Spotlight or your app launcher.
+              </div>
+            </div>
+          </div>
+          <div class="guide-step">
+            <div class="step-num-circle">!</div>
+            <div class="step-body">
+              <div class="step-title">Run the install command</div>
+              <div class="step-desc">
+                Type the following and replace <b>libraryname</b> with the library you need:
+                <div class="cmd-label">Windows:</div>
+                <span class="cmd-block">pip install libraryname</span>
+                <div class="cmd-label">Mac / Linux:</div>
+                <span class="cmd-block">pip3 install libraryname</span>
+                For example, to install Pillow: <code style="color:var(--blue)">pip install Pillow</code>. You only need to do this once per library.
+                <div class="tip-box good-box"><b>✓ Already listed for you</b> — every script on ScriptHub that needs extra libraries shows them in a yellow box. Just copy and paste the install command shown there.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- ── COMMON ERRORS ────────────────────────────────── -->
+      <div class="guide-section">
+        <div class="guide-section-title">🔴 common errors and how to fix them</div>
+        <p class="guide-section-sub">Something went wrong? Find your error below.</p>
+
+        <div class="error-list">
+
+          <div class="error-card">
+            <div class="error-code">ModuleNotFoundError: No module named 'X'</div>
+            <div class="error-fix">
+              <b>What it means:</b> The script needs a library that isn't installed yet.<br>
+              <b>Fix:</b> Run <code>pip install X</code> (Windows) or <code>pip3 install X</code> (Mac/Linux) in your terminal, replacing X with the library name. Then try running the script again.
+            </div>
+          </div>
+
+          <div class="error-card">
+            <div class="error-code">python: command not found  /  'python' is not recognized</div>
+            <div class="error-fix">
+              <b>What it means:</b> Python isn't installed, or wasn't added to your PATH during installation.<br>
+              <b>Fix (Windows):</b> Uninstall Python and reinstall it from python.org — this time, check the <b>"Add Python to PATH"</b> box on the first screen.<br>
+              <b>Fix (Mac):</b> Try using <code>python3</code> instead of <code>python</code>.
+            </div>
+          </div>
+
+          <div class="error-card">
+            <div class="error-code">SyntaxError: invalid syntax</div>
+            <div class="error-fix">
+              <b>What it means:</b> There's a typo or formatting problem in the code. This usually happens when pasting went wrong — for example, smart quotes (" ") instead of straight quotes (" ").<br>
+              <b>Fix:</b> Delete the script and copy it fresh from ScriptHub using the "copy code" button (don't type it manually). Make sure to paste into a plain text file, not Word.
+            </div>
+          </div>
+
+          <div class="error-card">
+            <div class="error-code">FileNotFoundError: [Errno 2] No such file or directory</div>
+            <div class="error-fix">
+              <b>What it means:</b> The script is looking for a file or folder that doesn't exist at the path you gave it.<br>
+              <b>Fix:</b> Double-check the path you typed. On Windows, use backslashes: <code>C:\Users\YourName\Desktop</code>. On Mac/Linux, use forward slashes: <code>/Users/yourname/Desktop</code>. Make sure the file actually exists at that location.
+            </div>
+          </div>
+
+          <div class="error-card">
+            <div class="error-code">IndentationError: unexpected indent</div>
+            <div class="error-fix">
+              <b>What it means:</b> The script has a spacing/tab problem. This usually means something went wrong when pasting — extra spaces were added or removed.<br>
+              <b>Fix:</b> Copy the script fresh from ScriptHub using the "copy code" button. Do not manually re-type any indentation (spaces at the start of lines).
+            </div>
+          </div>
+
+          <div class="error-card">
+            <div class="error-code">PermissionError: [Errno 13] Permission denied</div>
+            <div class="error-fix">
+              <b>What it means:</b> The script tried to access a file or folder it doesn't have permission to use.<br>
+              <b>Fix (Windows):</b> Right-click Command Prompt → "Run as administrator" and try again.<br>
+              <b>Fix (Mac/Linux):</b> Prefix the command with <code>sudo</code>: <code>sudo python3 myscript.py</code>
+            </div>
+          </div>
+
+          <div class="error-card">
+            <div class="error-code">KeyboardInterrupt (or nothing happening — script seems stuck)</div>
+            <div class="error-fix">
+              <b>What it means:</b> The script is waiting for input, running a loop, or monitoring something continuously.<br>
+              <b>Fix:</b> If the script is supposed to run forever (like a monitor or stopwatch), press <b>Ctrl+C</b> to stop it. If it's waiting for input, just type your answer and press Enter.
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- ── PRO TIPS ─────────────────────────────────────── -->
+      <div class="guide-section">
+        <div class="guide-section-title">💡 tips to make your life easier</div>
+        <div class="tips-grid">
+          <div class="tip-card">
+            <div class="tip-icon">⬆️</div>
+            <h4>Use the arrow keys</h4>
+            <p>In the terminal, press the <b>Up arrow key</b> to repeat your last command. No need to retype it every time.</p>
+          </div>
+          <div class="tip-card">
+            <div class="tip-icon">⌨️</div>
+            <h4>Tab completion</h4>
+            <p>Start typing a filename in the terminal and press <b>Tab</b> — it will autocomplete the name for you so you don't have to type every letter.</p>
+          </div>
+          <div class="tip-card">
+            <div class="tip-icon">📁</div>
+            <h4>Keep scripts on your Desktop</h4>
+            <p>Save all your .py files to the Desktop. That way, <code>cd Desktop</code> always puts you in the right place and you can always find them.</p>
+          </div>
+          <div class="tip-card">
+            <div class="tip-icon">🔰</div>
+            <h4>Start with beginner scripts</h4>
+            <p>Scripts marked "beginner" on ScriptHub have <b>no extra installs</b> — they just work. Perfect for your first tries.</p>
+          </div>
+          <div class="tip-card">
+            <div class="tip-icon">🔎</div>
+            <h4>Read the error message</h4>
+            <p>Python errors always tell you exactly what went wrong and which line the problem is on. Read the last line of the error first — it's usually the most useful part.</p>
+          </div>
+          <div class="tip-card">
+            <div class="tip-icon">🌐</div>
+            <h4>Google is your friend</h4>
+            <p>Copy the exact error message and paste it into Google. Someone has almost certainly had the same problem and posted a solution.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div style="text-align:center;margin-top:2.5rem;padding:1.5rem;background:var(--bg2);border:1px solid var(--border);border-radius:10px;">
+        <p style="font-size:1rem;margin-bottom:0.5rem;">🎉 ready to run your first script?</p>
+        <p style="color:var(--muted);font-size:0.82rem;margin-bottom:1.25rem;">Pick something easy from the Beginner's Corner — all these scripts work with no extra installs.</p>
+        <a href="beginner.html" style="display:inline-block;background:var(--green);color:#0d1117;padding:0.6rem 1.75rem;border-radius:6px;font-size:0.88rem;font-weight:bold;text-decoration:none;">🔰 go to beginner's corner →</a>
+      </div>
+
+    </div><!-- end guide-content -->
+  </div>
+
+  <footer><p>scripthub &nbsp;·&nbsp; <a href="about.html">about</a> &nbsp;·&nbsp; <a href="beginner.html">beginner's corner</a></p></footer>
+
+  <script>
+    function toggleTheme() {
+      document.documentElement.classList.add('theme-transitioning');
+      const curr = document.documentElement.getAttribute('data-theme');
+      const next = curr==='dark'?'light':'dark';
+      document.documentElement.setAttribute('data-theme',next);
+      localStorage.setItem('sh-theme',next);
+      document.getElementById('theme-btn').textContent=next==='dark'?'🌙':'☀️';
+      setTimeout(()=>document.documentElement.classList.remove('theme-transitioning'),420);
+    }
+    document.getElementById('theme-btn').textContent=(localStorage.getItem('sh-theme')||'dark')==='dark'?'🌙':'☀️';
+
+    let currentEditor = null;
+    let currentOS = 'windows';
+
+    function pickEditor(editor) {
+      currentEditor = editor;
+
+      // Highlight selected card
+      document.getElementById('card-vscode').className = 'editor-card' + (editor==='vscode'?' selected-vscode':'');
+      document.getElementById('card-idle').className   = 'editor-card' + (editor==='idle'  ?' selected-idle'  :'');
+
+      // Update banner
+      document.getElementById('chosen-icon').textContent = editor==='vscode'?'🖥️':'🐍';
+      document.getElementById('chosen-name').textContent = editor==='vscode'?'VS Code':'Python IDLE';
+
+      // Show/hide guides
+      document.getElementById('vscode-guide').style.display = editor==='vscode'?'block':'none';
+      document.getElementById('idle-guide').style.display   = editor==='idle'  ?'block':'none';
+
+      // Show content
+      document.getElementById('guide-content').classList.add('visible');
+      document.getElementById('pick-hint').textContent = '';
+
+      // Apply current OS selection
+      applyOS(currentOS);
+
+      // Scroll to content
+      setTimeout(()=>document.getElementById('guide-content').scrollIntoView({behavior:'smooth',block:'start'}), 50);
+    }
+
+    function resetPick() {
+      currentEditor = null;
+      document.getElementById('card-vscode').className = 'editor-card';
+      document.getElementById('card-idle').className   = 'editor-card';
+      document.getElementById('guide-content').classList.remove('visible');
+      document.getElementById('pick-hint').textContent = '👆 click a card to pick your editor and see the full guide';
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+
+    function pickOS(os, btn) {
+      currentOS = os;
+      document.querySelectorAll('.os-pill').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      applyOS(os);
+    }
+
+    function applyOS(os) {
+      if (!currentEditor) return;
+      // Deactivate all os-blocks in both guides
+      document.querySelectorAll('.os-block').forEach(b=>b.classList.remove('active'));
+      const block = document.getElementById(currentEditor + '-' + os);
+      if (block) block.classList.add('active');
+    }
+
+    // Auto-restore saved editor choice
+    const savedEditor = localStorage.getItem('sh-guide-editor');
+    if (savedEditor) pickEditor(savedEditor);
+  </script>
+</body>
+</html>
