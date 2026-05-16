@@ -497,4 +497,1019 @@ const SCRIPT_META = {
     ]
   },
 
+  // ── FILE TOOLS ──────────────────────────────────────────────
+  "word-counter": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python word-counter.py"},
+      {t:"in", v:"Text file path: essay.txt"},
+      {t:"out",v:""},
+      {t:"out",v:"📄 essay.txt"},
+      {t:"out",v:"  Words:       1,247"},
+      {t:"out",v:"  Lines:       84"},
+      {t:"out",v:"  Characters:  7,431 (6,012 without spaces)"},
+      {t:"out",v:"  Sentences:   62"},
+    ]
+  },
+
+  "find-large-files": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python find-large-files.py"},
+      {t:"in", v:"Folder to scan: /home/user"},
+      {t:"in", v:"Minimum size in MB: 100"},
+      {t:"out",v:""},
+      {t:"out",v:"      Size  Path"},
+      {t:"out",v:"  4,096.0 MB  /home/user/Videos/movie.mkv"},
+      {t:"out",v:"    512.3 MB  /home/user/Downloads/ubuntu.iso"},
+      {t:"out",v:"    200.1 MB  /home/user/backup.zip"},
+      {t:"out",v:""},
+      {t:"out",v:"Found 3 file(s)."},
+    ]
+  },
+
+  "file-hasher": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python file-hasher.py"},
+      {t:"in", v:"File path: ubuntu.iso"},
+      {t:"in", v:"Hash algorithm (md5 / sha1 / sha256): sha256"},
+      {t:"out",v:""},
+      {t:"out",v:"  SHA256: a8e9935e45a1a03c8d7c81c1e..."},
+      {t:"in", v:"Paste a hash to compare (blank to skip): a8e9935e45a1a03c8d7c81c1e..."},
+      {t:"out",v:"  ✅ Match!"},
+    ]
+  },
+
+  "batch-lowercase": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python batch-lowercase.py"},
+      {t:"in", v:"Folder path: /photos"},
+      {t:"out",v:"  IMG_001.JPG  →  img_001.jpg"},
+      {t:"out",v:"  Photo_A.PNG  →  photo_a.png"},
+      {t:"out",v:"  NOTES.TXT  →  notes.txt"},
+      {t:"out",v:""},
+      {t:"out",v:"Done. 3 file(s) renamed."},
+    ]
+  },
+
+  "extension-counter": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python extension-counter.py"},
+      {t:"in", v:"Folder to scan: /projects"},
+      {t:"in", v:"Include subfolders? (y/n): y"},
+      {t:"out",v:""},
+      {t:"out",v:"Extension             Count"},
+      {t:"out",v:"----------------------------"},
+      {t:"out",v:"  .py                    42"},
+      {t:"out",v:"  .json                  18"},
+      {t:"out",v:"  .html                   9"},
+      {t:"out",v:"  .css                    4"},
+      {t:"out",v:""},
+      {t:"out",v:"Total files: 73"},
+    ]
+  },
+
+  "find-old-files": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python find-old-files.py"},
+      {t:"in", v:"Folder to scan: /Downloads"},
+      {t:"in", v:"Older than how many days? 180"},
+      {t:"out",v:""},
+      {t:"out",v:"   365 days  /Downloads/old_resume.pdf"},
+      {t:"out",v:"   210 days  /Downloads/setup_2023.exe"},
+      {t:"out",v:"   188 days  /Downloads/notes_old.txt"},
+      {t:"out",v:""},
+      {t:"out",v:"Found 3 old file(s)."},
+    ]
+  },
+
+  "line-counter": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python line-counter.py"},
+      {t:"in", v:"Project folder: /myapp"},
+      {t:"in", v:"File extensions (e.g. .py .js .html, blank=all): .py .js"},
+      {t:"out",v:""},
+      {t:"out",v:"Extension         Lines"},
+      {t:"out",v:"-------------------------"},
+      {t:"out",v:"  .py             2,341"},
+      {t:"out",v:"  .js               891"},
+      {t:"out",v:""},
+      {t:"out",v:"  TOTAL           3,232"},
+    ]
+  },
+
+  "file-encryptor": {
+    difficulty:"intermediate", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python file-encryptor.py"},
+      {t:"in", v:"Encrypt or Decrypt? (e/d): e"},
+      {t:"in", v:"File path: secret.txt"},
+      {t:"in", v:"Password: mypassword123"},
+      {t:"out",v:""},
+      {t:"out",v:"✅ Encrypted: secret.txt.enc"},
+    ]
+  },
+
+  "empty-folder-finder": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python empty-folder-finder.py"},
+      {t:"in", v:"Root folder to scan: /projects"},
+      {t:"out",v:""},
+      {t:"out",v:"Found 3 empty folder(s):"},
+      {t:"out",v:"  /projects/old/temp"},
+      {t:"out",v:"  /projects/build/cache"},
+      {t:"out",v:"  /projects/test/__old"},
+      {t:"in", v:"Delete all? (yes/no): yes"},
+      {t:"out",v:"Deleted 3 folder(s)."},
+    ]
+  },
+
+  "txt-splitter": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python txt-splitter.py"},
+      {t:"in", v:"Text file path: bigfile.txt"},
+      {t:"in", v:"Lines per chunk: 1000"},
+      {t:"out",v:""},
+      {t:"out",v:"Splitting 4,231 lines into 5 file(s)..."},
+      {t:"out",v:"  ✓ bigfile_part001.txt (1,000 lines)"},
+      {t:"out",v:"  ✓ bigfile_part002.txt (1,000 lines)"},
+      {t:"out",v:"  ✓ bigfile_part003.txt (1,000 lines)"},
+      {t:"out",v:"  ✓ bigfile_part004.txt (1,000 lines)"},
+      {t:"out",v:"  ✓ bigfile_part005.txt (231 lines)"},
+      {t:"out",v:"Done."},
+    ]
+  },
+
+  // ── UTILITIES ────────────────────────────────────────────────
+  "dice-roller": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python dice-roller.py"},
+      {t:"out",v:"🎲 Dice Roller — type 'quit' to exit"},
+      {t:"in", v:"Roll: 2d6"},
+      {t:"out",v:"  [4 + 6] = 10"},
+      {t:"in", v:"Roll: 1d20"},
+      {t:"out",v:"  [17] = 17"},
+      {t:"in", v:"Roll: 3d8+5"},
+      {t:"out",v:"  [3 + 7 + 5] +5 = 20"},
+    ]
+  },
+
+  "todo-cli": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python todo-cli.py"},
+      {t:"out",v:"📋 Todo CLI  |  Commands: add, list, done, delete, clear, quit"},
+      {t:"in", v:"todo> add buy groceries"},
+      {t:"out",v:"  Added: buy groceries"},
+      {t:"in", v:"todo> add finish project"},
+      {t:"out",v:"  Added: finish project"},
+      {t:"in", v:"todo> list"},
+      {t:"out",v:"  [1] ⬜ buy groceries"},
+      {t:"out",v:"  [2] ⬜ finish project"},
+      {t:"in", v:"todo> done 1"},
+      {t:"out",v:"  ✅ Done: buy groceries"},
+    ]
+  },
+
+  "pomodoro": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python pomodoro.py"},
+      {t:"in", v:"Work minutes (default 25): 25"},
+      {t:"in", v:"Break minutes (default 5): 5"},
+      {t:"in", v:"How many Pomodoros? 3"},
+      {t:"out",v:""},
+      {t:"out",v:"─── Pomodoro 1/3 ───"},
+      {t:"out",v:"  🍅 Work block (25 min)"},
+      {t:"out",v:"  ⏱  24:59 remaining"},
+      {t:"out",v:"  ..."},
+      {t:"out",v:"  ✅ Work block (25 min) complete!"},
+    ]
+  },
+
+  "binary-converter": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python binary-converter.py"},
+      {t:"in", v:"From (bin/dec/hex/oct): dec"},
+      {t:"in", v:"Value: 42"},
+      {t:"out",v:"  Binary:      0b101010"},
+      {t:"out",v:"  Octal:       0o52"},
+      {t:"out",v:"  Decimal:     42"},
+      {t:"out",v:"  Hexadecimal: 0x2A"},
+    ]
+  },
+
+  "caesar-cipher": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python caesar-cipher.py"},
+      {t:"in", v:"Encode or Decode? (e/d/quit): e"},
+      {t:"in", v:"Text: Hello World"},
+      {t:"in", v:"Shift (1-25): 13"},
+      {t:"out",v:"  Result: Uryyb Jbeyq"},
+      {t:"in", v:"Encode or Decode? (e/d/quit): d"},
+      {t:"in", v:"Text: Uryyb Jbeyq"},
+      {t:"in", v:"Shift (1-25): 13"},
+      {t:"out",v:"  Result: Hello World"},
+    ]
+  },
+
+  "uuid-generator": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python uuid-generator.py"},
+      {t:"in", v:"Version (1/4 — recommended: 4): 4"},
+      {t:"in", v:"How many UUIDs? 3"},
+      {t:"out",v:""},
+      {t:"out",v:"  550e8400-e29b-41d4-a716-446655440000"},
+      {t:"out",v:"  6ba7b810-9dad-11d1-80b4-00c04fd430c8"},
+      {t:"out",v:"  7c9e6679-7425-40de-944b-e07fc1f90ae7"},
+      {t:"out",v:""},
+      {t:"out",v:"Generated 3 UUID(s)."},
+    ]
+  },
+
+  "word-frequency": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python word-frequency.py"},
+      {t:"in", v:"Text file path: article.txt"},
+      {t:"in", v:"Show top N words (e.g. 20): 5"},
+      {t:"out",v:""},
+      {t:"out",v:"Word                  Count  Bar"},
+      {t:"out",v:"--------------------------------------------------"},
+      {t:"out",v:"  python               42  ██████████"},
+      {t:"out",v:"  data                 31  ████████"},
+      {t:"out",v:"  code                 28  ███████"},
+    ]
+  },
+
+  "ascii-banner": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python ascii-banner.py"},
+      {t:"in", v:"Text (A-Z only): HI"},
+      {t:"out",v:""},
+      {t:"out",v:"  o   o  ooooo"},
+      {t:"out",v:"  o   o    o  "},
+      {t:"out",v:"  oooo o    o  "},
+      {t:"out",v:"  o   o    o  "},
+      {t:"out",v:"  o   o  ooooo"},
+    ]
+  },
+
+  "age-calculator": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python age-calculator.py"},
+      {t:"in", v:"Enter your birthday (YYYY-MM-DD): 1995-07-20"},
+      {t:"out",v:""},
+      {t:"out",v:"🎂 You are:"},
+      {t:"out",v:"  29 years, 9 months old"},
+      {t:"out",v:"  10,893 days"},
+      {t:"out",v:"  261,432 hours"},
+      {t:"out",v:"  15,685,920 minutes"},
+      {t:"out",v:""},
+      {t:"out",v:"  🎁 Next birthday in 109 day(s)!"},
+    ]
+  },
+
+  "anagram-checker": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python anagram-checker.py"},
+      {t:"in", v:"Word / phrase 1 (or 'quit'): listen"},
+      {t:"in", v:"Word / phrase 2: silent"},
+      {t:"out",v:"  ✅ Yes! 'listen' and 'silent' are anagrams."},
+      {t:"in", v:"Word / phrase 1 (or 'quit'): hello"},
+      {t:"in", v:"Word / phrase 2: world"},
+      {t:"out",v:"  ❌ Not anagrams. Different letters: d, h, r, w"},
+    ]
+  },
+
+  "morse-code": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python morse-code.py"},
+      {t:"in", v:"Encode (e) or Decode (d) or quit: e"},
+      {t:"in", v:"Input: SOS"},
+      {t:"out",v:"  Morse: ... --- ..."},
+      {t:"in", v:"Encode (e) or Decode (d) or quit: d"},
+      {t:"in", v:"Input: .... . .-.. .-.. ---"},
+      {t:"out",v:"  Text: HELLO"},
+    ]
+  },
+
+  "coin-flipper": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python coin-flipper.py"},
+      {t:"in", v:"How many flips? 100"},
+      {t:"out",v:""},
+      {t:"out",v:"🪙 Results of 100 flips:"},
+      {t:"out",v:"  Heads     53 (53.0%)  ████████████████"},
+      {t:"out",v:"  Tails     47 (47.0%)  ██████████████"},
+    ]
+  },
+
+  "random-quote": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python random-quote.py"},
+      {t:"out",v:""},
+      {t:"out",v:"💬 The only way to do great work is to love what you do."},
+      {t:"out",v:"     — Steve Jobs"},
+    ]
+  },
+
+  "text-stats": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python text-stats.py"},
+      {t:"out",v:"📊 Text Stats — paste text, type END on a new line when done:"},
+      {t:"in", v:"The quick brown fox jumps over the lazy dog."},
+      {t:"in", v:"END"},
+      {t:"out",v:""},
+      {t:"out",v:"  Words:         9"},
+      {t:"out",v:"  Sentences:     1"},
+      {t:"out",v:"  Avg words/sent:9.0"},
+      {t:"out",v:"  Reading time:  ~1 min"},
+      {t:"out",v:"  Readability:   72.4/100 — Easy (6th-7th grade)"},
+    ]
+  },
+
+  // ── AUTOMATION ───────────────────────────────────────────────
+  "system-info": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python system-info.py"},
+      {t:"out",v:""},
+      {t:"out",v:"💻 System Information"},
+      {t:"out",v:"========================================"},
+      {t:"out",v:"  OS:          Linux 6.1.0"},
+      {t:"out",v:"  Machine:     x86_64"},
+      {t:"out",v:"  Python:      3.11.5"},
+      {t:"out",v:"  Hostname:    my-laptop"},
+      {t:"out",v:""},
+      {t:"out",v:"  Disk Total:  512.0 GB"},
+      {t:"out",v:"  Disk Free:   234.7 GB"},
+      {t:"out",v:"  CPU Cores:   8"},
+    ]
+  },
+
+  "port-checker": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python port-checker.py"},
+      {t:"in", v:"Host (e.g. google.com or 192.168.1.1): google.com"},
+      {t:"in", v:"Port(s) to check (e.g. 80 443 22): 80 443 22"},
+      {t:"out",v:""},
+      {t:"out",v:"  ✅ google.com:80   OPEN"},
+      {t:"out",v:"  ✅ google.com:443  OPEN"},
+      {t:"out",v:"  ❌ google.com:22   CLOSED"},
+    ]
+  },
+
+  "ping-sweep": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python ping-sweep.py"},
+      {t:"in", v:"Enter hosts to ping (space-separated): google.com github.com badhost.xyz"},
+      {t:"out",v:""},
+      {t:"out",v:"  ✅ google.com  UP"},
+      {t:"out",v:"  ✅ github.com  UP"},
+      {t:"out",v:"  ❌ badhost.xyz  DOWN"},
+      {t:"out",v:""},
+      {t:"out",v:"Up: 2  Down: 1"},
+    ]
+  },
+
+  "temp-file-finder": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python temp-file-finder.py"},
+      {t:"in", v:"Folder to scan: /projects"},
+      {t:"out",v:""},
+      {t:"out",v:"Found 4 junk file(s):"},
+      {t:"out",v:"       0 B  /projects/__pycache__/"},
+      {t:"out",v:"    1024 B  /projects/debug.log"},
+      {t:"out",v:"     512 B  /projects/tmp_output.tmp"},
+    ]
+  },
+
+  "scheduled-shutdown": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python scheduled-shutdown.py"},
+      {t:"in", v:"Action: [1] Shutdown  [2] Restart: 1"},
+      {t:"in", v:"In how many minutes? 30"},
+      {t:"out",v:""},
+      {t:"out",v:"⏻ Scheduled shutdown in 30 minute(s)."},
+      {t:"out",v:"  Press Ctrl+C to cancel."},
+      {t:"out",v:""},
+      {t:"out",v:"  ⏱  29:59 remaining"},
+    ]
+  },
+
+  "cpu-monitor": {
+    difficulty:"intermediate", requires:["psutil"], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python cpu-monitor.py"},
+      {t:"out",v:"📈 CPU Monitor — Ctrl+C to stop"},
+      {t:"out",v:""},
+      {t:"out",v:"  CPU  23.4%  ██████░░░░░░░░░░░░░░░░░░░   RAM  61.2%  ███████████████░░░░░░░░░░"},
+      {t:"out",v:"  CPU  25.1%  ██████░░░░░░░░░░░░░░░░░░░   RAM  61.8%  ███████████████░░░░░░░░░░"},
+    ]
+  },
+
+  "batch-image-rename": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python batch-image-rename.py"},
+      {t:"in", v:"Folder with images: /photos"},
+      {t:"in", v:"Filename prefix (e.g. photo): vacation"},
+      {t:"in", v:"Start number (e.g. 1): 1"},
+      {t:"out",v:"  IMG_4821.jpg  →  vacation_001.jpg"},
+      {t:"out",v:"  IMG_4822.jpg  →  vacation_002.jpg"},
+      {t:"out",v:"  IMG_4823.png  →  vacation_003.png"},
+      {t:"out",v:""},
+      {t:"out",v:"Done. 3 image(s) renamed."},
+    ]
+  },
+
+  "log-analyzer": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python log-analyzer.py"},
+      {t:"in", v:"Log file path: app.log"},
+      {t:"out",v:""},
+      {t:"out",v:"📋 Log Summary (4,231 lines)"},
+      {t:"out",v:"  Errors:   14"},
+      {t:"out",v:"  Warnings: 38"},
+      {t:"out",v:"  Info:     127"},
+      {t:"out",v:""},
+      {t:"out",v:"  — Top Errors —"},
+      {t:"out",v:"  [5x] ERROR: Connection timeout"},
+      {t:"out",v:"  [3x] ERROR: NullPointerException at line 42"},
+    ]
+  },
+
+  "git-status-check": {
+    difficulty:"intermediate", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python git-status-check.py"},
+      {t:"out",v:""},
+      {t:"out",v:"🌿 Git Status"},
+      {t:"out",v:"  Branch: main"},
+      {t:"out",v:""},
+      {t:"out",v:"  Staged       2 file(s)"},
+      {t:"out",v:"    · scripts.js"},
+      {t:"out",v:"    · style.css"},
+      {t:"out",v:"  Modified     1 file(s)"},
+      {t:"out",v:"  Untracked    clean"},
+    ]
+  },
+
+  "file-monitor": {
+    difficulty:"intermediate", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python file-monitor.py"},
+      {t:"in", v:"Folder to watch: /projects"},
+      {t:"out",v:""},
+      {t:"out",v:"👁️  Watching /projects — Ctrl+C to stop"},
+      {t:"out",v:""},
+      {t:"out",v:"  ✨ CREATED  new_script.py"},
+      {t:"out",v:"  ✏️  CHANGED  app.js"},
+      {t:"out",v:"  🗑️  DELETED  old_notes.txt"},
+    ]
+  },
+
+  // ── WEB ──────────────────────────────────────────────────────
+  "random-joke": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python random-joke.py"},
+      {t:"out",v:""},
+      {t:"out",v:"😂 Why do programmers prefer dark mode?"},
+      {t:"in", v:"(press Enter for punchline)"},
+      {t:"out",v:""},
+      {t:"out",v:"  👉 Because light attracts bugs!"},
+    ]
+  },
+
+  "word-definition": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python word-definition.py"},
+      {t:"in", v:"Word to define (or 'quit'): serendipity"},
+      {t:"out",v:""},
+      {t:"out",v:"📖 serendipity"},
+      {t:"out",v:""},
+      {t:"out",v:"  [noun]"},
+      {t:"out",v:"    · The occurrence of events by chance in a happy way."},
+      {t:"out",v:"      e.g. A fortunate stroke of serendipity."},
+    ]
+  },
+
+  "crypto-price": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python crypto-price.py"},
+      {t:"in", v:"Coins (e.g. bitcoin ethereum solana): bitcoin ethereum"},
+      {t:"out",v:""},
+      {t:"out",v:"  BITCOIN        $67,432.10   ▲ 2.41%"},
+      {t:"out",v:"  ETHEREUM        $3,521.88   ▼ 0.83%"},
+    ]
+  },
+
+  "internet-check": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python internet-check.py"},
+      {t:"out",v:""},
+      {t:"out",v:"🌐 Internet Connectivity Check"},
+      {t:"out",v:""},
+      {t:"out",v:"  ✅ Google          42 ms"},
+      {t:"out",v:"  ✅ Cloudflare      18 ms"},
+      {t:"out",v:"  ✅ GitHub          91 ms"},
+      {t:"out",v:""},
+      {t:"out",v:"  Status: 🟢 Online"},
+    ]
+  },
+
+  "github-user": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python github-user.py"},
+      {t:"in", v:"GitHub username: torvalds"},
+      {t:"out",v:""},
+      {t:"out",v:"🐙 GitHub: torvalds"},
+      {t:"out",v:"  Name:       Linus Torvalds"},
+      {t:"out",v:"  Location:   Portland, OR"},
+      {t:"out",v:"  Public repos: 8"},
+      {t:"out",v:"  Followers:    214,000"},
+    ]
+  },
+
+  "ip-geolocate": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python ip-geolocate.py"},
+      {t:"in", v:"IP address (leave blank for your own): 8.8.8.8"},
+      {t:"out",v:""},
+      {t:"out",v:"📍 IP: 8.8.8.8"},
+      {t:"out",v:"  Country:  United States"},
+      {t:"out",v:"  Region:   California"},
+      {t:"out",v:"  City:     Mountain View"},
+      {t:"out",v:"  ISP:      Google LLC"},
+      {t:"out",v:"  Lat/Lon:  37.422, -122.084"},
+    ]
+  },
+
+  "dns-lookup": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python dns-lookup.py"},
+      {t:"in", v:"Domain to look up: github.com"},
+      {t:"out",v:""},
+      {t:"out",v:"🔍 DNS Lookup: github.com"},
+      {t:"out",v:""},
+      {t:"out",v:"  A record:     140.82.121.4"},
+      {t:"out",v:"  Address:      140.82.121.4"},
+      {t:"out",v:"  Reverse DNS:  lb-140-82-121-4-fra.github.com"},
+    ]
+  },
+
+  "ssl-expiry": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python ssl-expiry.py"},
+      {t:"in", v:"Domain(s) to check (e.g. google.com github.com): google.com github.com mysite.com"},
+      {t:"out",v:""},
+      {t:"out",v:"  ✅ google.com                   expires 2025-10-28  (167 days)"},
+      {t:"out",v:"  ✅ github.com                   expires 2025-09-14  (123 days)"},
+      {t:"out",v:"  🚨 mysite.com                   expires 2025-05-20  (5 days)"},
+    ]
+  },
+
+  "http-headers": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python http-headers.py"},
+      {t:"in", v:"URL (include https://): https://github.com"},
+      {t:"out",v:""},
+      {t:"out",v:"📨 HTTP Headers for: https://github.com"},
+      {t:"out",v:"  Status: 200"},
+      {t:"out",v:""},
+      {t:"out",v:"  Content-Type                   text/html; charset=utf-8"},
+      {t:"out",v:"  X-Frame-Options                deny"},
+      {t:"out",v:"  Strict-Transport-Security      max-age=31536000"},
+    ]
+  },
+
+  "random-fact": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python random-fact.py"},
+      {t:"out",v:""},
+      {t:"out",v:"🧠 Random Fact:"},
+      {t:"out",v:""},
+      {t:"out",v:"  A group of flamingos is called a flamboyance."},
+    ]
+  },
+
+  // ── GAMES ────────────────────────────────────────────────────
+  "tic-tac-toe": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python tic-tac-toe.py"},
+      {t:"out",v:""},
+      {t:"out",v:"  · │ · │ ·"},
+      {t:"out",v:"  ──┼───┼──"},
+      {t:"out",v:"  · │ · │ ·"},
+      {t:"out",v:"  ──┼───┼──"},
+      {t:"out",v:"  · │ · │ ·"},
+      {t:"in", v:"  Player X — enter position (1-9): 5"},
+      {t:"out",v:""},
+      {t:"out",v:"  🎉 Player X wins!"},
+    ]
+  },
+
+  "blackjack": {
+    difficulty:"intermediate", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python blackjack.py"},
+      {t:"out",v:"💰 Balance: $100"},
+      {t:"in", v:"  Bet: $20"},
+      {t:"out",v:"  Dealer: K♠ ??  (?)"},
+      {t:"out",v:"  You   : 7♥ 9♦  (16)"},
+      {t:"in", v:"  [h]it / [s]tand: h"},
+      {t:"out",v:"  You   : 7♥ 9♦ 5♠  (21)"},
+      {t:"out",v:"  Dealer: K♠ 6♣  (16)"},
+      {t:"out",v:"  ✅ You win!"},
+    ]
+  },
+
+  "wordle": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python wordle.py"},
+      {t:"out",v:"🟩 WORDLE — guess the 5-letter word!"},
+      {t:"in", v:"  Guess 1/6: crane"},
+      {t:"out",v:"   C   R   A   N   E "},
+      {t:"in", v:"  Guess 2/6: brave"},
+      {t:"out",v:"   B   R   A   V   E "},
+      {t:"in", v:"  Guess 3/6: grace"},
+      {t:"out",v:"  🎉 You got it in 3 tries!"},
+    ]
+  },
+
+  "typing-speed": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python typing-speed.py"},
+      {t:"out",v:"⌨️  Typing Speed Test"},
+      {t:"out",v:""},
+      {t:"out",v:"  Type this text exactly:"},
+      {t:"out",v:"  \"python is a high level general purpose programming language\""},
+      {t:"in", v:"  Press Enter when ready..."},
+      {t:"out",v:"  GO!"},
+      {t:"in", v:"python is a high level general purpose programming language"},
+      {t:"out",v:"  ⏱  Time:     14.2s"},
+      {t:"out",v:"  💨 WPM:      61"},
+      {t:"out",v:"  ✅ Accuracy: 100.0%"},
+    ]
+  },
+
+  "higher-lower": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python higher-lower.py"},
+      {t:"out",v:"📊 Higher or Lower — guess a number between 1 and 100"},
+      {t:"in", v:"  Your guess: 50"},
+      {t:"out",v:"  📈 Higher!"},
+      {t:"in", v:"  Your guess: 75"},
+      {t:"out",v:"  📉 Lower!"},
+      {t:"in", v:"  Your guess: 62"},
+      {t:"out",v:"  🎉 Correct! (3 guesses) | Score: 7 | Best: 3"},
+    ]
+  },
+
+  "text-adventure": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python text-adventure.py"},
+      {t:"out",v:"🗺️  TEXT ADVENTURE  — commands: go <dir>, take, look, inventory, quit"},
+      {t:"out",v:"  You are at a stone entrance. Passages lead NORTH and EAST."},
+      {t:"in", v:"> go north"},
+      {t:"out",v:"  A dark forest. A SWORD glints on the ground. Exit SOUTH."},
+      {t:"in", v:"> take"},
+      {t:"out",v:"  Picked up: sword"},
+      {t:"in", v:"> go south"},
+      {t:"in", v:"> go east"},
+      {t:"out",v:"  A damp cave. A DRAGON blocks the path north."},
+      {t:"in", v:"> go north"},
+      {t:"out",v:"  🏆 You found the TREASURE ROOM! You win!"},
+    ]
+  },
+
+  "math-quiz": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python math-quiz.py"},
+      {t:"in", v:"Difficulty: [1] Easy  [2] Medium  [3] Hard: 2"},
+      {t:"in", v:"How many questions? 5"},
+      {t:"out",v:"  Q1: 34 + 18 = "},
+      {t:"in", v:"52"},
+      {t:"out",v:"  ✅ Correct!"},
+      {t:"out",v:"  Q2: 67 * 4 = "},
+      {t:"in", v:"268"},
+      {t:"out",v:"  ✅ Correct!"},
+      {t:"out",v:""},
+      {t:"out",v:"🏆 Score: 4/5  Time: 18.3s  Avg: 3.7s/q"},
+    ]
+  },
+
+  "slot-machine": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python slot-machine.py"},
+      {t:"out",v:"🎰 Slot Machine — Ctrl+C to quit"},
+      {t:"out",v:"  Credits: 100"},
+      {t:"in", v:"  Bet: 10"},
+      {t:"out",v:""},
+      {t:"out",v:"  | 🍒 | ⭐ | 🍋 |"},
+      {t:"out",v:"  ❌ No match. -10 credits."},
+      {t:"out",v:"  Credits: 90"},
+      {t:"in", v:"  Bet: 10"},
+      {t:"out",v:"  | 💎 | 💎 | 💎 |"},
+      {t:"out",v:"  🎉 JACKPOT! ×20 → +200 credits!"},
+    ]
+  },
+
+  "memory-game": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python memory-game.py"},
+      {t:"out",v:"🧠 Memory Game — match all pairs!"},
+      {t:"out",v:""},
+      {t:"out",v:"    1  2  3  4"},
+      {t:"out",v:"  1 ?  ?  ?  ?"},
+      {t:"out",v:"  2 ?  ?  ?  ?"},
+      {t:"in", v:"  Pick card 1: 1 1"},
+      {t:"in", v:"  Pick card 2: 2 3"},
+      {t:"out",v:"  ✅ Match!"},
+    ]
+  },
+
+  "connect-four": {
+    difficulty:"intermediate", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python connect-four.py"},
+      {t:"out",v:"  1 2 3 4 5 6 7"},
+      {t:"out",v:"  · · · · · · ·"},
+      {t:"out",v:"  · · · · · · ·"},
+      {t:"out",v:"  · · · · · · ·"},
+      {t:"in", v:"> 4"},
+      {t:"out",v:"  Player 2 (🔴) — pick column (1-7)"},
+      {t:"in", v:"> 4"},
+      {t:"out",v:"  🎉 Player 1 wins!"},
+    ]
+  },
+
+  // ── MATH ─────────────────────────────────────────────────────
+  "statistics-calc": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python statistics-calc.py"},
+      {t:"in", v:"Enter numbers separated by spaces: 4 7 13 2 7 9 1"},
+      {t:"out",v:""},
+      {t:"out",v:"📊 Statistics (7 numbers):"},
+      {t:"out",v:"  Count:         7"},
+      {t:"out",v:"  Sum:           43.0000"},
+      {t:"out",v:"  Mean:          6.1429"},
+      {t:"out",v:"  Median:        7.0000"},
+      {t:"out",v:"  Mode:          7.0"},
+      {t:"out",v:"  Std Deviation: 3.7859"},
+    ]
+  },
+
+  "prime-sieve": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python prime-sieve.py"},
+      {t:"in", v:"Find all primes up to: 50"},
+      {t:"out",v:""},
+      {t:"out",v:"🔢 Primes up to 50: 15 found"},
+      {t:"out",v:""},
+      {t:"out",v:"      2       3       5       7      11      13      17      19      23      29"},
+      {t:"out",v:"     31      37      41      43      47"},
+      {t:"out",v:""},
+      {t:"out",v:"  Largest prime: 47"},
+    ]
+  },
+
+  "fibonacci-gen": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python fibonacci-gen.py"},
+      {t:"in", v:"Generate by [1] number of terms or [2] max value: 1"},
+      {t:"in", v:"Number of terms: 8"},
+      {t:"out",v:""},
+      {t:"out",v:"🌀 Fibonacci (8 terms):"},
+      {t:"out",v:"  F(  1) = 0"},
+      {t:"out",v:"  F(  2) = 1"},
+      {t:"out",v:"  F(  3) = 1"},
+      {t:"out",v:"  F(  4) = 2"},
+      {t:"out",v:"  ..."},
+      {t:"out",v:"  F(  8) = 13"},
+      {t:"out",v:""},
+      {t:"out",v:"  Golden ratio approx: 1.61538462"},
+    ]
+  },
+
+  "mortgage-calc": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python mortgage-calc.py"},
+      {t:"in", v:"Loan amount ($): 300000"},
+      {t:"in", v:"Annual interest rate (%): 6.5"},
+      {t:"in", v:"Loan term (years): 30"},
+      {t:"out",v:""},
+      {t:"out",v:"🏠 Mortgage Summary"},
+      {t:"out",v:"  Loan Amount:     $   300,000.00"},
+      {t:"out",v:"  Interest Rate:   6.50% per year"},
+      {t:"out",v:"  Monthly Payment: $     1,896.20"},
+      {t:"out",v:"  Total Interest:  $   382,633.00"},
+    ]
+  },
+
+  "compound-interest": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python compound-interest.py"},
+      {t:"in", v:"Principal ($): 10000"},
+      {t:"in", v:"Annual rate (%): 7"},
+      {t:"in", v:"Compounding times per year: 12"},
+      {t:"in", v:"Number of years: 5"},
+      {t:"out",v:""},
+      {t:"out",v:"  Year     Balance     Interest Earned"},
+      {t:"out",v:"  -----------------------------------"},
+      {t:"out",v:"     1  $10,722.90         $722.90"},
+      {t:"out",v:"     5  $14,176.25       $4,176.25"},
+      {t:"out",v:""},
+      {t:"out",v:"  Growth Factor:   1.42x"},
+    ]
+  },
+
+  "bmi-calc": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python bmi-calc.py"},
+      {t:"in", v:"Units: [1] Metric (kg/cm)  [2] Imperial (lbs/in): 1"},
+      {t:"in", v:"Weight (kg): 75"},
+      {t:"in", v:"Height (cm): 178"},
+      {t:"out",v:""},
+      {t:"out",v:"⚖️  BMI Results:"},
+      {t:"out",v:"  BMI:      23.7"},
+      {t:"out",v:"  Category: Normal weight"},
+    ]
+  },
+
+  "quadratic-solver": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python quadratic-solver.py"},
+      {t:"out",v:"📐 Quadratic Equation Solver: ax² + bx + c = 0"},
+      {t:"in", v:"  a = 1"},
+      {t:"in", v:"  b = -5"},
+      {t:"in", v:"  c = 6"},
+      {t:"out",v:""},
+      {t:"out",v:"  Equation: 1.0x² + -5.0x + 6.0 = 0"},
+      {t:"out",v:"  Discriminant: 1.0000"},
+      {t:"out",v:"  → Two distinct real roots"},
+      {t:"out",v:"  x₁ = 3.0000"},
+      {t:"out",v:"  x₂ = 2.0000"},
+    ]
+  },
+
+  "tip-calc": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python tip-calc.py"},
+      {t:"in", v:"Bill total ($): 84.50"},
+      {t:"in", v:"Tip percentage (%): 20"},
+      {t:"in", v:"Number of people: 4"},
+      {t:"out",v:""},
+      {t:"out",v:"🍽️  Bill Breakdown"},
+      {t:"out",v:"  Bill:          $84.50"},
+      {t:"out",v:"  Tip (20%):     $16.90"},
+      {t:"out",v:"  Total:        $101.40"},
+      {t:"out",v:"  ─────────────────────"},
+      {t:"out",v:"  Per person:    $25.35"},
+    ]
+  },
+
+  "area-calc": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python area-calc.py"},
+      {t:"out",v:"📏 Area & Perimeter Calculator"},
+      {t:"out",v:"  [1] Circle  [2] Rectangle  [3] Triangle  ..."},
+      {t:"in", v:"Pick a shape: 1"},
+      {t:"in", v:"Radius: 5"},
+      {t:"out",v:"  Area:          78.5398"},
+      {t:"out",v:"  Circumference: 31.4159"},
+    ]
+  },
+
+  "percentage-calc": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python percentage-calc.py"},
+      {t:"out",v:"💯 Percentage Calculator"},
+      {t:"out",v:"  [1] What is X% of Y?  [2] X is what % of Y?  ..."},
+      {t:"in", v:"Pick: 3"},
+      {t:"in", v:"Original value: 80"},
+      {t:"in", v:"New value: 100"},
+      {t:"out",v:"  Change: 25.0000% increase"},
+    ]
+  },
+
+  "grade-calc": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python grade-calc.py"},
+      {t:"in", v:"  Name (blank to finish): Midterm"},
+      {t:"in", v:"  Score for Midterm: 85"},
+      {t:"in", v:"  Max score: 100"},
+      {t:"in", v:"  Weight (%): 40"},
+      {t:"in", v:"  Name (blank to finish): Final"},
+      {t:"in", v:"  Score for Final: 92"},
+      {t:"in", v:"  Max score: 100"},
+      {t:"in", v:"  Weight (%): 60"},
+      {t:"in", v:"  Name (blank to finish): "},
+      {t:"out",v:"  FINAL GRADE                              89.2%  → B"},
+    ]
+  },
+
+  "matrix-calc": {
+    difficulty:"intermediate", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python matrix-calc.py"},
+      {t:"out",v:"🔢 Matrix Calculator"},
+      {t:"out",v:"  [1] Add  [2] Subtract  [3] Multiply  [4] Transpose"},
+      {t:"in", v:"Operation: 4"},
+      {t:"in", v:"  Matrix A rows: 2"},
+      {t:"in", v:"  Matrix A cols: 3"},
+      {t:"in", v:"    1 2 3"},
+      {t:"in", v:"    4 5 6"},
+      {t:"out",v:"  Aᵀ:"},
+      {t:"out",v:"     1.000     4.000"},
+      {t:"out",v:"     2.000     5.000"},
+      {t:"out",v:"     3.000     6.000"},
+    ]
+  },
+
+  "loan-calc": {
+    difficulty:"beginner", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python loan-calc.py"},
+      {t:"in", v:"Loan balance ($): 10000"},
+      {t:"in", v:"Annual interest rate (%): 5"},
+      {t:"in", v:"Monthly payment ($): 200"},
+      {t:"out",v:""},
+      {t:"out",v:"  Loan Amount:    $  10,000.00"},
+      {t:"out",v:"  Monthly Payment:$     200.00"},
+      {t:"out",v:"  Payoff Time:    4 yr 9 mo (57 payments)"},
+      {t:"out",v:"  Total Interest: $   1,349.12"},
+    ]
+  },
+
+  "number-theory": {
+    difficulty:"intermediate", requires:[], version:"1.0",
+    demo:[
+      {t:"cmd",v:"python number-theory.py"},
+      {t:"in", v:"Enter number(s) (or 'quit'): 28 12"},
+      {t:"out",v:""},
+      {t:"out",v:"  🔢 28"},
+      {t:"out",v:"    Prime?          No"},
+      {t:"out",v:"    Perfect?        Yes"},
+      {t:"out",v:"    Prime factors:  2 × 2 × 7"},
+      {t:"out",v:"    Divisors:       [1, 2, 4, 7, 14, 28]"},
+      {t:"out",v:""},
+      {t:"out",v:"    GCD(28,12): 4"},
+      {t:"out",v:"    LCM(28,12): 84"},
+    ]
+  },
+
 };
