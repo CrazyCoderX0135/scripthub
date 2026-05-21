@@ -3365,4 +3365,1893 @@ while True:
         print(f"    LCM({nums[0]},{nums[1]}): {math.lcm(nums[0],nums[1])}")`
   },
 
+
+  // ── SCIENCE ─────────────────────────────────────────────────
+  {
+    id: "unit-science",
+    name: "unit-science",
+    desc: "Convert scientific units: energy, pressure, speed, force, temperature, and more.",
+    tag: "science", lang: "python", icon: "⚗️",
+    code: `CONVERSIONS = {
+  "energy":      [("Joule","J",1),("Calorie","cal",4.184),("kWh","kWh",3600000),("eV","eV",1.602e-19),("BTU","BTU",1055.06)],
+  "pressure":    [("Pascal","Pa",1),("Bar","bar",100000),("PSI","psi",6894.76),("atm","atm",101325),("mmHg","mmHg",133.322)],
+  "speed":       [("m/s","m/s",1),("km/h","km/h",0.27778),("mph","mph",0.44704),("knot","kn",0.51444),("Mach","M",340.29)],
+  "force":       [("Newton","N",1),("Pound-force","lbf",4.44822),("Dyne","dyn",0.00001),("kgf","kgf",9.80665)],
+}
+
+print("⚗️  Scientific Unit Converter")
+for i, cat in enumerate(CONVERSIONS, 1):
+    print(f"  [{i}] {cat.capitalize()}")
+choice = int(input("Category: ").strip()) - 1
+cat    = list(CONVERSIONS.keys())[choice]
+units  = CONVERSIONS[cat]
+
+print()
+for i, (name, sym, _) in enumerate(units, 1):
+    print(f"  [{i}] {name} ({sym})")
+
+src = int(input("From: ").strip()) - 1
+dst = int(input("To:   ").strip()) - 1
+val = float(input("Value: ").strip())
+
+base   = val * units[src][2]
+result = base / units[dst][2]
+print(f"\\n  {val} {units[src][1]} = {result:.6g} {units[dst][1]}")`
+  },
+
+  {
+    id: "planet-weight",
+    name: "planet-weight",
+    desc: "Calculate your weight on every planet in the solar system.",
+    tag: "science", lang: "python", icon: "🪐",
+    code: `PLANETS = {
+  "Mercury": 0.378, "Venus": 0.907, "Earth": 1.000,
+  "Moon":    0.166, "Mars":  0.377, "Jupiter": 2.364,
+  "Saturn":  0.916, "Uranus":0.889, "Neptune": 1.125, "Pluto": 0.063,
+}
+
+weight = float(input("Your weight on Earth (kg): ").strip())
+print(f"\\n🪐 Weight across the Solar System ({weight} kg on Earth):\\n")
+for planet, g in PLANETS.items():
+    w = weight * g
+    bar = "█" * round(g * 20)
+    print(f"  {planet:10}  {w:6.1f} kg  {bar}")`
+  },
+
+  {
+    id: "periodic-table",
+    name: "periodic-table",
+    desc: "Look up any element from the periodic table — symbol, mass, group, and properties.",
+    tag: "science", lang: "python", icon: "🧪",
+    code: `ELEMENTS = {
+  "H":("Hydrogen",1,1.008,"nonmetal"),      "He":("Helium",2,4.003,"noble gas"),
+  "Li":("Lithium",3,6.941,"alkali metal"),  "Be":("Beryllium",4,9.012,"alkaline earth"),
+  "B":("Boron",5,10.81,"metalloid"),        "C":("Carbon",6,12.01,"nonmetal"),
+  "N":("Nitrogen",7,14.01,"nonmetal"),      "O":("Oxygen",8,16.00,"nonmetal"),
+  "F":("Fluorine",9,19.00,"halogen"),       "Ne":("Neon",10,20.18,"noble gas"),
+  "Na":("Sodium",11,22.99,"alkali metal"),  "Mg":("Magnesium",12,24.31,"alkaline earth"),
+  "Al":("Aluminium",13,26.98,"post-transition"), "Si":("Silicon",14,28.09,"metalloid"),
+  "P":("Phosphorus",15,30.97,"nonmetal"),   "S":("Sulfur",16,32.07,"nonmetal"),
+  "Cl":("Chlorine",17,35.45,"halogen"),     "Ar":("Argon",18,39.95,"noble gas"),
+  "K":("Potassium",19,39.10,"alkali metal"),"Ca":("Calcium",20,40.08,"alkaline earth"),
+  "Fe":("Iron",26,55.85,"transition metal"),"Cu":("Copper",29,63.55,"transition metal"),
+  "Zn":("Zinc",30,65.38,"transition metal"),"Ag":("Silver",47,107.87,"transition metal"),
+  "Au":("Gold",79,196.97,"transition metal"),"Hg":("Mercury",80,200.59,"transition metal"),
+  "Pb":("Lead",82,207.2,"post-transition"), "U":("Uranium",92,238.03,"actinide"),
+}
+
+print("🧪 Periodic Table Lookup — type 'quit' to exit\\n")
+while True:
+    q = input("Element symbol or name: ").strip()
+    if q.lower() == "quit": break
+    match = None
+    for sym, (name, num, mass, cat) in ELEMENTS.items():
+        if q.upper() == sym or q.lower() == name.lower():
+            match = (sym, name, num, mass, cat); break
+    if match:
+        sym, name, num, mass, cat = match
+        print(f"\\n  [{sym}]  {name}")
+        print(f"  Atomic Number:  {num}")
+        print(f"  Atomic Mass:    {mass} u")
+        print(f"  Category:       {cat}\\n")
+    else:
+        print("  Not found. Try symbol (e.g. Au) or name (e.g. Gold)\\n")`
+  },
+
+  {
+    id: "ohms-law",
+    name: "ohms-law",
+    desc: "Solve Ohm's Law: enter any two of V, I, R, P and get the other two.",
+    tag: "science", lang: "python", icon: "⚡",
+    code: `import math
+
+print("⚡ Ohm's Law Calculator")
+print("  V = Voltage (Volts)")
+print("  I = Current (Amps)")
+print("  R = Resistance (Ohms)")
+print("  P = Power (Watts)")
+print("\\nEnter any 2 values (leave the others blank):\\n")
+
+def get(label):
+    v = input(f"  {label}: ").strip()
+    return float(v) if v else None
+
+V = get("V (Volts)")
+I = get("I (Amps)")
+R = get("R (Ohms)")
+P = get("P (Watts)")
+
+known = sum(x is not None for x in [V,I,R,P])
+if known < 2:
+    print("Need at least 2 values."); exit()
+
+if V is None:
+    V = I*R if (I and R) else P/I if (P and I) else math.sqrt(P*R)
+if I is None:
+    I = V/R if (V and R) else P/V if (P and V) else math.sqrt(P/R)
+if R is None:
+    R = V/I if (V and I) else None
+if P is None:
+    P = V*I if (V and I) else None
+
+print(f"\\n  V = {V:.4f} V")
+print(f"  I = {I:.4f} A")
+print(f"  R = {R:.4f} Ω" if R else "  R = N/A")
+print(f"  P = {P:.4f} W" if P else "  P = N/A")`
+  },
+
+  {
+    id: "speed-of-sound",
+    name: "speed-of-sound",
+    desc: "Calculate the speed of sound in air, water, and steel at any temperature.",
+    tag: "science", lang: "python", icon: "🔊",
+    code: `import math
+
+temp_c = float(input("Temperature (°C): ").strip())
+temp_k = temp_c + 273.15
+
+# Air: v = 331.3 * sqrt(T/273.15)
+v_air   = 331.3 * math.sqrt(temp_k / 273.15)
+# Water: approx 1484 + 4.0*(T-20)
+v_water = 1484 + 4.0 * (temp_c - 20)
+# Steel: ~5960 m/s (not temp dependent in simple model)
+v_steel = 5960
+
+print(f"\\n🔊 Speed of Sound at {temp_c}°C")
+print(f"  Air:   {v_air:>7.1f} m/s  ({v_air*3.6:.1f} km/h)")
+print(f"  Water: {v_water:>7.1f} m/s")
+print(f"  Steel: {v_steel:>7.1f} m/s")
+
+dist = input("\\nDistance to lightning (km, blank to skip): ").strip()
+if dist:
+    d   = float(dist) * 1000
+    sec = d / v_air
+    print(f"  Thunder delay: {sec:.2f} seconds")`
+  },
+
+  {
+    id: "half-life",
+    name: "half-life",
+    desc: "Calculate radioactive decay — how much of a substance remains after N half-lives.",
+    tag: "science", lang: "python", icon: "☢️",
+    code: `import math
+
+print("☢️  Radioactive Decay Calculator\\n")
+
+initial  = float(input("Initial amount (grams or units): ").strip())
+half_life= float(input("Half-life (years): ").strip())
+time     = float(input("Time elapsed (years): ").strip())
+
+remaining = initial * (0.5 ** (time / half_life))
+decayed   = initial - remaining
+pct_left  = remaining / initial * 100
+n_halves  = time / half_life
+
+print(f"\\n  Initial:      {initial:.4f}")
+print(f"  Time elapsed: {time:.2f} years ({n_halves:.2f} half-lives)")
+print(f"  Remaining:    {remaining:.6f} ({pct_left:.4f}%)")
+print(f"  Decayed:      {decayed:.6f}")
+
+# Time to reach a target amount
+target_raw = input("\\nFind time to reach amount (blank to skip): ").strip()
+if target_raw:
+    target = float(target_raw)
+    t = half_life * math.log(target / initial) / math.log(0.5)
+    print(f"  Time to reach {target}: {t:.2f} years")`
+  },
+
+  {
+    id: "projectile",
+    name: "projectile",
+    desc: "Simulate projectile motion — calculate range, max height, and time of flight.",
+    tag: "science", lang: "python", icon: "🚀",
+    code: `import math
+
+print("🚀 Projectile Motion Calculator\\n")
+
+v0    = float(input("Initial velocity (m/s): ").strip())
+angle = float(input("Launch angle (degrees): ").strip())
+h0    = float(input("Initial height (m, default 0): ").strip() or "0")
+g     = 9.81
+
+rad   = math.radians(angle)
+vx    = v0 * math.cos(rad)
+vy    = v0 * math.sin(rad)
+
+# Time of flight
+disc  = vy**2 + 2 * g * h0
+t_total = (vy + math.sqrt(disc)) / g
+
+# Max height
+t_peak = vy / g
+h_max  = h0 + vy * t_peak - 0.5 * g * t_peak**2
+
+# Range
+x_range = vx * t_total
+
+print(f"\\n  Launch velocity: {v0} m/s @ {angle}°")
+print(f"  Initial height:  {h0} m")
+print(f"\\n  Max height:      {h_max:.2f} m  (at t={t_peak:.2f}s)")
+print(f"  Range:           {x_range:.2f} m")
+print(f"  Time of flight:  {t_total:.2f} s")
+print(f"  Horizontal vx:   {vx:.2f} m/s")
+print(f"  Vertical vy:     {vy:.2f} m/s")`
+  },
+
+  {
+    id: "body-water",
+    name: "body-water",
+    desc: "Calculate your total body water content and daily hydration needs.",
+    tag: "science", lang: "python", icon: "💧",
+    code: `print("💧 Body Water & Hydration Calculator\\n")
+
+sex    = input("Sex (m/f): ").strip().lower()
+age    = int(input("Age (years): ").strip())
+weight = float(input("Weight (kg): ").strip())
+height = float(input("Height (cm): ").strip())
+active = input("Activity level [1] Sedentary [2] Moderate [3] Active: ").strip()
+
+# Watson formula
+if sex == "m":
+    tbw = 2.447 - 0.09156*age + 0.1074*height + 0.3362*weight
+else:
+    tbw = -2.097 + 0.1069*height + 0.2466*weight
+
+# Daily water intake (ml)
+base   = weight * 35
+factor = {"1": 0.0, "2": 0.15, "3": 0.30}.get(active, 0)
+daily  = base * (1 + factor)
+
+print(f"\\n  Total Body Water: {tbw:.1f} litres ({tbw/weight*100:.1f}% of body weight)")
+print(f"  Recommended daily intake: {daily:.0f} ml ({daily/1000:.1f} L)")
+print(f"  That's about {daily/250:.0f} glasses of water (250ml each)")`
+  },
+
+  {
+    id: "calorie-burn",
+    name: "calorie-burn",
+    desc: "Estimate calories burned during exercise using MET values.",
+    tag: "science", lang: "python", icon: "🏃",
+    code: `ACTIVITIES = {
+    "1":  ("Walking (slow)",      2.8),
+    "2":  ("Walking (brisk)",     3.5),
+    "3":  ("Running (5mph)",      8.3),
+    "4":  ("Running (8mph)",     11.8),
+    "5":  ("Cycling (moderate)", 8.0),
+    "6":  ("Swimming",           7.0),
+    "7":  ("Jump rope",         11.8),
+    "8":  ("Yoga",               2.5),
+    "9":  ("Weight training",    5.0),
+    "10": ("HIIT",              10.0),
+}
+
+weight_kg = float(input("Your weight (kg): ").strip())
+print()
+for k, (name, met) in ACTIVITIES.items():
+    print(f"  [{k:>2}] {name}")
+
+choice  = input("\\nActivity: ").strip()
+minutes = float(input("Duration (minutes): ").strip())
+
+if choice not in ACTIVITIES:
+    print("Invalid choice."); exit()
+
+name, met = ACTIVITIES[choice]
+calories  = met * weight_kg * (minutes / 60)
+
+print(f"\\n🏃 {name} for {minutes:.0f} min")
+print(f"  Calories burned: {calories:.0f} kcal")
+print(f"  Per minute:      {calories/minutes:.1f} kcal/min")`
+  },
+
+  {
+    id: "tide-calculator",
+    name: "tide-calculator",
+    desc: "Model a simple tidal cycle and print tide heights throughout the day.",
+    tag: "science", lang: "python", icon: "🌊",
+    code: `import math
+
+print("🌊 Simple Tide Modeler\\n")
+
+high = float(input("High tide height (m, e.g. 4.5): ").strip())
+low  = float(input("Low tide height  (m, e.g. 0.5): ").strip())
+period_h = float(input("Tidal period (hours, typical 12.4): ").strip() or "12.4")
+
+amp    = (high - low) / 2
+mean   = (high + low) / 2
+omega  = 2 * math.pi / period_h
+
+print(f"\\n  Time   Tide Height")
+print("  " + "-"*28)
+
+for hour in range(25):
+    h = mean + amp * math.cos(omega * hour)
+    bar_len = round((h - low) / (high - low) * 30)
+    bar = "█" * bar_len
+    print(f"  {hour:02d}:00  {h:5.2f} m  {bar}")`
+  },
+
+  {
+    id: "ph-calculator",
+    name: "ph-calculator",
+    desc: "Calculate pH, pOH, [H+], and [OH-] — acid/base chemistry tool.",
+    tag: "science", lang: "python", icon: "🧫",
+    code: `import math
+
+print("🧫 pH / Acid-Base Calculator")
+print("  [1] From H+ concentration")
+print("  [2] From pH")
+print("  [3] From OH- concentration")
+print("  [4] From pOH")
+
+choice = input("\\nPick: ").strip()
+
+def classify(ph):
+    if ph < 3:   return "Strongly acidic"
+    if ph < 7:   return "Acidic"
+    if ph == 7:  return "Neutral"
+    if ph < 11:  return "Basic"
+    return "Strongly basic"
+
+if choice == "1":
+    h    = float(input("  [H+] concentration (mol/L): ").strip())
+    ph   = -math.log10(h)
+elif choice == "2":
+    ph   = float(input("  pH value: ").strip())
+    h    = 10 ** (-ph)
+elif choice == "3":
+    oh   = float(input("  [OH-] concentration (mol/L): ").strip())
+    poh  = -math.log10(oh)
+    ph   = 14 - poh
+    h    = 10 ** (-ph)
+elif choice == "4":
+    poh  = float(input("  pOH value: ").strip())
+    ph   = 14 - poh
+    h    = 10 ** (-ph)
+else:
+    print("Invalid."); exit()
+
+oh  = 10 ** (-(14 - ph))
+poh = 14 - ph
+
+print(f"\\n  pH    = {ph:.4f}  → {classify(ph)}")
+print(f"  pOH   = {poh:.4f}")
+print(f"  [H+]  = {h:.4e} mol/L")
+print(f"  [OH-] = {oh:.4e} mol/L")`
+  },
+
+
+  // ── PRODUCTIVITY ────────────────────────────────────────────
+  {
+    id: "habit-tracker",
+    name: "habit-tracker",
+    desc: "Track daily habits from the terminal — streaks, completion rates, and history.",
+    tag: "productivity", lang: "python", icon: "📅",
+    code: `import json, os
+from datetime import date
+
+FILE = "habits.json"
+
+def load():
+    return json.load(open(FILE)) if os.path.exists(FILE) else {"habits": {}, "log": {}}
+
+def save(d): json.dump(d, open(FILE,"w"), indent=2)
+
+data  = load()
+today = str(date.today())
+
+print("📅 Habit Tracker — commands: add, log, status, history, quit\\n")
+
+while True:
+    cmd = input("habit> ").strip().lower()
+    data = load()
+
+    if cmd == "quit": break
+
+    elif cmd.startswith("add "):
+        name = cmd[4:].strip()
+        data["habits"][name] = data["habits"].get(name, {"created": today})
+        save(data); print(f"  ✅ Added habit: {name}")
+
+    elif cmd == "log":
+        if not data["habits"]:
+            print("  No habits yet. Use 'add <habit>'"); continue
+        print("  Mark today's habits (y/n):")
+        log = data["log"].get(today, {})
+        for h in data["habits"]:
+            done = input(f"  {h}? (y/n): ").strip().lower() == "y"
+            log[h] = done
+        data["log"][today] = log
+        save(data); print("  ✅ Logged!")
+
+    elif cmd == "status":
+        print(f"\\n  Today ({today}):")
+        today_log = data["log"].get(today, {})
+        for h in data["habits"]:
+            days = [d for d in sorted(data["log"]) if data["log"][d].get(h)]
+            streak = 0
+            for d in sorted(days, reverse=True):
+                streak += 1
+            icon = "✅" if today_log.get(h) else "⬜"
+            print(f"  {icon} {h:20} streak: {streak} days")
+
+    elif cmd.startswith("history"):
+        for day in sorted(data["log"].keys())[-7:]:
+            done  = sum(1 for v in data["log"][day].values() if v)
+            total = len(data["log"][day])
+            bar   = "█" * done + "░" * (total - done)
+            print(f"  {day}  {bar}  {done}/{total}")
+
+    else: print("  Commands: add, log, status, history, quit")`
+  },
+
+  {
+    id: "journal",
+    name: "journal",
+    desc: "A private terminal journal — write daily entries, search past ones, and track mood.",
+    tag: "productivity", lang: "python", icon: "📓",
+    code: `import json, os
+from datetime import datetime
+
+FILE = "journal.json"
+
+def load():
+    return json.load(open(FILE)) if os.path.exists(FILE) else []
+
+def save(entries): json.dump(entries, open(FILE,"w"), indent=2)
+
+print("📓 Terminal Journal — commands: write, read, search, quit\\n")
+
+while True:
+    cmd = input("journal> ").strip().lower()
+    entries = load()
+
+    if cmd == "quit": break
+
+    elif cmd == "write":
+        mood = input("  Mood today (1-5 ⭐): ").strip()
+        print("  Write your entry (type END on a new line when done):")
+        lines = []
+        while True:
+            line = input("  ")
+            if line.strip() == "END": break
+            lines.append(line)
+        text = "\\n".join(lines)
+        entry = {
+            "date": datetime.now().strftime("%Y-%m-%d %H:%M"),
+            "mood": mood,
+            "text": text
+        }
+        entries.append(entry)
+        save(entries)
+        print("  ✅ Entry saved.")
+
+    elif cmd.startswith("read"):
+        n = int(cmd.split()[-1]) if cmd != "read" else 5
+        for e in entries[-n:]:
+            print(f"\\n  ─── {e['date']}  ⭐ {e['mood']}")
+            print(f"  {e['text'][:200]}{'...' if len(e['text'])>200 else ''}")
+
+    elif cmd.startswith("search "):
+        term = cmd[7:].strip()
+        hits = [e for e in entries if term.lower() in e["text"].lower()]
+        print(f"  Found {len(hits)} matching entries:")
+        for e in hits[-5:]:
+            print(f"  [{e['date']}] {e['text'][:80]}...")
+
+    else: print("  Commands: write, read [N], search <term>, quit")`
+  },
+
+  {
+    id: "budget-tracker",
+    name: "budget-tracker",
+    desc: "Track income and expenses from the terminal — see where your money goes.",
+    tag: "productivity", lang: "python", icon: "💰",
+    code: `import json, os
+from datetime import date
+
+FILE = "budget.json"
+
+def load():
+    return json.load(open(FILE)) if os.path.exists(FILE) else []
+
+def save(d): json.dump(d, open(FILE,"w"), indent=2)
+
+print("💰 Budget Tracker — commands: add, summary, list, quit\\n")
+CATS = ["food","rent","transport","entertainment","health","income","other"]
+
+while True:
+    cmd = input("budget> ").strip().lower()
+    data = load()
+
+    if cmd == "quit": break
+
+    elif cmd.startswith("add"):
+        try:
+            amt  = float(input("  Amount (negative = expense): ").strip())
+            print("  Categories: " + "  ".join(f"[{i+1}]{c}" for i,c in enumerate(CATS)))
+            ci   = int(input("  Category: ").strip()) - 1
+            note = input("  Note: ").strip()
+            data.append({"date": str(date.today()), "amount": amt, "cat": CATS[ci], "note": note})
+            save(data); print(f"  ✅ Added \${amt:.2f} ({CATS[ci]})")
+        except (ValueError, IndexError): print("  Invalid input.")
+
+    elif cmd == "summary":
+        income   = sum(e["amount"] for e in data if e["amount"] > 0)
+        expenses = sum(e["amount"] for e in data if e["amount"] < 0)
+        by_cat   = {}
+        for e in data:
+            by_cat[e["cat"]] = by_cat.get(e["cat"], 0) + e["amount"]
+        print(f"\\n  Income:   \${income:>10,.2f}")
+        print(f"  Expenses: \${abs(expenses):>10,.2f}")
+        print(f"  Balance:  \${income+expenses:>10,.2f}\\n")
+        for cat, amt in sorted(by_cat.items(), key=lambda x: x[1]):
+            bar = "█" * min(int(abs(amt)/10), 30)
+            print(f"  {cat:15} \${amt:>8,.2f}  {bar}")
+
+    elif cmd == "list":
+        for e in data[-10:]:
+            sign = "+" if e["amount"] > 0 else ""
+            print(f"  {e['date']}  {sign}{e['amount']:>8.2f}  {e['cat']:12}  {e['note']}")
+
+    else: print("  Commands: add, summary, list, quit")`
+  },
+
+  {
+    id: "meeting-timer",
+    name: "meeting-timer",
+    desc: "A meeting timer that tracks agenda items and alerts when time runs over.",
+    tag: "productivity", lang: "python", icon: "🕐",
+    code: `import time
+
+print("🕐 Meeting Timer\\n")
+print("Add agenda items (name + minutes). Blank name = start.")
+items = []
+while True:
+    name = input("  Agenda item (blank to start): ").strip()
+    if not name: break
+    mins = int(input(f"  Minutes for '{name}': ").strip())
+    items.append((name, mins * 60))
+
+if not items:
+    print("No items."); exit()
+
+total = sum(s for _, s in items)
+print(f"\\n  Total meeting time: {total//60} min\\n")
+print("  Press Enter to move to next item, Ctrl+C to stop.\\n")
+
+overall_start = time.time()
+
+for i, (name, secs) in enumerate(items, 1):
+    start = time.time()
+    print(f"  [{i}/{len(items)}] {name}  ({secs//60} min)")
+    while True:
+        elapsed = time.time() - start
+        remaining = secs - elapsed
+        m, s = divmod(int(abs(remaining)), 60)
+        over = remaining < 0
+        line = f"\\r  {'⏰ OVER' if over else '⏱ '} {'+' if over else ''}{m:02d}:{s:02d}  (press Enter for next)"
+        print(line, end="", flush=True)
+        try:
+            time.sleep(0.5)
+        except KeyboardInterrupt:
+            print("\\n\\n  Meeting stopped."); exit()
+
+print("\\n\\n  ✅ Meeting complete!")`
+  },
+
+  {
+    id: "note-taker",
+    name: "note-taker",
+    desc: "Quick command-line notes with tags — add, list, search, and delete.",
+    tag: "productivity", lang: "python", icon: "📝",
+    code: `import json, os
+from datetime import datetime
+
+FILE = "notes.json"
+
+def load(): return json.load(open(FILE)) if os.path.exists(FILE) else []
+def save(d): json.dump(d, open(FILE,"w"), indent=2)
+
+print("📝 Quick Notes — commands: add, list, search, delete, quit\\n")
+
+while True:
+    cmd = input("notes> ").strip()
+    data = load()
+
+    if cmd.lower() == "quit": break
+
+    elif cmd.lower().startswith("add"):
+        text = input("  Note text: ").strip()
+        tags_raw = input("  Tags (space-separated, blank for none): ").strip()
+        tags = tags_raw.split() if tags_raw else []
+        data.append({"id": len(data)+1, "date": datetime.now().strftime("%m/%d %H:%M"), "text": text, "tags": tags})
+        save(data); print(f"  ✅ Note #{len(data)} saved.")
+
+    elif cmd.lower() == "list":
+        if not data: print("  No notes yet.")
+        for n in data[-20:]:
+            tags = " ".join(f"#{t}" for t in n.get("tags", []))
+            print(f"  [{n['id']:>3}] {n['date']}  {n['text'][:60]}  {tags}")
+
+    elif cmd.lower().startswith("search "):
+        q = cmd[7:].strip().lower()
+        hits = [n for n in data if q in n["text"].lower() or q in " ".join(n.get("tags",[]))]
+        for n in hits:
+            print(f"  [{n['id']:>3}] {n['text'][:60]}")
+
+    elif cmd.lower().startswith("delete "):
+        nid = int(cmd[7:].strip())
+        data = [n for n in data if n["id"] != nid]
+        save(data); print(f"  Deleted note #{nid}.")
+
+    else: print("  Commands: add, list, search <term>, delete <id>, quit")`
+  },
+
+  {
+    id: "goal-tracker",
+    name: "goal-tracker",
+    desc: "Set goals with deadlines and track your progress in the terminal.",
+    tag: "productivity", lang: "python", icon: "🎯",
+    code: `import json, os
+from datetime import date, datetime
+
+FILE = "goals.json"
+
+def load(): return json.load(open(FILE)) if os.path.exists(FILE) else []
+def save(d): json.dump(d, open(FILE,"w"), indent=2)
+
+print("🎯 Goal Tracker — commands: add, update, list, quit\\n")
+
+while True:
+    cmd = input("goals> ").strip().lower()
+    data = load()
+
+    if cmd == "quit": break
+
+    elif cmd == "add":
+        name    = input("  Goal: ").strip()
+        target  = float(input("  Target (e.g. 100 for 100%): ").strip())
+        unit    = input("  Unit (e.g. pages, km, %, tasks): ").strip()
+        deadline= input("  Deadline (YYYY-MM-DD): ").strip()
+        data.append({"name": name, "target": target, "current": 0, "unit": unit, "deadline": deadline, "created": str(date.today())})
+        save(data); print(f"  ✅ Goal added: {name}")
+
+    elif cmd.startswith("update"):
+        for i, g in enumerate(data):
+            print(f"  [{i+1}] {g['name']} ({g['current']}/{g['target']} {g['unit']})")
+        idx = int(input("  Goal number: ").strip()) - 1
+        val = float(input("  New current value: ").strip())
+        data[idx]["current"] = val
+        save(data); print(f"  ✅ Updated!")
+
+    elif cmd == "list":
+        today = date.today()
+        for g in data:
+            pct = min(g["current"]/g["target"]*100, 100)
+            bar = "█" * round(pct/5) + "░" * (20 - round(pct/5))
+            dl  = date.fromisoformat(g["deadline"])
+            days_left = (dl - today).days
+            print(f"\\n  🎯 {g['name']}")
+            print(f"     {bar} {pct:.0f}%  ({g['current']}/{g['target']} {g['unit']})")
+            print(f"     Deadline: {g['deadline']}  ({days_left} days left)")
+
+    else: print("  Commands: add, update, list, quit")`
+  },
+
+  {
+    id: "focus-mode",
+    name: "focus-mode",
+    desc: "A distraction blocker that locks your terminal for a set focus period.",
+    tag: "productivity", lang: "python", icon: "🧘",
+    code: `import time, sys, signal
+
+def handler(sig, frame):
+    print("\\n  ⛔ Focus interrupted! Stay strong next time.")
+    sys.exit(0)
+
+signal.signal(signal.SIGINT, handler)
+
+print("🧘 Focus Mode")
+mins = int(input("Focus duration (minutes): ").strip())
+task = input("What are you focusing on? ").strip()
+
+secs = mins * 60
+print(f"\\n  🔒 Focus locked for {mins} min — {task}")
+print("  Ctrl+C to break focus (but try not to!)\\n")
+
+for remaining in range(secs, 0, -1):
+    m, s  = divmod(remaining, 60)
+    done  = secs - remaining
+    pct   = done / secs
+    bar_w = 30
+    bar   = "█" * round(pct * bar_w) + "░" * (bar_w - round(pct * bar_w))
+    print(f"\\r  [{bar}] {m:02d}:{s:02d}", end="", flush=True)
+    time.sleep(1)
+
+print("\\n\\n  🎉 Focus session complete! Great work.")
+print(f"  You focused on: {task} for {mins} minutes.")`
+  },
+
+  {
+    id: "reading-list",
+    name: "reading-list",
+    desc: "Manage your reading list — add books, mark as read, and track progress.",
+    tag: "productivity", lang: "python", icon: "📚",
+    code: `import json, os
+from datetime import date
+
+FILE = "reading.json"
+
+def load(): return json.load(open(FILE)) if os.path.exists(FILE) else []
+def save(d): json.dump(d, open(FILE,"w"), indent=2)
+
+STATUS = {"1":"want to read","2":"reading","3":"finished","4":"abandoned"}
+
+print("📚 Reading List — commands: add, list, update, stats, quit\\n")
+
+while True:
+    cmd = input("books> ").strip().lower()
+    data = load()
+
+    if cmd == "quit": break
+
+    elif cmd == "add":
+        title  = input("  Title: ").strip()
+        author = input("  Author: ").strip()
+        pages  = input("  Pages (optional): ").strip()
+        data.append({"title":title,"author":author,"pages":pages,"status":"want to read","added":str(date.today()),"finished":None})
+        save(data); print(f"  ✅ Added: {title}")
+
+    elif cmd == "list":
+        for i, b in enumerate(data, 1):
+            icon = {"want to read":"📖","reading":"🔖","finished":"✅","abandoned":"❌"}.get(b["status"],"📖")
+            print(f"  [{i:>2}] {icon} {b['title']} — {b['author']}  [{b['status']}]")
+
+    elif cmd.startswith("update"):
+        for i, b in enumerate(data,1): print(f"  [{i}] {b['title']}")
+        idx = int(input("  Book number: ").strip()) - 1
+        for k, v in STATUS.items(): print(f"  [{k}] {v}")
+        s = STATUS.get(input("  Status: ").strip())
+        if s:
+            data[idx]["status"] = s
+            if s == "finished": data[idx]["finished"] = str(date.today())
+            save(data); print("  ✅ Updated!")
+
+    elif cmd == "stats":
+        total    = len(data)
+        finished = sum(1 for b in data if b["status"]=="finished")
+        reading  = sum(1 for b in data if b["status"]=="reading")
+        print(f"\\n  Total: {total}  |  Read: {finished}  |  Reading: {reading}  |  Backlog: {total-finished-reading}")
+
+    else: print("  Commands: add, list, update, stats, quit")`
+  },
+
+  // ── SECURITY ────────────────────────────────────────────────
+  {
+    id: "password-strength",
+    name: "password-strength",
+    desc: "Analyze password strength — length, entropy, character variety, and crack time.",
+    tag: "security", lang: "python", icon: "🔐",
+    code: `import math, re
+
+print("🔐 Password Strength Analyzer (passwords never leave your device)\\n")
+
+while True:
+    pwd = input("Password (or 'quit'): ").strip()
+    if pwd.lower() == "quit": break
+
+    length = len(pwd)
+    has_lower = bool(re.search(r'[a-z]', pwd))
+    has_upper = bool(re.search(r'[A-Z]', pwd))
+    has_digit = bool(re.search(r'\\d', pwd))
+    has_sym   = bool(re.search(r'[^a-zA-Z0-9]', pwd))
+
+    pool = 0
+    if has_lower: pool += 26
+    if has_upper: pool += 26
+    if has_digit: pool += 10
+    if has_sym:   pool += 32
+
+    entropy = length * math.log2(pool) if pool else 0
+
+    common = ["password","123456","qwerty","letmein","abc123","password1"]
+    is_common = pwd.lower() in common
+
+    if entropy < 28:     score, label = 1, "Very Weak  🔴"
+    elif entropy < 36:   score, label = 2, "Weak       🟠"
+    elif entropy < 60:   score, label = 3, "Moderate   🟡"
+    elif entropy < 128:  score, label = 4, "Strong     🟢"
+    else:                score, label = 5, "Very Strong 💪"
+
+    crack_secs = (2 ** entropy) / 1e12
+    if crack_secs < 60:  crack = f"{crack_secs:.1f} seconds"
+    elif crack_secs < 3600: crack = f"{crack_secs/60:.1f} minutes"
+    elif crack_secs < 86400: crack = f"{crack_secs/3600:.1f} hours"
+    else: crack = f"{crack_secs/86400:.2e} days"
+
+    print(f"\\n  Strength:  {label}")
+    print(f"  Entropy:   {entropy:.1f} bits")
+    print(f"  Length:    {length}")
+    print(f"  Crack est: {crack} (at 1T guesses/sec)")
+    print(f"  Common pw: {'⚠️  YES — change it!' if is_common else 'No'}\\n")`
+  },
+
+  {
+    id: "hash-cracker",
+    name: "hash-cracker",
+    desc: "Educational dictionary attack on MD5/SHA1 hashes using a wordlist — learn how hashing works.",
+    tag: "security", lang: "python", icon: "🔓",
+    code: `import hashlib, sys
+
+WORDLIST = [
+  "password","123456","qwerty","letmein","abc123","monkey","dragon","master",
+  "sunshine","princess","football","shadow","superman","michael","charlie",
+  "login","pass","admin","welcome","hello","secret","password1","test",
+]
+
+algo = input("Hash algorithm (md5/sha1/sha256): ").strip().lower()
+hash_target = input("Hash to crack: ").strip().lower()
+
+if algo not in ("md5","sha1","sha256"):
+    print("Unsupported algorithm."); sys.exit(1)
+
+print(f"\\n🔓 Attempting dictionary attack on {algo} hash...")
+print(f"  Wordlist size: {len(WORDLIST)} words\\n")
+
+found = False
+for word in WORDLIST:
+    h = hashlib.new(algo, word.encode()).hexdigest()
+    print(f"  Trying: {word:20} → {h[:16]}...", end="\\r")
+    if h == hash_target:
+        print(f"\\n\\n  🎉 CRACKED! Password is: {word}")
+        found = True
+        break
+
+if not found:
+    print(f"\\n\\n  ❌ Not found in dictionary. Use a stronger password!")
+
+print("\\n  ⚠️  This demonstrates why common passwords are dangerous.")`
+  },
+
+  {
+    id: "port-scanner",
+    name: "port-scanner",
+    desc: "Scan a host for open ports in a given range — educational network tool.",
+    tag: "security", lang: "python", icon: "🛡️",
+    code: `import socket, sys
+from concurrent.futures import ThreadPoolExecutor
+
+host      = input("Target host (localhost or IP): ").strip()
+start_raw = input("Start port (default 1): ").strip() or "1"
+end_raw   = input("End port (default 1024): ").strip() or "1024"
+start, end = int(start_raw), int(end_raw)
+
+print(f"\\n🛡️  Scanning {host} ports {start}-{end}...\\n")
+
+COMMON = {21:"FTP",22:"SSH",23:"Telnet",25:"SMTP",53:"DNS",80:"HTTP",
+           110:"POP3",143:"IMAP",443:"HTTPS",3306:"MySQL",5432:"PostgreSQL",6379:"Redis",8080:"Alt-HTTP"}
+
+open_ports = []
+
+def scan(port):
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.settimeout(0.5)
+            if s.connect_ex((host, port)) == 0:
+                open_ports.append(port)
+    except: pass
+
+with ThreadPoolExecutor(max_workers=100) as ex:
+    ex.map(scan, range(start, end+1))
+
+open_ports.sort()
+if open_ports:
+    print(f"  {'Port':>6}  {'Service':15}")
+    print("  " + "-"*25)
+    for p in open_ports:
+        svc = COMMON.get(p, "unknown")
+        print(f"  {p:>6}  {svc}")
+    print(f"\\n  Found {len(open_ports)} open port(s).")
+else:
+    print("  No open ports found.")`
+  },
+
+  {
+    id: "steganography",
+    name: "steganography",
+    desc: "Hide or reveal a secret message inside a plain text file.",
+    tag: "security", lang: "python", icon: "🕵️",
+    code: `import os
+
+def encode(cover_text, secret):
+    bits = "".join(format(ord(c),"08b") for c in secret) + "00000000"
+    words = cover_text.split(" ")
+    if len(bits) > len(words):
+        print("Cover text too short!"); return None
+    out = []
+    for i, word in enumerate(words):
+        if i < len(bits):
+            out.append(word + (" " if bits[i] == "0" else "  "))
+        else:
+            out.append(word + " ")
+    return "".join(out)
+
+def decode(stego_text):
+    words = stego_text.split(" ")
+    bits = ""
+    i = 0
+    while i < len(words):
+        if not words[i]: i += 1; continue
+        # Check trailing spaces
+        raw = stego_text
+        bits = ""
+        # Parse differently: look at raw spacing
+        break
+
+    # Simpler decode: split on single vs double space
+    parts = stego_text.split(" ")
+    # rebuild bit stream from double-space markers
+    bits_out = []
+    raw_chars = list(stego_text)
+    for j in range(len(raw_chars)-1):
+        if raw_chars[j] == " ":
+            if j+1 < len(raw_chars) and raw_chars[j+1] == " ":
+                bits_out.append("1")
+            else:
+                bits_out.append("0")
+    chars = []
+    for i in range(0, len(bits_out)-7, 8):
+        byte = "".join(bits_out[i:i+8])
+        if byte == "00000000": break
+        chars.append(chr(int(byte,2)))
+    return "".join(chars)
+
+print("🕵️  Text Steganography")
+print("  [1] Hide message  [2] Reveal message\\n")
+choice = input("Pick: ").strip()
+
+if choice == "1":
+    cover = input("Cover text (a sentence or paragraph): ").strip()
+    secret = input("Secret message: ").strip()
+    result = encode(cover, secret)
+    if result:
+        path = "stego_output.txt"
+        open(path,"w").write(result)
+        print(f"  ✅ Hidden message written to: {path}")
+elif choice == "2":
+    path = input("File with hidden message: ").strip()
+    text = open(path).read()
+    msg  = decode(text)
+    print(f"  🔍 Hidden message: {msg if msg else '(none found)'}")`
+  },
+
+  {
+    id: "network-sniffer",
+    name: "network-sniffer",
+    desc: "Display basic network interface info and active connections on your machine.",
+    tag: "security", lang: "python", icon: "🌐",
+    code: `import socket, subprocess, platform, sys
+
+print("🌐 Network Info\\n")
+
+# Hostname and local IP
+hostname = socket.gethostname()
+try:
+    local_ip = socket.gethostbyname(hostname)
+except:
+    local_ip = "unknown"
+
+print(f"  Hostname:    {hostname}")
+print(f"  Local IP:    {local_ip}")
+print(f"  OS:          {platform.system()} {platform.release()}")
+
+# Try to get active connections via netstat
+print("\\n  Active Connections (top 10):\\n")
+try:
+    os_name = platform.system().lower()
+    if os_name == "windows":
+        result = subprocess.run(["netstat","-an"], capture_output=True, text=True)
+    else:
+        result = subprocess.run(["netstat","-tn"], capture_output=True, text=True)
+
+    lines = [l for l in result.stdout.split("\\n") if "ESTABLISHED" in l or "LISTEN" in l]
+    for line in lines[:10]:
+        print(f"  {line.strip()}")
+except Exception as e:
+    print(f"  Could not retrieve connections: {e}")
+
+print(f"\\n  Tip: Run as administrator/root for full connection details.")`
+  },
+
+  {
+    id: "otp-generator",
+    name: "otp-generator",
+    desc: "Generate time-based one-time passwords (TOTP) from a secret key — like Google Authenticator.",
+    tag: "security", lang: "python", icon: "🔑",
+    code: `import hmac, hashlib, time, struct, base64
+
+def hotp(key: bytes, counter: int, digits=6) -> str:
+    msg = struct.pack(">Q", counter)
+    h   = hmac.new(key, msg, hashlib.sha1).digest()
+    offset = h[-1] & 0x0f
+    code   = struct.unpack(">I", h[offset:offset+4])[0] & 0x7fffffff
+    return str(code % (10 ** digits)).zfill(digits)
+
+def totp(secret: str, digits=6, period=30) -> str:
+    try:
+        key = base64.b32decode(secret.upper().replace(" ",""), casefold=True)
+    except Exception:
+        return "Invalid secret"
+    counter = int(time.time()) // period
+    return hotp(key, counter, digits)
+
+print("🔑 TOTP Generator (Google Authenticator compatible)\\n")
+print("  You need a Base32 secret key (e.g. from a 2FA setup QR code).")
+print("  Example test key: JBSWY3DPEHPK3PXP\\n")
+
+secret = input("  Base32 secret key: ").strip()
+
+print()
+for i in range(5):
+    code = totp(secret)
+    remaining = 30 - (int(time.time()) % 30)
+    print(f"  OTP: {code}  (valid for {remaining}s)")
+    cont = input("  Press Enter for next code, q to quit: ").strip()
+    if cont.lower() == "q": break`
+  },
+
+  // ── DATA ────────────────────────────────────────────────────
+  {
+    id: "csv-analyzer",
+    name: "csv-analyzer",
+    desc: "Load any CSV and get instant stats: row count, column types, nulls, and summaries.",
+    tag: "data", lang: "python", icon: "📊",
+    code: `import csv, sys, math
+from collections import Counter
+
+path = input("CSV file path: ").strip()
+try:
+    with open(path, newline="", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        rows   = list(reader)
+        cols   = reader.fieldnames or []
+except FileNotFoundError:
+    print("File not found."); sys.exit(1)
+
+print(f"\\n📊 CSV Analysis: {path}")
+print(f"  Rows: {len(rows):,}   Columns: {len(cols)}\\n")
+
+for col in cols:
+    vals     = [r[col] for r in rows if r[col]]
+    nulls    = len(rows) - len(vals)
+    nums     = []
+    for v in vals:
+        try: nums.append(float(v))
+        except: pass
+
+    print(f"  [{col}]")
+    print(f"    Non-null: {len(vals):,}   Nulls: {nulls:,}   Unique: {len(set(vals)):,}")
+    if nums:
+        mean  = sum(nums)/len(nums)
+        srtd  = sorted(nums)
+        med   = srtd[len(srtd)//2]
+        print(f"    Min: {min(nums):.4g}   Max: {max(nums):.4g}   Mean: {mean:.4g}   Median: {med:.4g}")
+    else:
+        top = Counter(vals).most_common(3)
+        print(f"    Top values: {', '.join(f'{v}({n})' for v,n in top)}")`
+  },
+
+  {
+    id: "json-explorer",
+    name: "json-explorer",
+    desc: "Interactively explore a JSON file — navigate keys, search values, print paths.",
+    tag: "data", lang: "python", icon: "🔎",
+    code: `import json, sys
+
+path = input("JSON file path: ").strip()
+try:
+    data = json.load(open(path, encoding="utf-8"))
+except (FileNotFoundError, json.JSONDecodeError) as e:
+    print(f"Error: {e}"); sys.exit(1)
+
+def navigate(node, path="root"):
+    while True:
+        print(f"\\n  📍 {path}")
+        if isinstance(node, dict):
+            keys = list(node.keys())
+            for i, k in enumerate(keys[:20], 1):
+                v = node[k]
+                preview = str(v)[:40] + ("..." if len(str(v)) > 40 else "")
+                print(f"    [{i:>2}] {k}: {preview}")
+        elif isinstance(node, list):
+            print(f"    List with {len(node)} items")
+            for i, v in enumerate(node[:10], 1):
+                print(f"    [{i:>2}] {str(v)[:60]}")
+        else:
+            print(f"    Value: {node}")
+            return
+
+        cmd = input("\\n  Enter key/index, 'back', 'print', or 'quit': ").strip()
+        if cmd == "quit": sys.exit(0)
+        if cmd == "back": return
+        if cmd == "print": print(json.dumps(node, indent=2)[:500]); continue
+
+        try:
+            key = int(cmd) - 1 if isinstance(node, list) else cmd
+            navigate(node[key], f"{path}.{cmd}")
+        except (KeyError, IndexError, ValueError):
+            print("  Not found.")
+
+navigate(data)`
+  },
+
+  {
+    id: "data-cleaner",
+    name: "data-cleaner",
+    desc: "Clean a CSV: remove duplicates, trim whitespace, fill nulls, and normalize columns.",
+    tag: "data", lang: "python", icon: "🧹",
+    code: `import csv, sys, os
+
+path = input("CSV file path: ").strip()
+try:
+    with open(path, newline="", encoding="utf-8") as f:
+        rows = list(csv.DictReader(f))
+        cols = list(rows[0].keys()) if rows else []
+except (FileNotFoundError, StopIteration):
+    print("File not found or empty."); sys.exit(1)
+
+original = len(rows)
+
+# Strip whitespace
+rows = [{k: v.strip() for k, v in r.items()} for r in rows]
+
+# Remove fully empty rows
+rows = [r for r in rows if any(v for v in r.values())]
+
+# Remove duplicates
+seen, deduped = set(), []
+for r in rows:
+    key = tuple(r.values())
+    if key not in seen:
+        seen.add(key); deduped.append(r)
+rows = deduped
+
+# Fill nulls
+fill = input("Fill empty cells with (blank to skip): ").strip()
+if fill:
+    rows = [{k: v if v else fill for k, v in r.items()} for r in rows]
+
+# Lowercase a column?
+print(f"  Columns: {', '.join(cols)}")
+lc_col = input("Lowercase which column? (blank to skip): ").strip()
+if lc_col in cols:
+    rows = [{k: (v.lower() if k == lc_col else v) for k, v in r.items()} for r in rows]
+
+out_path = os.path.splitext(path)[0] + "_clean.csv"
+with open(out_path, "w", newline="", encoding="utf-8") as f:
+    writer = csv.DictWriter(f, fieldnames=cols)
+    writer.writeheader(); writer.writerows(rows)
+
+print(f"\\n  Original rows:  {original:,}")
+print(f"  Cleaned rows:   {len(rows):,}")
+print(f"  Removed:        {original - len(rows):,}")
+print(f"  Saved to:       {out_path}")`
+  },
+
+  {
+    id: "number-gen",
+    name: "number-gen",
+    desc: "Generate datasets of random numbers with custom distributions: uniform, normal, etc.",
+    tag: "data", lang: "python", icon: "🎲",
+    code: `import random, math, csv, sys
+
+print("🎲 Random Number Generator\\n")
+print("  [1] Uniform    [2] Normal (Gaussian)    [3] Exponential    [4] Integer range")
+dist = input("Distribution: ").strip()
+n    = int(input("How many numbers: ").strip())
+
+nums = []
+if dist == "1":
+    a = float(input("Min: ").strip()); b = float(input("Max: ").strip())
+    nums = [random.uniform(a, b) for _ in range(n)]
+elif dist == "2":
+    mu = float(input("Mean: ").strip()); sigma = float(input("Std Dev: ").strip())
+    nums = [random.gauss(mu, sigma) for _ in range(n)]
+elif dist == "3":
+    lam = float(input("Lambda (rate): ").strip())
+    nums = [random.expovariate(lam) for _ in range(n)]
+elif dist == "4":
+    a = int(input("Min: ").strip()); b = int(input("Max: ").strip())
+    nums = [random.randint(a, b) for _ in range(n)]
+else:
+    print("Invalid."); sys.exit(1)
+
+save = input("Save to CSV? (y/n): ").strip().lower()
+if save == "y":
+    fname = "random_data.csv"
+    with open(fname, "w", newline="") as f:
+        csv.writer(f).writerows([[v] for v in nums])
+    print(f"  Saved {n:,} numbers to {fname}")
+else:
+    for v in nums[:20]:
+        print(f"  {v:.6f}")
+    if n > 20: print(f"  ... ({n-20} more)")`
+  },
+
+  {
+    id: "pivot-table",
+    name: "pivot-table",
+    desc: "Create a simple pivot table from a CSV file — group by column and sum/count values.",
+    tag: "data", lang: "python", icon: "📋",
+    code: `import csv, sys
+from collections import defaultdict
+
+path = input("CSV file path: ").strip()
+try:
+    with open(path, newline="", encoding="utf-8") as f:
+        rows = list(csv.DictReader(f))
+        cols = list(rows[0].keys()) if rows else []
+except FileNotFoundError:
+    print("File not found."); sys.exit(1)
+
+print(f"\\n  Columns: {', '.join(cols)}")
+group_col = input("Group by column: ").strip()
+val_col   = input("Value column (for sum/avg): ").strip()
+agg       = input("Aggregation [1] count  [2] sum  [3] avg: ").strip()
+
+pivot = defaultdict(list)
+for r in rows:
+    if group_col in r and val_col in r:
+        try:
+            pivot[r[group_col]].append(float(r[val_col]))
+        except ValueError:
+            pivot[r[group_col]].append(0)
+
+print(f"\\n  {group_col:25} {'Value':>12}")
+print("  " + "-" * 38)
+for key in sorted(pivot.keys()):
+    vals = pivot[key]
+    if agg == "1":   result = len(vals)
+    elif agg == "2": result = sum(vals)
+    elif agg == "3": result = sum(vals)/len(vals)
+    else: result = len(vals)
+    print(f"  {key:25} {result:>12.2f}")`
+  },
+
+  // ── PYTHON TRICKS ───────────────────────────────────────────
+  {
+    id: "list-comprehensions",
+    name: "list-comprehensions",
+    desc: "Interactive demo of Python list comprehensions — learn with live examples.",
+    tag: "python-tricks", lang: "python", icon: "🐍",
+    code: `print("🐍 List Comprehension Demo\\n")
+
+# Basic
+squares = [x**2 for x in range(10)]
+print(f"  Squares 0-9:       {squares}")
+
+# With filter
+evens = [x for x in range(20) if x % 2 == 0]
+print(f"  Even numbers 0-20: {evens}")
+
+# Nested
+matrix = [[i*j for j in range(1,4)] for i in range(1,4)]
+print(f"  3x3 mult table:    {matrix}")
+
+# String ops
+words   = ["hello", "WORLD", "Python", "is", "GREAT"]
+lower   = [w.lower() for w in words]
+lengths = {w: len(w) for w in words}
+print(f"  Lowercased:        {lower}")
+print(f"  Word lengths:      {lengths}")
+
+# Set comprehension
+sentence = "the cat sat on the mat"
+unique_letters = {c for c in sentence if c.isalpha()}
+print(f"  Unique letters:    {sorted(unique_letters)}")
+
+# Generator
+gen = (x**2 for x in range(1000000))
+print(f"  Generator (lazy):  {next(gen)}, {next(gen)}, {next(gen)}, ...")
+
+print("\\n  Try your own:")
+expr = input("  List comp expression (e.g. [x*2 for x in range(5)]): ").strip()
+try:
+    result = eval(expr)
+    print(f"  Result: {result}")
+except Exception as e:
+    print(f"  Error: {e}")`
+  },
+
+  {
+    id: "decorators-demo",
+    name: "decorators-demo",
+    desc: "See Python decorators in action — timing, caching, retry logic, and logging.",
+    tag: "python-tricks", lang: "python", icon: "🎁",
+    code: `import time, functools
+
+# ── Timing decorator
+def timer(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        t0 = time.time()
+        result = func(*args, **kwargs)
+        print(f"  ⏱  {func.__name__} took {(time.time()-t0)*1000:.2f}ms")
+        return result
+    return wrapper
+
+# ── Retry decorator
+def retry(times=3):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            for attempt in range(1, times+1):
+                try:
+                    return func(*args, **kwargs)
+                except Exception as e:
+                    print(f"  ⚠️  Attempt {attempt} failed: {e}")
+            raise RuntimeError(f"Failed after {times} retries")
+        return wrapper
+    return decorator
+
+# ── Cache decorator (manual)
+def memoize(func):
+    cache = {}
+    @functools.wraps(func)
+    def wrapper(*args):
+        if args not in cache:
+            cache[args] = func(*args)
+        return cache[args]
+    return wrapper
+
+@timer
+def slow_sum(n):
+    return sum(range(n))
+
+@memoize
+def fib(n):
+    if n < 2: return n
+    return fib(n-1) + fib(n-2)
+
+@retry(times=3)
+def risky(x):
+    if x < 3: raise ValueError("Not ready yet")
+    return "success"
+
+print("🎁 Decorator Examples\\n")
+print("  1. @timer:")
+result = slow_sum(1000000)
+print(f"     slow_sum(1000000) = {result:,}\\n")
+
+print("  2. @memoize (Fibonacci):")
+t0 = time.time()
+print(f"     fib(35) = {fib(35)}  (took {(time.time()-t0)*1000:.2f}ms)\\n")
+
+print("  3. @retry:")
+attempt = [0]
+try:
+    result = risky(3)
+    print(f"     risky(3) = {result}")`
+  },
+
+  {
+    id: "generators-demo",
+    name: "generators-demo",
+    desc: "Learn Python generators with live examples — infinite sequences, pipelines, and memory savings.",
+    tag: "python-tricks", lang: "python", icon: "⚡",
+    code: `import sys
+
+print("⚡ Python Generators Demo\\n")
+
+# Infinite counter
+def count_up(start=0, step=1):
+    n = start
+    while True:
+        yield n
+        n += step
+
+# Fibonacci generator
+def fibonacci():
+    a, b = 0, 1
+    while True:
+        yield a
+        a, b = b, a+b
+
+# Pipeline: generate → filter → transform
+def take(n, gen):
+    return [next(gen) for _ in range(n)]
+
+def gen_filter(gen, pred):
+    for item in gen:
+        if pred(item):
+            yield item
+
+print("  1. Infinite counter (first 10):")
+counter = count_up(1)
+print(f"     {take(10, counter)}")
+
+print("\\n  2. Fibonacci (first 15):")
+fib = fibonacci()
+print(f"     {take(15, fib)}")
+
+print("\\n  3. Pipeline — even fibonacci under 1000:")
+fib2    = fibonacci()
+bounded = (x for x in fib2 if x < 1000)
+evens   = [x for x in bounded if x % 2 == 0]
+print(f"     {evens}")
+
+print("\\n  4. Memory comparison:")
+n = 1000000
+list_mem = sys.getsizeof(list(range(n)))
+gen_mem  = sys.getsizeof(x for x in range(n))
+print(f"     list(range({n:,})) = {list_mem:,} bytes")
+print(f"     generator         = {gen_mem:,} bytes  ({list_mem//gen_mem}x more efficient!)")`
+  },
+
+  {
+    id: "context-managers",
+    name: "context-managers",
+    desc: "Explore Python context managers — with statements, custom managers, and use cases.",
+    tag: "python-tricks", lang: "python", icon: "📦",
+    code: `import time, os, tempfile
+from contextlib import contextmanager
+
+# Custom timer context manager
+@contextmanager
+def timer(label=""):
+    t0 = time.time()
+    try:
+        yield
+    finally:
+        elapsed = (time.time() - t0) * 1000
+        print(f"  ⏱  {label}: {elapsed:.2f}ms")
+
+# Temp directory context manager
+@contextmanager
+def temp_dir():
+    d = tempfile.mkdtemp()
+    print(f"  📁 Created temp dir: {d}")
+    try:
+        yield d
+    finally:
+        import shutil
+        shutil.rmtree(d)
+        print(f"  🗑️  Cleaned up: {d}")
+
+# Suppress exceptions context manager
+@contextmanager
+def suppress(*exceptions):
+    try:
+        yield
+    except exceptions as e:
+        print(f"  (Suppressed: {type(e).__name__}: {e})")
+
+print("📦 Context Manager Examples\\n")
+
+print("  1. Timer context manager:")
+with timer("sum of 1M numbers"):
+    total = sum(range(1000000))
+print(f"     Result: {total:,}\\n")
+
+print("  2. Temp directory:")
+with temp_dir() as d:
+    test_file = os.path.join(d, "test.txt")
+    open(test_file, "w").write("hello")
+    print(f"     Wrote file: {test_file}")
+print()
+
+print("  3. Suppress exceptions:")
+with suppress(ZeroDivisionError):
+    result = 1 / 0
+    print("  (this won't print)")
+print("  Code continues after suppressed exception!")`
+  },
+
+  {
+    id: "regex-tester",
+    name: "regex-tester",
+    desc: "Interactive Python regex tester — test patterns, see matches, capture groups live.",
+    tag: "python-tricks", lang: "python", icon: "🔍",
+    code: `import re
+
+print("🔍 Python Regex Tester")
+print("  Type 'quit' to exit, 'help' for examples\\n")
+
+EXAMPLES = {
+  "email":    r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}",
+  "phone":    r"\\(?\\d{3}\\)?[\\s.-]?\\d{3}[\\s.-]?\\d{4}",
+  "url":      r"https?://[^\\s]+",
+  "date":     r"\\d{4}-\\d{2}-\\d{2}",
+  "ip":       r"\\b\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\b",
+  "hex":      r"#[0-9A-Fa-f]{3,6}",
+}
+
+while True:
+    pattern = input("Pattern (or 'help'/'quit'): ").strip()
+    if pattern == "quit": break
+    if pattern == "help":
+        for name, ex in EXAMPLES.items():
+            print(f"  {name:10}: {ex}")
+        continue
+
+    text = input("Test string: ").strip()
+    flags_raw = input("Flags (i=ignorecase, m=multiline, blank=none): ").strip().lower()
+    flags = 0
+    if "i" in flags_raw: flags |= re.IGNORECASE
+    if "m" in flags_raw: flags |= re.MULTILINE
+
+    try:
+        matches = list(re.finditer(pattern, text, flags))
+        if not matches:
+            print("  ❌ No matches\\n"); continue
+        print(f"  ✅ {len(matches)} match(es):")
+        for m in matches:
+            print(f"     [{m.start()}-{m.end()}] '{m.group()}'")
+            if m.groups():
+                for i, g in enumerate(m.groups(), 1):
+                    print(f"       Group {i}: '{g}'")
+    except re.error as e:
+        print(f"  ❌ Regex error: {e}")
+    print()`
+  },
+
+  {
+    id: "class-demo",
+    name: "class-demo",
+    desc: "OOP demo — build a bank account class with inheritance, properties, and dunder methods.",
+    tag: "python-tricks", lang: "python", icon: "🏗️",
+    code: `class Account:
+    _total_accounts = 0
+
+    def __init__(self, owner, balance=0):
+        Account._total_accounts += 1
+        self._owner   = owner
+        self._balance = balance
+        self._history = []
+
+    @property
+    def balance(self): return self._balance
+
+    @property
+    def owner(self): return self._owner
+
+    def deposit(self, amount):
+        if amount <= 0: raise ValueError("Amount must be positive")
+        self._balance += amount
+        self._history.append(f"+{amount:.2f}")
+
+    def withdraw(self, amount):
+        if amount > self._balance: raise ValueError("Insufficient funds")
+        self._balance -= amount
+        self._history.append(f"-{amount:.2f}")
+
+    def __repr__(self): return f"Account(owner={self._owner!r}, balance={self._balance:.2f})"
+    def __str__(self):  return f"{self._owner}'s account: \${self._balance:.2f}"
+    def __add__(self, other): return self._balance + other._balance
+
+    @classmethod
+    def total(cls): return cls._total_accounts
+
+class SavingsAccount(Account):
+    def __init__(self, owner, balance=0, rate=0.05):
+        super().__init__(owner, balance)
+        self.rate = rate
+
+    def add_interest(self):
+        interest = self._balance * self.rate
+        self.deposit(interest)
+        return interest
+
+print("🏗️  OOP Demo — Bank Account\\n")
+
+alice = Account("Alice", 1000)
+bob   = SavingsAccount("Bob", 500, rate=0.05)
+
+alice.deposit(500)
+bob.deposit(200)
+alice.withdraw(200)
+
+print(f"  {alice}")
+print(f"  {bob}")
+print(f"  Alice history: {alice._history}")
+print(f"  Combined balance: \${alice + bob:.2f}")
+print(f"  Total accounts: {Account.total()}")
+
+interest = bob.add_interest()
+print(f"  Bob's interest: \${interest:.2f}  New balance: \${bob.balance:.2f}")`
+  },
+
+  {
+    id: "file-tricks",
+    name: "file-tricks",
+    desc: "Python file handling tricks — pathlib, glob, temp files, atomic writes, and more.",
+    tag: "python-tricks", lang: "python", icon: "📁",
+    code: `import os, tempfile, shutil
+from pathlib import Path
+from datetime import datetime
+
+print("📁 Python File Tricks Demo\\n")
+
+# 1. Pathlib
+print("  1. pathlib — modern path handling:")
+p = Path.home()
+print(f"     Home dir:  {p}")
+print(f"     Desktop:   {p / 'Desktop'}")
+py_files = list(Path(".").glob("*.py"))
+print(f"     .py files here: {py_files[:3] or ['(none)']}")
+
+# 2. Temp files
+print("\\n  2. Temp files (auto-cleaned):")
+with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False) as f:
+    f.write("hello world\\nline 2\\n")
+    tmppath = f.name
+content = Path(tmppath).read_text()
+print(f"     Created: {tmppath}")
+print(f"     Content: {content.strip()!r}")
+os.unlink(tmppath)
+print(f"     Deleted: ✅")
+
+# 3. Atomic write
+print("\\n  3. Atomic write (safe replace):")
+target = Path("atomic_test.txt")
+tmp    = Path("atomic_test.tmp")
+tmp.write_text(f"Written at {datetime.now()}")
+tmp.replace(target)
+print(f"     Atomically wrote to {target}")
+target.unlink()
+
+# 4. Walk vs glob
+print("\\n  4. Path tricks:")
+print(f"     cwd:        {Path.cwd().name}")
+print(f"     parent:     {Path.cwd().parent.name}")
+print(f"     stem/suffix of 'file.tar.gz': {Path('file.tar.gz').stem}, {Path('file.tar.gz').suffix}")`
+  },
+
+  // ── MORE GAMES ──────────────────────────────────────────────
+  {
+    id: "battleship",
+    name: "battleship",
+    desc: "Play solo Battleship — guess ship locations on a 10x10 grid in limited shots.",
+    tag: "games", lang: "python", icon: "🚢",
+    code: `import random
+
+SIZE  = 8
+SHIPS = [("Carrier",4),("Battleship",3),("Destroyer",2),("Submarine",2)]
+
+def make_board():
+    board = [["~"]*SIZE for _ in range(SIZE)]
+    ships = []
+    for name, length in SHIPS:
+        while True:
+            horiz = random.random() < 0.5
+            if horiz:
+                r = random.randint(0, SIZE-1)
+                c = random.randint(0, SIZE-length)
+                cells = [(r, c+i) for i in range(length)]
+            else:
+                r = random.randint(0, SIZE-length)
+                c = random.randint(0, SIZE-1)
+                cells = [(r+i, c) for i in range(length)]
+            if all(board[rr][cc] == "~" for rr,cc in cells):
+                for rr,cc in cells: board[rr][cc] = "S"
+                ships.append((name, cells))
+                break
+    return board, ships
+
+def draw(board, show_ships=False):
+    print("    " + " ".join(str(i+1) for i in range(SIZE)))
+    for i, row in enumerate(board):
+        cells = []
+        for c in row:
+            if c == "S": cells.append("~" if not show_ships else "S")
+            elif c == "X": cells.append("💥")
+            elif c == "O": cells.append("○")
+            else: cells.append("~")
+        print(f"  {chr(65+i)} " + " ".join(cells))
+
+board, ships = make_board()
+shots = 0
+max_shots = 30
+hits  = 0
+total_cells = sum(l for _,l in SHIPS)
+
+print("🚢 BATTLESHIP — Sink all ships!")
+print(f"  Ships: {', '.join(f'{n}({l})' for n,l in SHIPS)}")
+print(f"  Shots remaining: {max_shots}\\n")
+
+while shots < max_shots and hits < total_cells:
+    draw(board)
+    try:
+        raw = input(f"\\n  Shots left: {max_shots-shots} | Hits: {hits}/{total_cells}\\n  Target (e.g. A5): ").strip().upper()
+        r = ord(raw[0]) - 65
+        c = int(raw[1:]) - 1
+        if not (0 <= r < SIZE and 0 <= c < SIZE): raise ValueError
+    except: print("  Invalid. Try A1 format."); continue
+    if board[r][c] in ("X","O"): print("  Already tried!"); continue
+    shots += 1
+    if board[r][c] == "S":
+        board[r][c] = "X"; hits += 1; print("  💥 HIT!")
+        for name, cells in ships:
+            if all(board[rr][cc] == "X" for rr,cc in cells):
+                print(f"  ⚓ You sunk the {name}!")
+    else:
+        board[r][c] = "O"; print("  ○ Miss.")
+
+draw(board, show_ships=True)
+if hits == total_cells: print(f"\\n  🎉 You won in {shots} shots!")
+else: print(f"\\n  💀 Out of shots! {hits}/{total_cells} hits.")`
+  },
+
+  {
+    id: "snake-game",
+    name: "snake-game",
+    desc: "A text-based Snake game that runs in your terminal — eat food, avoid walls!",
+    tag: "games", lang: "python", icon: "🐍",
+    code: `import random, sys, os, time
+
+# Text-based simplified snake (non-curses version)
+WIDTH, HEIGHT = 20, 10
+
+def make_food(snake):
+    while True:
+        f = (random.randint(0,HEIGHT-1), random.randint(0,WIDTH-1))
+        if f not in snake: return f
+
+snake = [(HEIGHT//2, WIDTH//2)]
+food  = make_food(snake)
+direction = (0, 1)
+score = 0
+
+DIRS = {"w":(-1,0),"s":(1,0),"a":(0,-1),"d":(0,1)}
+
+def draw(snake, food, score):
+    os.system("cls" if os.name=="nt" else "clear")
+    print("  " + "─"*(WIDTH+2))
+    for r in range(HEIGHT):
+        row = "│"
+        for c in range(WIDTH):
+            if (r,c) == snake[0]: row += "●"
+            elif (r,c) in snake:  row += "○"
+            elif (r,c) == food:   row += "★"
+            else:                  row += " "
+        print("  " + row + "│")
+    print("  " + "─"*(WIDTH+2))
+    print(f"  Score: {score}  | WASD to move | Q to quit")
+
+print("🐍 Snake — WASD to move, Q to quit")
+print("  Press Enter after each move.")
+input("  Ready? Press Enter to start...")
+
+while True:
+    draw(snake, food, score)
+    key = input("  Move: ").strip().lower()[:1]
+    if key == "q": print("  Game over!"); break
+    if key in DIRS:
+        direction = DIRS[key]
+    dr, dc = direction
+    head   = (snake[0][0]+dr, snake[0][1]+dc)
+    if not (0 <= head[0] < HEIGHT and 0 <= head[1] < WIDTH):
+        draw(snake, food, score); print("  💥 Hit a wall! Game over."); break
+    if head in snake:
+        draw(snake, food, score); print("  💥 Hit yourself! Game over."); break
+    snake.insert(0, head)
+    if head == food:
+        score += 10; food = make_food(snake)
+        print("  🍎 Nom!")
+    else:
+        snake.pop()
+
+print(f"  Final score: {score}")`
+  },
+
+  {
+    id: "sudoku",
+    name: "sudoku",
+    desc: "Play Sudoku in your terminal — auto-generated puzzles with a solver built in.",
+    tag: "games", lang: "python", icon: "🔢",
+    code: `import random, copy
+
+def is_valid(board, row, col, num):
+    if num in board[row]: return False
+    if num in [board[r][col] for r in range(9)]: return False
+    br, bc = (row//3)*3, (col//3)*3
+    for r in range(br, br+3):
+        for c in range(bc, bc+3):
+            if board[r][c] == num: return False
+    return True
+
+def solve(board):
+    for r in range(9):
+        for c in range(9):
+            if board[r][c] == 0:
+                for num in range(1, 10):
+                    if is_valid(board, r, c, num):
+                        board[r][c] = num
+                        if solve(board): return True
+                        board[r][c] = 0
+                return False
+    return True
+
+def generate():
+    board = [[0]*9 for _ in range(9)]
+    for i in range(9):
+        row = list(range(1,10))
+        random.shuffle(row)
+        for j, n in enumerate(row):
+            if is_valid(board, i, j, n):
+                board[i][j] = n
+            else:
+                board[i][j] = 0
+    solve(board)
+    puzzle = copy.deepcopy(board)
+    cells  = [(r,c) for r in range(9) for c in range(9)]
+    random.shuffle(cells)
+    for r, c in cells[:40]:
+        puzzle[r][c] = 0
+    return puzzle, board
+
+def draw(board, orig):
+    print("\\n     1 2 3   4 5 6   7 8 9")
+    for r in range(9):
+        if r % 3 == 0: print("    ┼───────┼───────┼───────┼")
+        row_str = f"  {chr(65+r)} │"
+        for c in range(9):
+            v = board[r][c]
+            ch = str(v) if v else "·"
+            row_str += f" {ch}"
+            if (c+1) % 3 == 0: row_str += " │"
+        print(row_str)
+    print("    ┼───────┼───────┼───────┼")
+
+puzzle, solution = generate()
+board = copy.deepcopy(puzzle)
+print("🔢 SUDOKU — enter row (A-I) col (1-9) value, or 'hint', 'solve', 'quit'")
+
+while True:
+    draw(board, puzzle)
+    if all(board[r][c] != 0 for r in range(9) for c in range(9)):
+        if board == solution: print("\\n  🎉 Solved correctly!"); break
+        else: print("\\n  ❌ Some errors. Keep trying!")
+    cmd = input("\\n  Move (e.g. A5 7) or hint/solve/quit: ").strip().lower()
+    if cmd == "quit": break
+    if cmd == "hint":
+        empty = [(r,c) for r in range(9) for c in range(9) if board[r][c]==0]
+        if empty:
+            r,c = random.choice(empty); board[r][c] = solution[r][c]
+            print(f"  Hint: {chr(65+r)}{c+1} = {solution[r][c]}")
+    elif cmd == "solve":
+        board = copy.deepcopy(solution); print("  Solved!")
+    else:
+        try:
+            r = ord(cmd[0]) - ord("a")
+            c = int(cmd[1]) - 1
+            v = int(cmd[3])
+            if puzzle[r][c] != 0: print("  Can't change a given cell!")
+            elif 1 <= v <= 9:
+                board[r][c] = v
+                if v != solution[r][c]: print("  ❌ Incorrect!")
+        except: print("  Format: A5 7")`
+  },
+
 ];
