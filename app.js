@@ -1,5 +1,5 @@
 const langBadge = { python:"badge-py", javascript:"badge-js", shell:"badge-sh", powershell:"badge-ps" };
-let activeTag = "all", searchVal = "";
+let activeTag = "all", searchVal = "", activeDiff = "all";
 
 // ── CARD BUILDER ─────────────────────────────────────────────
 function makeCard(s, featured) {
@@ -7,10 +7,13 @@ function makeCard(s, featured) {
   a.className = 'card' + (featured ? ' featured-card' : '');
   a.href = `script.html?id=${s.id}`;
   const preview = s.code.split('\n').slice(0, 6).join('\n').slice(0, 220);
+  const isNew = (typeof SCRIPT_NEW !== 'undefined') && Array.isArray(SCRIPT_NEW) && SCRIPT_NEW.includes(s.id);
+  const newBadge = isNew ? `<span class="badge badge-new">✦ new</span>` : '';
   a.innerHTML = `
     <div class="card-top">
       <span class="card-icon">${s.icon}</span>
       <span class="card-name">${s.name}</span>
+      ${newBadge}
     </div>
     <div class="card-desc">${s.desc}</div>
     <div class="card-footer">
@@ -23,6 +26,27 @@ function makeCard(s, featured) {
 
 function escHtml(s) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── RECENTLY VIEWED ───────────────────────────────────────────
+function getRV() {
+  try { return JSON.parse(localStorage.getItem('sh-rv') || '[]'); } catch { return []; }
+}
+
+function renderRecentlyViewed() {
+  const sec = document.getElementById('rv-section');
+  if (!sec) return;
+  const ids = getRV();
+  if (ids.length === 0) { sec.style.display = 'none'; return; }
+  const scripts = ids.map(id => SCRIPTS.find(s => s.id === id)).filter(Boolean);
+  if (scripts.length === 0) { sec.style.display = 'none'; return; }
+  sec.style.display = 'block';
+  const scrollEl = document.getElementById('rv-scroll');
+  if (scrollEl) {
+    scrollEl.innerHTML = scripts.map(s =>
+      `<a class="rv-chip" href="script.html?id=${s.id}"><span>${s.icon}</span>${s.name}</a>`
+    ).join('');
+  }
 }
 
 // ── FEATURED ─────────────────────────────────────────────────
@@ -58,18 +82,23 @@ function renderGrid() {
   const featSec = document.getElementById('featured-section');
   const sotdSec = document.getElementById('sotd-section');
   const allLabel = document.getElementById('all-label');
+  const rvSec = document.getElementById('rv-section');
   if (!grid) return;
 
   const filtered = SCRIPTS.filter(s => {
     const matchTag = activeTag === 'all' || s.tag === activeTag;
-    const matchSearch = s.name.includes(searchVal) || s.desc.toLowerCase().includes(searchVal);
-    return matchTag && matchSearch;
+    const matchSearch = s.name.toLowerCase().includes(searchVal) || s.desc.toLowerCase().includes(searchVal);
+    const matchDiff = activeDiff === 'all' ||
+      (SCRIPT_META && SCRIPT_META[s.id] && SCRIPT_META[s.id].difficulty === activeDiff);
+    return matchTag && matchSearch && matchDiff;
   });
 
-  const isFiltering = activeTag !== 'all' || searchVal !== '';
+  const isFiltering = activeTag !== 'all' || searchVal !== '' || activeDiff !== 'all';
   if (featSec) featSec.style.display = isFiltering ? 'none' : 'block';
   if (sotdSec) sotdSec.style.display = isFiltering ? 'none' : 'block';
   if (allLabel) allLabel.style.display = isFiltering ? 'none' : 'flex';
+  if (rvSec && isFiltering) rvSec.style.display = 'none';
+  else if (rvSec && !isFiltering) renderRecentlyViewed();
 
   grid.innerHTML = '';
   if (filtered.length === 0) { noRes.style.display = 'block'; return; }
@@ -88,6 +117,16 @@ document.querySelectorAll('.tag').forEach(btn => {
     document.querySelectorAll('.tag').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     activeTag = btn.dataset.tag;
+    renderGrid();
+  });
+});
+
+// ── DIFFICULTY FILTER ─────────────────────────────────────────
+document.querySelectorAll('.diff-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeDiff = btn.dataset.diff;
     renderGrid();
   });
 });
@@ -153,15 +192,39 @@ if (si) {
       showEasterEggMsg('👾 you found the secret! welcome to scripthub.');
     }
   });
-  // Keyboard shortcut: / focuses search
-  document.addEventListener('keydown', e => {
-    if (e.key === '/' && document.activeElement !== si) {
-      e.preventDefault();
-      si.focus();
-      si.select();
-    }
-  });
 }
+
+// ── KEYBOARD SHORTCUTS ────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  const tag = document.activeElement?.tagName;
+  const isTyping = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+
+  // / → focus search
+  if (e.key === '/' && !isTyping) {
+    e.preventDefault();
+    if (si) { si.focus(); si.select(); }
+    return;
+  }
+  // Escape → blur search / clear
+  if (e.key === 'Escape') {
+    if (document.activeElement === si && si) {
+      si.blur();
+    }
+    // Close guide modal if open
+    closeGuide && closeGuide();
+    return;
+  }
+  // R → random script (only on index page)
+  if ((e.key === 'r' || e.key === 'R') && !isTyping) {
+    if (typeof goRandom === 'function') goRandom();
+    return;
+  }
+  // F → go to favorites
+  if ((e.key === 'f' || e.key === 'F') && !isTyping) {
+    window.location.href = 'favorites.html';
+    return;
+  }
+});
 
 // ── EASTER EGGS ───────────────────────────────────────────────
 function showEasterEggMsg(msg) {
@@ -265,6 +328,25 @@ function toggleTerminal() {
   if (tb) tb.classList.toggle('active', m === 'terminal');
 })();
 
+// ── HAMBURGER NAV ─────────────────────────────────────────────
+const hamburger = document.getElementById('hamburger');
+const navLinks = document.querySelector('.nav-links');
+if (hamburger && navLinks) {
+  hamburger.addEventListener('click', () => {
+    navLinks.classList.toggle('open');
+  });
+  // Close on nav link click
+  navLinks.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => navLinks.classList.remove('open'));
+  });
+  // Close on outside click
+  document.addEventListener('click', e => {
+    if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) {
+      navLinks.classList.remove('open');
+    }
+  });
+}
+
 // ── GUIDE MODAL ───────────────────────────────────────────────
 function openGuide()  { document.getElementById('guide-modal')?.classList.add('open'); document.body.style.overflow='hidden'; }
 function closeGuide() { document.getElementById('guide-modal')?.classList.remove('open'); document.body.style.overflow=''; }
@@ -275,7 +357,6 @@ function switchOS(os, btn) {
   document.getElementById('os-'+os).classList.add('active');
   btn.classList.add('active');
 }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeGuide(); });
 
 // ── RANDOM SCRIPT ─────────────────────────────────────────────
 function goRandom() {
@@ -286,5 +367,6 @@ function goRandom() {
 // ── INIT ──────────────────────────────────────────────────────
 renderFeatured();
 renderSOTD();
+renderRecentlyViewed();
 renderGrid();
 updateCount();

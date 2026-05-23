@@ -1,5 +1,12 @@
 const FEATURED_IDS = ["file-organizer","weather","hangman","password-gen","sysmon","trivia-quiz"];
 
+// IDs of recently-added scripts — shown with a "✦ new" badge on cards
+// Update this list whenever you push a new batch of scripts
+const SCRIPT_NEW = [
+  "ip-geolocate","port-scanner","morse-code","caesar-cipher","matrix-screensaver",
+  "pomodoro-timer","expense-tracker","ascii-art","word-counter","network-speed-test"
+];
+
 const SCRIPT_META = {
 
   "bulk-rename": {

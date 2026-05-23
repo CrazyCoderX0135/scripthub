@@ -11,8 +11,11 @@
   <nav>
     <a class="logo" href="index.html">script<span>hub</span>.dev</a>
     <div class="nav-right">
+      <button class="hamburger" id="hamburger" aria-label="Menu">☰</button>
       <div class="nav-links">
         <a href="index.html">browse</a>
+        <a href="favorites.html">⭐ favorites</a>
+        <a href="generate.html">✨ generate</a>
         <a href="submit.html">submit</a>
         <a href="about.html">about</a>
         <a href="changelog.html" class="active">changelog</a>
@@ -81,6 +84,17 @@
   <footer><p>scripthub — scripts for everything</p></footer>
 
   <script>
+    // Hamburger nav
+    const hamburger = document.getElementById('hamburger');
+    const navLinks  = document.querySelector('.nav-links');
+    if (hamburger && navLinks) {
+      hamburger.addEventListener('click', () => navLinks.classList.toggle('open'));
+      navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+      document.addEventListener('click', e => {
+        if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) navLinks.classList.remove('open');
+      });
+    }
+
     function toggleTheme() {
       const curr = document.documentElement.getAttribute('data-theme');
       const next = curr === 'dark' ? 'light' : 'dark';

@@ -4,6 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ScriptHub</title>
+
+  <!-- og:meta (defaults; updated by JS after script loads) -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:site_name"   content="ScriptHub" />
+  <meta property="og:title"       content="ScriptHub — scripts for everything" />
+  <meta property="og:description" content="Browse, copy, and run scripts — no signup, no login, no nonsense." />
+  <meta property="og:image"       content="https://crazycoderx0135.github.io/scripthub/og-image.png" />
+  <meta property="og:url"         content="https://crazycoderx0135.github.io/scripthub/script.html" />
+  <meta name="twitter:card"       content="summary" />
+  <meta name="twitter:title"      content="ScriptHub" />
+  <meta name="twitter:description" content="Browse, copy, and run scripts — no signup, no login, no nonsense." />
+
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
   <script>
@@ -20,11 +32,14 @@
   <nav>
     <a class="logo" href="index.html">script<span>hub</span>.dev</a>
     <div class="nav-right">
+      <button class="hamburger" id="hamburger" aria-label="Menu">☰</button>
       <div class="nav-links">
         <a href="index.html">browse</a>
         <a href="beginner.html">🔰 beginner</a>
         <a href="leaderboard.html">🏆 top</a>
         <a href="collections.html">📦 collections</a>
+        <a href="favorites.html">⭐ favorites</a>
+        <a href="generate.html">✨ generate</a>
         <a href="submit.html">submit</a>
         <a href="about.html">about</a>
         <a href="changelog.html">changelog</a>
@@ -70,7 +85,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
   <script>
-    // Theme
+    // ── THEME & NAV ───────────────────────────────────────────
     function toggleTheme() {
       document.documentElement.classList.add('theme-transitioning');
       const curr = document.documentElement.getAttribute('data-theme');
@@ -102,7 +117,53 @@
       bt.addEventListener('click', () => window.scrollTo({top:0,behavior:'smooth'}));
     }
 
+    // Hamburger
+    const hamburger = document.getElementById('hamburger');
+    const navLinks  = document.querySelector('.nav-links');
+    if (hamburger && navLinks) {
+      hamburger.addEventListener('click', () => navLinks.classList.toggle('open'));
+      navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+      document.addEventListener('click', e => {
+        if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) navLinks.classList.remove('open');
+      });
+    }
+
     function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    // ── DOWNLOAD ──────────────────────────────────────────────
+    function downloadScript(filename, content) {
+      const blob = new Blob([content], {type:'text/plain'});
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href = url; a.download = filename; a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    // ── RECENTLY VIEWED ───────────────────────────────────────
+    function trackRecentlyViewed(id) {
+      try {
+        let rv = JSON.parse(localStorage.getItem('sh-rv') || '[]');
+        rv = rv.filter(x => x !== id);
+        rv.unshift(id);
+        rv = rv.slice(0, 8);
+        localStorage.setItem('sh-rv', JSON.stringify(rv));
+      } catch(e) {}
+    }
+
+    // ── FAVORITES ─────────────────────────────────────────────
+    function getFavs() {
+      try { return JSON.parse(localStorage.getItem('sh-favs') || '[]'); } catch { return []; }
+    }
+    function toggleFav(id) {
+      let favs = getFavs();
+      if (favs.includes(id)) {
+        favs = favs.filter(x => x !== id);
+      } else {
+        favs.unshift(id);
+      }
+      localStorage.setItem('sh-favs', JSON.stringify(favs));
+      return favs.includes(id);
+    }
 
     // ── TERMINAL DEMO BUILDER ─────────────────────────────────
     function buildTermDemo(meta, script) {
@@ -128,7 +189,6 @@
 
       function nextLine() {
         if (lineIndex >= demo.length) {
-          // blinking cursor at end
           const cur = document.createElement('span');
           cur.className = 'term-cursor';
           cur.textContent = '█';
@@ -170,11 +230,9 @@
       setTimeout(nextLine, 300);
     }
 
-    function replayDemo() {
-      runTermDemo();
-    }
+    function replayDemo() { runTermDemo(); }
 
-    const langMap = {python:'python',javascript:'javascript',shell:'bash',powershell:'powershell'};
+    const langMap   = {python:'python',javascript:'javascript',shell:'bash',powershell:'powershell'};
     const langBadge = {python:'badge-py',javascript:'badge-js',shell:'badge-sh',powershell:'badge-ps'};
 
     const params = new URLSearchParams(window.location.search);
@@ -185,13 +243,28 @@
     if (!script) {
       detail.innerHTML = `<p style="color:var(--muted)">Script not found. <a href="index.html" style="color:var(--blue)">go back</a></p>`;
     } else {
+      // Update page title
       document.title = `${script.name} — ScriptHub`;
-      const meta = (SCRIPT_META&&SCRIPT_META[script.id])||{difficulty:'beginner',requires:[],version:'1.0'};
-      const likeKey = `sh-likes-${script.id}`;
+
+      // Update og:meta tags
+      document.querySelector('meta[property="og:title"]').setAttribute('content', `${script.name} — ScriptHub`);
+      document.querySelector('meta[property="og:description"]').setAttribute('content', script.desc);
+      document.querySelector('meta[property="og:url"]').setAttribute('content', window.location.href);
+      document.querySelector('meta[name="twitter:title"]').setAttribute('content', `${script.name} — ScriptHub`);
+      document.querySelector('meta[name="twitter:description"]').setAttribute('content', script.desc);
+
+      // Track recently viewed
+      trackRecentlyViewed(script.id);
+
+      const meta     = (SCRIPT_META&&SCRIPT_META[script.id])||{difficulty:'beginner',requires:[],version:'1.0'};
+      const likeKey  = `sh-likes-${script.id}`;
       const likedKey = `sh-liked-${script.id}`;
-      const likes = parseInt(localStorage.getItem(likeKey)||'0');
-      const liked = localStorage.getItem(likedKey)==='1';
-      const ext = script.lang==='python'?'py':script.lang==='javascript'?'js':'sh';
+      const likes    = parseInt(localStorage.getItem(likeKey)||'0');
+      const liked    = localStorage.getItem(likedKey)==='1';
+      const favs     = getFavs();
+      const isFav    = favs.includes(script.id);
+      const ext      = script.lang==='python'?'py':script.lang==='javascript'?'js':script.lang==='powershell'?'ps1':'sh';
+      const filename = `${script.id}.${ext}`;
 
       const reqHtml = meta.requires&&meta.requires.length>0
         ? `<div class="requires-box"><b>requires:</b> install before running: ${meta.requires.map(r=>`<code>pip install ${r}</code>`).join('  ')}</div>`
@@ -232,6 +305,7 @@
         <div class="rating-box">
           <span>was this useful?</span>
           <button class="like-btn ${liked?'liked':''}" id="like-btn">♥ <span id="like-count">${likes}</span> likes</button>
+          <button class="star-btn ${isFav?'starred':''}" id="star-btn">${isFav?'★ saved':'☆ save'}</button>
           <button class="link-btn" id="link-btn" style="margin-left:auto;">🔗 copy link</button>
           <button class="print-btn" onclick="window.print()">🖨 print</button>
           <button class="bug-btn" onclick="openBug()">🐛 bug?</button>
@@ -241,6 +315,7 @@
           <div class="code-toolbar">
             <span class="code-lang">${script.lang}</span>
             <div class="code-toolbar-right">
+              <button class="dl-btn" id="dl-btn">⬇ download</button>
               <button class="copy-btn" id="copy-btn">copy code</button>
             </div>
           </div>
@@ -248,13 +323,24 @@
         </div>
 
         <div class="usage-tip" style="margin-bottom:1.5rem;">
-          <b>how to use:</b> copy the code, save it as <code style="color:var(--blue)">${script.name}.${ext}</code>, then run it from your terminal.
+          <b>how to use:</b> copy the code, save it as <code style="color:var(--blue)">${filename}</code>, then run it from your terminal.
           <a href="index.html#guide" onclick="localStorage.setItem('open-guide','1')" style="color:var(--blue);">need help? see the guide →</a>
         </div>
 
         ${buildTermDemo(meta, script)}
 
         ${simHtml}
+
+        <div class="comments-section">
+          <h3>💬 comments</h3>
+          <script src="https://utteranc.es/client.js"
+            repo="crazycoderx0135/scripthub"
+            issue-term="og:title"
+            theme="github-dark"
+            crossorigin="anonymous"
+            async>
+          <\/script>
+        </div>
       `;
 
       // Syntax highlight
@@ -270,6 +356,14 @@
           btn.textContent='copied!'; btn.classList.add('copied');
           setTimeout(()=>{btn.textContent='copy code';btn.classList.remove('copied');},2000);
         });
+      });
+
+      // Download
+      document.getElementById('dl-btn').addEventListener('click', () => {
+        downloadScript(filename, script.code);
+        const btn = document.getElementById('dl-btn');
+        btn.textContent='✓ saved!';
+        setTimeout(()=>btn.textContent='⬇ download',2000);
       });
 
       // Copy link
@@ -293,6 +387,21 @@
           cnt.textContent=n; localStorage.setItem(likeKey,n); localStorage.setItem(likedKey,'1'); btn.classList.add('liked');
         }
       });
+
+      // Star / favorites
+      document.getElementById('star-btn').addEventListener('click', () => {
+        const btn = document.getElementById('star-btn');
+        const nowFav = toggleFav(script.id);
+        btn.textContent = nowFav ? '★ saved' : '☆ save';
+        btn.classList.toggle('starred', nowFav);
+        if (nowFav) {
+          const toast = document.createElement('div');
+          toast.style.cssText = 'position:fixed;bottom:5rem;left:50%;transform:translateX(-50%);background:var(--bg2);border:1px solid var(--yellow);color:var(--yellow);padding:0.6rem 1.5rem;border-radius:8px;font-size:0.82rem;font-family:Courier New,monospace;z-index:9999;transition:opacity 0.5s;';
+          toast.textContent = '⭐ added to favorites';
+          document.body.appendChild(toast);
+          setTimeout(() => { toast.style.opacity='0'; setTimeout(()=>toast.remove(),500); }, 2000);
+        }
+      });
     }
 
     // Bug modal
@@ -304,7 +413,15 @@
       document.getElementById('bug-form').style.display='none';
       document.getElementById('bug-thanks').style.display='block';
     }
-    document.addEventListener('keydown', e=>{ if(e.key==='Escape'){closeBug();} });
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', e => {
+      const tag = document.activeElement?.tagName;
+      const isTyping = tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT';
+      if (isTyping) return;
+      if (e.key==='Escape') { closeBug(); return; }
+      if (e.key==='r'||e.key==='R') { goRandom(); return; }
+    });
   </script>
 </body>
 </html>

@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-mode="">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Generate a Script — ScriptHub</title>
+  <link rel="stylesheet" href="style.css" />
+  <script>(function(){var t=localStorage.getItem('sh-theme')||'dark';var m=localStorage.getItem('sh-mode')||'';document.documentElement.setAttribute('data-theme',t);document.documentElement.setAttribute('data-mode',m);})();</script>
+</head>
+<body>
+
+  <nav>
+    <a class="logo" href="index.html">script<span>hub</span>.dev</a>
+    <div class="nav-right">
+      <button class="hamburger" id="hamburger" aria-label="Menu">☰</button>
+      <div class="nav-links">
+        <a href="index.html">browse</a>
+        <a href="beginner.html">🔰 beginner</a>
+        <a href="leaderboard.html">🏆 top</a>
+        <a href="collections.html">📦 collections</a>
+        <a href="favorites.html">⭐ favorites</a>
+        <a href="generate.html" class="active">✨ generate</a>
+        <a href="submit.html">submit</a>
+        <a href="about.html">about</a>
+        <a href="changelog.html">changelog</a>
+        <a href="request.html">request</a>
+      </div>
+      <button class="terminal-btn" id="terminal-btn" onclick="toggleTerminal()">💻</button>
+      <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
+    </div>
+  </nav>
+
+  <div class="page-wrap" style="max-width:700px;">
+    <a class="back-link" href="index.html">← back to browse</a>
+    <h1>✨ script <span class="green">generator</span></h1>
+    <p class="subtitle">describe what you want and get a ready-to-run Python script.</p>
+
+    <!-- BETA NOTICE -->
+    <div style="background:var(--bg2);border:1px solid var(--yellow);border-radius:8px;padding:0.85rem 1.1rem;margin-bottom:1.5rem;font-size:0.8rem;color:var(--muted);line-height:1.65;">
+      <b style="color:var(--yellow);">✦ how this works:</b>
+      pick a category and describe your task — the generator will create a script based on proven templates and patterns. for very custom needs, use <a href="submit.html" style="color:var(--blue);">submit</a> to request one from the community.
+    </div>
+
+    <div class="gen-form">
+
+      <div class="form-group">
+        <label>what should the script do? <span style="color:var(--red)">*</span></label>
+        <input type="text" id="gen-task" placeholder="e.g. rename all jpg files in a folder to include today's date" autocomplete="off" />
+      </div>
+
+      <div class="form-group">
+        <label>category</label>
+        <div class="gen-tags-grid" id="gen-tags">
+          <button class="gen-tag-btn selected" data-cat="automation">⚙ automation</button>
+          <button class="gen-tag-btn" data-cat="file tools">📁 file tools</button>
+          <button class="gen-tag-btn" data-cat="utilities">🔧 utilities</button>
+          <button class="gen-tag-btn" data-cat="web">🌐 web</button>
+          <button class="gen-tag-btn" data-cat="data">📊 data</button>
+          <button class="gen-tag-btn" data-cat="games">🎮 games</button>
+          <button class="gen-tag-btn" data-cat="security">🔐 security</button>
+          <button class="gen-tag-btn" data-cat="productivity">📅 productivity</button>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+        <div class="form-group" style="flex:1;min-width:130px;">
+          <label>language</label>
+          <select id="gen-lang">
+            <option value="python">python</option>
+            <option value="javascript">javascript (node)</option>
+            <option value="shell">shell / bash</option>
+          </select>
+        </div>
+        <div class="form-group" style="flex:1;min-width:130px;">
+          <label>difficulty</label>
+          <select id="gen-diff">
+            <option value="beginner">beginner</option>
+            <option value="intermediate" selected>intermediate</option>
+            <option value="advanced">advanced</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="submit-btn" id="gen-btn" onclick="generateScript()" style="width:100%;margin-top:0.5rem;">
+        ✨ generate script
+      </button>
+    </div>
+
+    <!-- SPINNER -->
+    <div class="gen-spinner" id="gen-spinner">
+      <span class="spin">⚙</span> generating your script...
+    </div>
+
+    <!-- OUTPUT -->
+    <div class="gen-output" id="gen-output">
+      <div class="gen-output-header">
+        <span id="gen-output-label">generated script</span>
+        <div style="display:flex;gap:6px;">
+          <button class="dl-btn" id="gen-dl-btn" onclick="downloadGenerated()">⬇ download</button>
+          <button class="copy-btn" id="gen-copy-btn" onclick="copyGenerated()">copy code</button>
+          <button class="submit-btn" onclick="submitGenerated()" style="font-size:0.72rem;padding:3px 10px;">submit to hub →</button>
+        </div>
+      </div>
+      <pre id="gen-pre" style="padding:1.1rem 1.25rem;overflow-x:auto;font-size:0.8rem;line-height:1.65;color:var(--code-text);"></pre>
+    </div>
+
+    <div id="gen-note" style="display:none;margin-top:1rem;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:0.85rem 1rem;font-size:0.8rem;color:var(--muted);line-height:1.65;">
+      <b style="color:var(--green);">✓ script generated!</b>
+      copy the code, save it as <code id="gen-filename" style="color:var(--blue);"></code>, and run it from your terminal.
+      if it doesn't do exactly what you need, <a href="submit.html" style="color:var(--blue);">submit it</a> with your adjustments and we'll add it to the site.
+    </div>
+
+  </div>
+
+  <button id="back-top">↑ top</button>
+  <footer><p>scripthub &nbsp;·&nbsp; <a href="about.html">about</a></p></footer>
+
+  <script>
+    function toggleTheme() {
+      document.documentElement.classList.add('theme-transitioning');
+      const curr = document.documentElement.getAttribute('data-theme');
+      const next = curr==='dark'?'light':'dark';
+      document.documentElement.setAttribute('data-theme',next);
+      localStorage.setItem('sh-theme',next);
+      document.getElementById('theme-btn').textContent=next==='dark'?'🌙':'☀️';
+      setTimeout(()=>document.documentElement.classList.remove('theme-transitioning'),420);
+    }
+    function toggleTerminal() {
+      const curr = document.documentElement.getAttribute('data-mode');
+      const next = curr==='terminal'?'':'terminal';
+      document.documentElement.setAttribute('data-mode',next);
+      localStorage.setItem('sh-mode',next);
+      document.getElementById('terminal-btn').classList.toggle('active',next==='terminal');
+    }
+    document.getElementById('theme-btn').textContent=(localStorage.getItem('sh-theme')||'dark')==='dark'?'🌙':'☀️';
+    document.getElementById('terminal-btn').classList.toggle('active',(localStorage.getItem('sh-mode')||'')==='terminal');
+
+    // Hamburger
+    const hamburger = document.getElementById('hamburger');
+    const navLinks  = document.querySelector('.nav-links');
+    if (hamburger && navLinks) {
+      hamburger.addEventListener('click', () => navLinks.classList.toggle('open'));
+      navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+      document.addEventListener('click', e => {
+        if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) navLinks.classList.remove('open');
+      });
+    }
+
+    // Back to top
+    const bt = document.getElementById('back-top');
+    if (bt) {
+      window.addEventListener('scroll', () => bt.classList.toggle('visible', window.scrollY>400));
+      bt.addEventListener('click', () => window.scrollTo({top:0,behavior:'smooth'}));
+    }
+
+    // Category tag selection
+    let selectedCat = 'automation';
+    document.querySelectorAll('.gen-tag-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.gen-tag-btn').forEach(b=>b.classList.remove('selected'));
+        btn.classList.add('selected');
+        selectedCat = btn.dataset.cat;
+      });
+    });
+
+    // ── TEMPLATE GENERATOR ───────────────────────────────────
+    // Turns a user description into a real, runnable Python (or JS/shell) script
+    // by filling keyword-matched templates. Falls back to a generic template.
+
+    const PYTHON_TEMPLATES = {
+      'rename': (task) => `import os, re
+from datetime import datetime
+
+# ${task}
+folder = input("enter folder path (or press Enter for current dir): ").strip() or "."
+today  = datetime.now().strftime("%Y-%m-%d")
+count  = 0
+
+for fname in os.listdir(folder):
+    if fname.lower().endswith(('.jpg', '.jpeg', '.png', '.gif')):
+        name, ext = os.path.splitext(fname)
+        new_name  = f"{today}_{name}{ext}"
+        src  = os.path.join(folder, fname)
+        dst  = os.path.join(folder, new_name)
+        if not os.path.exists(dst):
+            os.rename(src, dst)
+            print(f"  renamed: {fname} -> {new_name}")
+            count += 1
+
+print(f"\\ndone! renamed {count} file(s).")`,
+
+      'file': (task) => `import os, shutil
+
+# ${task}
+source = input("source folder: ").strip()
+dest   = input("destination folder: ").strip()
+
+if not os.path.isdir(source):
+    print("source folder not found."); exit(1)
+os.makedirs(dest, exist_ok=True)
+
+count = 0
+for fname in os.listdir(source):
+    src_path = os.path.join(source, fname)
+    if os.path.isfile(src_path):
+        shutil.copy2(src_path, dest)
+        print(f"  copied: {fname}")
+        count += 1
+
+print(f"\\ndone! copied {count} file(s) to {dest}")`,
+
+      'download': (task) => `import urllib.request, os
+
+# ${task}
+url  = input("enter URL to download: ").strip()
+dest = input("save filename (or press Enter for auto): ").strip()
+if not dest:
+    dest = url.split("/")[-1] or "downloaded_file"
+
+print(f"downloading {url}...")
+try:
+    urllib.request.urlretrieve(url, dest)
+    size = os.path.getsize(dest)
+    print(f"saved: {dest} ({size:,} bytes)")
+except Exception as e:
+    print(f"error: {e}")`,
+
+      'password': (task) => `import random, string
+
+# ${task}
+def generate_password(length=16, use_symbols=True):
+    chars = string.ascii_letters + string.digits
+    if use_symbols:
+        chars += "!@#$%^&*()_+-=[]{}|"
+    return "".join(random.SystemRandom().choice(chars) for _ in range(length))
+
+length  = int(input("password length [16]: ").strip() or 16)
+symbols = input("include symbols? [y/n]: ").strip().lower() != 'n'
+count   = int(input("how many passwords? [5]: ").strip() or 5)
+
+print()
+for i in range(count):
+    print(f"  {generate_password(length, symbols)}")
+print()`,
+
+      'search': (task) => `import os, fnmatch
+
+# ${task}
+folder  = input("search in folder (or Enter for current): ").strip() or "."
+pattern = input("filename pattern (e.g. *.txt, report*): ").strip()
+keyword = input("search inside files for (leave blank to skip): ").strip()
+
+matches = []
+for root, dirs, files in os.walk(folder):
+    dirs[:] = [d for d in dirs if not d.startswith('.')]
+    for fname in fnmatch.filter(files, pattern):
+        path = os.path.join(root, fname)
+        if keyword:
+            try:
+                with open(path, encoding='utf-8', errors='ignore') as f:
+                    if keyword.lower() in f.read().lower():
+                        matches.append(path)
+            except: pass
+        else:
+            matches.append(path)
+
+print(f"\\nfound {len(matches)} match(es):")
+for m in matches:
+    print(f"  {m}")`,
+
+      'web': (task) => `import urllib.request, html, re
+
+# ${task}
+url = input("enter URL to fetch: ").strip()
+if not url.startswith("http"):
+    url = "https://" + url
+
+print(f"fetching {url}...")
+try:
+    req = urllib.request.Request(url, headers={'User-Agent':'Mozilla/5.0'})
+    with urllib.request.urlopen(req, timeout=10) as r:
+        content = r.read().decode('utf-8', errors='ignore')
+    # strip tags
+    text = re.sub(r'<[^>]+>', '', content)
+    text = html.unescape(text)
+    text = re.sub(r'\\n{3,}', '\\n\\n', text).strip()
+    print("\\n" + text[:2000])
+    print("\\n[truncated to 2000 chars]" if len(text)>2000 else "")
+except Exception as e:
+    print(f"error: {e}")`,
+
+      'monitor': (task) => `import psutil, time, os
+
+# ${task}
+interval = float(input("update interval in seconds [1]: ").strip() or 1)
+
+print("monitoring system — press Ctrl+C to stop\\n")
+try:
+    while True:
+        cpu  = psutil.cpu_percent(interval=0.2)
+        mem  = psutil.virtual_memory()
+        disk = psutil.disk_usage('/')
+        os.system('cls' if os.name=='nt' else 'clear')
+        print(f"  CPU:    {cpu:5.1f}%  {'█'*int(cpu/5)}")
+        print(f"  RAM:    {mem.percent:5.1f}%  {mem.used/1e9:.1f}GB / {mem.total/1e9:.1f}GB")
+        print(f"  Disk:   {disk.percent:5.1f}%  {disk.used/1e9:.1f}GB / {disk.total/1e9:.1f}GB")
+        print(f"\\npress Ctrl+C to stop")
+        time.sleep(interval)
+except KeyboardInterrupt:
+    print("\\nstopped.")`,
+
+      'csv': (task) => `import csv, os
+
+# ${task}
+path = input("CSV file path: ").strip()
+if not os.path.isfile(path):
+    print("file not found."); exit(1)
+
+with open(path, newline='', encoding='utf-8') as f:
+    reader = csv.DictReader(f)
+    rows   = list(reader)
+    cols   = reader.fieldnames or []
+
+print(f"\\nloaded {len(rows)} rows, {len(cols)} columns")
+print(f"columns: {', '.join(cols)}\\n")
+
+# Print first 10 rows
+for i, row in enumerate(rows[:10]):
+    print(f"  row {i+1}: " + " | ".join(f"{k}={v}" for k,v in list(row.items())[:4]))
+
+if len(rows) > 10:
+    print(f"  ... and {len(rows)-10} more rows")`,
+
+      'default': (task) => `# ${task}
+# Generated by ScriptHub
+# ───────────────────────────────────────────
+# Requirements: none (Python standard library only)
+# Usage: python script.py
+
+def main():
+    print("ScriptHub Generated Script")
+    print("=" * 40)
+
+    # TODO: add your logic here
+    # This template is ready to customise.
+
+    task = input("enter input: ").strip()
+    if not task:
+        print("nothing entered.")
+        return
+
+    # process
+    result = task.upper()  # replace with real logic
+    print(f"result: {result}")
+
+if __name__ == "__main__":
+    main()`
+    };
+
+    const JS_TEMPLATES = {
+      'default': (task) => `// ${task}
+// Generated by ScriptHub — run with: node script.js
+const readline = require('readline');
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+function ask(question) {
+  return new Promise(resolve => rl.question(question, resolve));
+}
+
+async function main() {
+  console.log('ScriptHub Generated Script');
+  console.log('='.repeat(40));
+
+  const input = await ask('enter input: ');
+
+  // TODO: replace with your logic
+  const result = input.toUpperCase();
+  console.log('result:', result);
+
+  rl.close();
+}
+
+main().catch(console.error);`
+    };
+
+    const SHELL_TEMPLATES = {
+      'default': (task) => `#!/bin/bash
+# ${task}
+# Generated by ScriptHub
+# Usage: chmod +x script.sh && ./script.sh
+
+set -e
+
+echo "ScriptHub Generated Script"
+echo "================================"
+
+# get user input
+read -p "enter input: " USER_INPUT
+
+if [ -z "\$USER_INPUT" ]; then
+    echo "nothing entered."
+    exit 1
+fi
+
+# TODO: add your logic here
+echo "result: \$(echo "\$USER_INPUT" | tr '[:lower:]' '[:upper:]')"
+
+echo "done!"`
+    };
+
+    function matchTemplate(task, templates) {
+      const lower = task.toLowerCase();
+      for (const key of Object.keys(templates)) {
+        if (key !== 'default' && lower.includes(key)) {
+          return templates[key];
+        }
+      }
+      return templates['default'];
+    }
+
+    function slugify(str) {
+      return str.toLowerCase()
+        .replace(/[^a-z0-9\s-]/g,'')
+        .trim().replace(/\s+/g,'-')
+        .slice(0, 30);
+    }
+
+    let generatedCode = '';
+    let generatedFilename = '';
+
+    function generateScript() {
+      const task = document.getElementById('gen-task').value.trim();
+      if (!task) {
+        document.getElementById('gen-task').focus();
+        document.getElementById('gen-task').style.borderColor = 'var(--red)';
+        setTimeout(()=>document.getElementById('gen-task').style.borderColor='',2000);
+        return;
+      }
+
+      const lang = document.getElementById('gen-lang').value;
+      const diff = document.getElementById('gen-diff').value;
+
+      document.getElementById('gen-output').classList.remove('visible');
+      document.getElementById('gen-note').style.display = 'none';
+      document.getElementById('gen-spinner').classList.add('visible');
+      document.getElementById('gen-btn').disabled = true;
+      document.getElementById('gen-btn').textContent = 'generating...';
+
+      setTimeout(() => {
+        let code, ext, templates;
+        if (lang === 'javascript') {
+          templates = JS_TEMPLATES;
+          ext = 'js';
+        } else if (lang === 'shell') {
+          templates = SHELL_TEMPLATES;
+          ext = 'sh';
+        } else {
+          templates = PYTHON_TEMPLATES;
+          ext = 'py';
+        }
+
+        const fn = matchTemplate(task, templates);
+        code = fn(task);
+
+        // Add difficulty comment for beginner
+        if (diff === 'beginner' && lang === 'python') {
+          const lines = code.split('\n');
+          const commentIdx = lines.findIndex(l=>l.trim().startsWith('#'));
+          if (commentIdx >= 0) {
+            lines.splice(commentIdx+1, 0, '# difficulty: beginner — heavily commented for learning');
+          }
+          code = lines.join('\n');
+        }
+
+        const slug = slugify(task);
+        generatedCode = code;
+        generatedFilename = `${slug || 'script'}.${ext}`;
+
+        document.getElementById('gen-spinner').classList.remove('visible');
+        document.getElementById('gen-output').classList.add('visible');
+        document.getElementById('gen-output-label').textContent = generatedFilename;
+        document.getElementById('gen-pre').textContent = code;
+        document.getElementById('gen-filename').textContent = generatedFilename;
+        document.getElementById('gen-note').style.display = 'block';
+        document.getElementById('gen-btn').disabled = false;
+        document.getElementById('gen-btn').textContent = '✨ generate script';
+
+        // Scroll to output
+        document.getElementById('gen-output').scrollIntoView({behavior:'smooth', block:'start'});
+      }, 900 + Math.random() * 600);
+    }
+
+    function copyGenerated() {
+      if (!generatedCode) return;
+      navigator.clipboard.writeText(generatedCode).then(() => {
+        const btn = document.getElementById('gen-copy-btn');
+        btn.textContent = 'copied!'; btn.classList.add('copied');
+        setTimeout(()=>{ btn.textContent='copy code'; btn.classList.remove('copied'); },2000);
+      });
+    }
+
+    function downloadGenerated() {
+      if (!generatedCode) return;
+      const blob = new Blob([generatedCode], {type:'text/plain'});
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href = url; a.download = generatedFilename; a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function submitGenerated() {
+      if (!generatedCode) return;
+      // Pre-fill submit form via sessionStorage
+      sessionStorage.setItem('gen-code', generatedCode);
+      sessionStorage.setItem('gen-task', document.getElementById('gen-task').value.trim());
+      window.location.href = 'submit.html';
+    }
+
+    // Enter to generate
+    document.getElementById('gen-task').addEventListener('keydown', e => {
+      if (e.key === 'Enter') generateScript();
+    });
+  </script>
+</body>
+</html>

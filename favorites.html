@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-mode="">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Favorites — ScriptHub</title>
+  <link rel="stylesheet" href="style.css" />
+  <script>(function(){var t=localStorage.getItem('sh-theme')||'dark';var m=localStorage.getItem('sh-mode')||'';document.documentElement.setAttribute('data-theme',t);document.documentElement.setAttribute('data-mode',m);})();</script>
+</head>
+<body>
+
+  <nav>
+    <a class="logo" href="index.html">script<span>hub</span>.dev</a>
+    <div class="nav-right">
+      <button class="hamburger" id="hamburger" aria-label="Menu">☰</button>
+      <div class="nav-links">
+        <a href="index.html">browse</a>
+        <a href="beginner.html">🔰 beginner</a>
+        <a href="leaderboard.html">🏆 top</a>
+        <a href="collections.html">📦 collections</a>
+        <a href="favorites.html" class="active">⭐ favorites</a>
+        <a href="generate.html">✨ generate</a>
+        <a href="submit.html">submit</a>
+        <a href="about.html">about</a>
+        <a href="changelog.html">changelog</a>
+        <a href="request.html">request</a>
+      </div>
+      <button class="terminal-btn" id="terminal-btn" onclick="toggleTerminal()">💻</button>
+      <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
+    </div>
+  </nav>
+
+  <div class="page-wrap">
+    <a class="back-link" href="index.html">← back to browse</a>
+    <h1>⭐ your <span class="yellow">favorites</span></h1>
+    <p class="subtitle">scripts you've saved — stored locally in your browser.</p>
+
+    <div id="fav-grid" class="grid" style="margin-top:1.5rem;"></div>
+
+    <div id="fav-empty" class="fav-empty" style="display:none;">
+      <div class="fav-empty-icon">⭐</div>
+      <p>no favorites yet!<br>
+      hit the <b style="color:var(--yellow);">☆ save</b> button on any script page to add it here.<br><br>
+      <a href="index.html">browse scripts →</a></p>
+    </div>
+  </div>
+
+  <button id="back-top">↑ top</button>
+  <footer><p>scripthub &nbsp;·&nbsp; <a href="about.html">about</a></p></footer>
+
+  <script src="scripts.js"></script>
+  <script>
+    function toggleTheme() {
+      document.documentElement.classList.add('theme-transitioning');
+      const curr = document.documentElement.getAttribute('data-theme');
+      const next = curr==='dark'?'light':'dark';
+      document.documentElement.setAttribute('data-theme',next);
+      localStorage.setItem('sh-theme',next);
+      document.getElementById('theme-btn').textContent=next==='dark'?'🌙':'☀️';
+      setTimeout(()=>document.documentElement.classList.remove('theme-transitioning'),420);
+    }
+    function toggleTerminal() {
+      const curr = document.documentElement.getAttribute('data-mode');
+      const next = curr==='terminal'?'':'terminal';
+      document.documentElement.setAttribute('data-mode',next);
+      localStorage.setItem('sh-mode',next);
+      document.getElementById('terminal-btn').classList.toggle('active',next==='terminal');
+    }
+    document.getElementById('theme-btn').textContent=(localStorage.getItem('sh-theme')||'dark')==='dark'?'🌙':'☀️';
+    document.getElementById('terminal-btn').classList.toggle('active',(localStorage.getItem('sh-mode')||'')==='terminal');
+
+    // Hamburger
+    const hamburger = document.getElementById('hamburger');
+    const navLinks  = document.querySelector('.nav-links');
+    if (hamburger && navLinks) {
+      hamburger.addEventListener('click', () => navLinks.classList.toggle('open'));
+      navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+      document.addEventListener('click', e => {
+        if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) navLinks.classList.remove('open');
+      });
+    }
+
+    // Back to top
+    const bt = document.getElementById('back-top');
+    if (bt) {
+      window.addEventListener('scroll', () => bt.classList.toggle('visible', window.scrollY>400));
+      bt.addEventListener('click', () => window.scrollTo({top:0,behavior:'smooth'}));
+    }
+
+    const langBadge = {python:'badge-py',javascript:'badge-js',shell:'badge-sh',powershell:'badge-ps'};
+
+    function getFavs() {
+      try { return JSON.parse(localStorage.getItem('sh-favs')||'[]'); } catch { return []; }
+    }
+
+    function removeFav(id) {
+      let favs = getFavs().filter(x=>x!==id);
+      localStorage.setItem('sh-favs', JSON.stringify(favs));
+      renderFavs();
+    }
+
+    function renderFavs() {
+      const grid = document.getElementById('fav-grid');
+      const empty = document.getElementById('fav-empty');
+      const ids = getFavs();
+      const scripts = ids.map(id=>SCRIPTS.find(s=>s.id===id)).filter(Boolean);
+
+      if (scripts.length === 0) {
+        grid.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+      }
+      empty.style.display = 'none';
+      grid.innerHTML = scripts.map(s => `
+        <div class="card" style="position:relative;">
+          <a href="script.html?id=${s.id}" style="text-decoration:none;color:inherit;display:contents;">
+            <div class="card-top">
+              <span class="card-icon">${s.icon}</span>
+              <span class="card-name">${s.name}</span>
+            </div>
+            <div class="card-desc">${s.desc}</div>
+            <div class="card-footer">
+              <span class="badge ${langBadge[s.lang]||'badge-py'}">${s.lang}</span>
+              <span class="badge" style="color:var(--muted);border-color:var(--border);background:transparent;">${s.tag}</span>
+            </div>
+          </a>
+          <button onclick="removeFav('${s.id}')" title="Remove from favorites"
+            style="position:absolute;top:0.6rem;right:0.6rem;background:none;border:none;cursor:pointer;color:var(--yellow);font-size:1rem;padding:2px 5px;border-radius:4px;opacity:0.7;transition:opacity 0.15s;"
+            onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">★</button>
+        </div>
+      `).join('');
+    }
+
+    renderFavs();
+  </script>
+</body>
+</html>

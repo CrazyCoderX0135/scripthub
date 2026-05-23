@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-mode="">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>404 — ScriptHub</title>
+  <link rel="stylesheet" href="style.css" />
+  <script>(function(){var t=localStorage.getItem('sh-theme')||'dark';var m=localStorage.getItem('sh-mode')||'';document.documentElement.setAttribute('data-theme',t);document.documentElement.setAttribute('data-mode',m);})();</script>
+</head>
+<body>
+
+  <nav>
+    <a class="logo" href="index.html">script<span>hub</span>.dev</a>
+    <div class="nav-right">
+      <button class="hamburger" id="hamburger" aria-label="Menu">☰</button>
+      <div class="nav-links">
+        <a href="index.html">browse</a>
+        <a href="beginner.html">🔰 beginner</a>
+        <a href="leaderboard.html">🏆 top</a>
+        <a href="collections.html">📦 collections</a>
+        <a href="favorites.html">⭐ favorites</a>
+        <a href="generate.html">✨ generate</a>
+        <a href="submit.html">submit</a>
+        <a href="about.html">about</a>
+      </div>
+      <button class="terminal-btn" id="terminal-btn" onclick="toggleTerminal()">💻</button>
+      <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
+    </div>
+  </nav>
+
+  <div class="notfound-wrap">
+    <canvas id="notfound-canvas" style="position:absolute;inset:0;width:100%;height:100%;opacity:0.08;pointer-events:none;"></canvas>
+    <div style="position:relative;z-index:1;">
+      <div class="notfound-code" id="glitch-code">404</div>
+      <p style="color:var(--green);font-family:'Courier New',monospace;font-size:0.85rem;margin-bottom:0.5rem;">
+        > ERROR: page not found
+      </p>
+      <p class="notfound-msg">
+        this script doesn't exist — or it got <span class="red">deleted</span>.<br>
+        maybe a typo? maybe it was never real. who knows.
+      </p>
+      <div class="notfound-btns">
+        <a class="notfound-btn primary" href="index.html">← back to browse</a>
+        <a class="notfound-btn" href="javascript:void(0)" onclick="goRandom()">🎲 random script</a>
+        <a class="notfound-btn" href="submit.html">+ submit one</a>
+      </div>
+    </div>
+  </div>
+
+  <footer><p>scripthub &nbsp;·&nbsp; <a href="about.html">about</a></p></footer>
+
+  <script src="scripts.js"></script>
+  <script>
+    function toggleTheme() {
+      document.documentElement.classList.add('theme-transitioning');
+      const curr = document.documentElement.getAttribute('data-theme');
+      const next = curr==='dark'?'light':'dark';
+      document.documentElement.setAttribute('data-theme',next);
+      localStorage.setItem('sh-theme',next);
+      document.getElementById('theme-btn').textContent=next==='dark'?'🌙':'☀️';
+      setTimeout(()=>document.documentElement.classList.remove('theme-transitioning'),420);
+    }
+    function toggleTerminal() {
+      const curr = document.documentElement.getAttribute('data-mode');
+      const next = curr==='terminal'?'':'terminal';
+      document.documentElement.setAttribute('data-mode',next);
+      localStorage.setItem('sh-mode',next);
+      document.getElementById('terminal-btn').classList.toggle('active',next==='terminal');
+    }
+    document.getElementById('theme-btn').textContent=(localStorage.getItem('sh-theme')||'dark')==='dark'?'🌙':'☀️';
+    document.getElementById('terminal-btn').classList.toggle('active',(localStorage.getItem('sh-mode')||'')==='terminal');
+
+    // Hamburger
+    const hamburger = document.getElementById('hamburger');
+    const navLinks  = document.querySelector('.nav-links');
+    if (hamburger && navLinks) {
+      hamburger.addEventListener('click', () => navLinks.classList.toggle('open'));
+      navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+      document.addEventListener('click', e => {
+        if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) navLinks.classList.remove('open');
+      });
+    }
+
+    function goRandom() {
+      const s = SCRIPTS[Math.floor(Math.random()*SCRIPTS.length)];
+      window.location.href = `script.html?id=${s.id}`;
+    }
+
+    // Matrix rain on 404 page (subtle)
+    const canvas = document.getElementById('notfound-canvas');
+    if (canvas) {
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
+      const ctx = canvas.getContext('2d');
+      const chars = '0123456789ABCDEF404';
+      const fs = 14, cols = Math.floor(canvas.width/fs);
+      const drops = Array(cols).fill(1);
+      setInterval(() => {
+        ctx.fillStyle='rgba(0,0,0,0.08)';
+        ctx.fillRect(0,0,canvas.width,canvas.height);
+        ctx.fillStyle='#ff6b6b'; ctx.font=fs+'px Courier New';
+        drops.forEach((y,i)=>{
+          ctx.fillText(chars[Math.floor(Math.random()*chars.length)],i*fs,y*fs);
+          if(y*fs>canvas.height&&Math.random()>0.975) drops[i]=0;
+          drops[i]++;
+        });
+      },55);
+      window.addEventListener('resize',()=>{
+        canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+      });
+    }
+
+    // Glitch effect on "404"
+    const glitch = document.getElementById('glitch-code');
+    setInterval(() => {
+      const digits = '0123456789!@#$%';
+      glitch.textContent = Math.random()>0.85
+        ? Array.from('404').map(c=>Math.random()>0.7?digits[Math.floor(Math.random()*digits.length)]:c).join('')
+        : '404';
+    }, 150);
+  </script>
+</body>
+</html>

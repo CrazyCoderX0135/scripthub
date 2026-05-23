@@ -1,159 +1,243 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark" data-mode="">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Submit a Script — ScriptHub</title>
   <link rel="stylesheet" href="style.css" />
+  <script>(function(){var t=localStorage.getItem('sh-theme')||'dark';var m=localStorage.getItem('sh-mode')||'';document.documentElement.setAttribute('data-theme',t);document.documentElement.setAttribute('data-mode',m);})();</script>
 </head>
 <body>
 
   <nav>
     <a class="logo" href="index.html">script<span>hub</span>.dev</a>
-    <div class="nav-links">
-      <a href="index.html">browse</a>
-      <a href="submit.html">submit</a>
+    <div class="nav-right">
+      <button class="hamburger" id="hamburger" aria-label="Menu">☰</button>
+      <div class="nav-links">
+        <a href="index.html">browse</a>
+        <a href="beginner.html">🔰 beginner</a>
+        <a href="leaderboard.html">🏆 top</a>
+        <a href="collections.html">📦 collections</a>
+        <a href="favorites.html">⭐ favorites</a>
+        <a href="generate.html">✨ generate</a>
+        <a href="submit.html" class="active">submit</a>
+        <a href="about.html">about</a>
+        <a href="changelog.html">changelog</a>
+      </div>
+      <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
     </div>
   </nav>
 
-  <div class="submit-wrap">
+  <div class="page-wrap" style="max-width:640px;">
     <a class="back-link" href="index.html">← back to browse</a>
     <h1>submit a <span class="green">script</span></h1>
-    <p>share a script you built. once reviewed it'll show up on the site.</p>
+    <p class="subtitle">share something you built — after a quick review it'll go live on the site.</p>
 
-    <div id="form-wrap">
-      <div class="form-group">
-        <label for="s-name">script name</label>
-        <input type="text" id="s-name" placeholder="e.g. bulk-rename" />
-      </div>
-
-      <div class="form-group">
-        <label for="s-desc">description</label>
-        <input type="text" id="s-desc" placeholder="what does it do? (one sentence)" />
-      </div>
-
-      <div class="form-group">
-        <label for="s-lang">language</label>
-        <select id="s-lang">
-          <option value="python">python</option>
-          <option value="javascript">javascript</option>
-          <option value="shell">shell</option>
-          <option value="powershell">powershell</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="s-tag">category</label>
-        <select id="s-tag">
-          <option value="automation">automation</option>
-          <option value="utilities">utilities</option>
-          <option value="web">web</option>
-          <option value="file tools">file tools</option>
-          <option value="games">games</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="s-code">paste your code</label>
-        <textarea id="s-code" placeholder="# paste your script here..."></textarea>
-      </div>
-
-      <button class="submit-btn" id="submit-btn">submit script →</button>
+    <!-- GUIDELINES BANNER -->
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.75rem;font-size:0.82rem;color:var(--muted);line-height:1.7;">
+      <b style="color:var(--fg);">✅ Good submissions:</b> use only Python built-ins or widely available packages · include a clear description · run without errors · do something useful or fun<br>
+      <b style="color:var(--red);">❌ Won't be accepted:</b> malware, exploits, or intentionally harmful code
     </div>
 
-    <div id="success-msg" style="display:none; margin-top:2rem; padding:1.25rem; background:#0d2110; border:1px solid #1a3a1f; border-radius:8px;">
-      <p style="color:#3fb950; margin-bottom:0.4rem;">✓ script submitted!</p>
-      <p style="color:#8b949e; font-size:0.85rem;">thanks for contributing. submissions are reviewed before going live.</p>
+    <form id="submit-form">
+
+      <div class="form-group">
+        <label for="s-name">script name <span style="color:var(--red)">*</span></label>
+        <input type="text" id="s-name" name="Script Name" placeholder="e.g. bulk-rename (lowercase, hyphenated)" autocomplete="off" />
+        <span class="field-error" id="err-name"></span>
+      </div>
+
+      <div class="form-group">
+        <label for="s-desc">description <span style="color:var(--red)">*</span></label>
+        <input type="text" id="s-desc" name="Description" placeholder="what does it do? (one clear sentence)" />
+        <span class="field-error" id="err-desc"></span>
+      </div>
+
+      <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+        <div class="form-group" style="flex:1;min-width:140px;">
+          <label for="s-lang">language</label>
+          <select id="s-lang" name="Language">
+            <option value="python">python</option>
+            <option value="javascript">javascript</option>
+            <option value="shell">shell / bash</option>
+            <option value="powershell">powershell</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="flex:1;min-width:140px;">
+          <label for="s-tag">category</label>
+          <select id="s-tag" name="Category">
+            <option value="automation">automation</option>
+            <option value="utilities">utilities</option>
+            <option value="web">web</option>
+            <option value="file tools">file tools</option>
+            <option value="games">games</option>
+            <option value="math">math</option>
+            <option value="science">science</option>
+            <option value="productivity">productivity</option>
+            <option value="security">security</option>
+            <option value="data">data</option>
+            <option value="python-tricks">python tricks</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="s-code">paste your code <span style="color:var(--red)">*</span></label>
+        <textarea id="s-code" name="Code" placeholder="# paste your full script here..." style="min-height:220px;font-family:monospace;font-size:0.82rem;"></textarea>
+        <span class="field-error" id="err-code"></span>
+      </div>
+
+      <div class="form-group">
+        <label for="s-email">your email <span style="color:var(--muted);font-weight:400;font-size:0.78rem;">(optional — only used to credit you)</span></label>
+        <input type="email" id="s-email" name="email" placeholder="you@example.com" />
+      </div>
+
+      <div class="form-group">
+        <label for="s-notes">extra notes <span style="color:var(--muted);font-weight:400;font-size:0.78rem;">(optional)</span></label>
+        <textarea id="s-notes" name="Notes" placeholder="e.g. requires: requests, pillow — or anything else we should know" style="min-height:70px;"></textarea>
+      </div>
+
+      <!-- honeypot — hidden from real users, bots fill it in -->
+      <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off" />
+
+      <div id="submit-error" style="display:none;background:#1a0505;border:1px solid #ff6b6b;border-radius:8px;padding:0.85rem 1rem;margin-bottom:1rem;color:#ff6b6b;font-size:0.85rem;"></div>
+
+      <button class="submit-btn" id="submit-btn" type="submit">submit script →</button>
+    </form>
+
+    <!-- SUCCESS STATE -->
+    <div id="success-msg" style="display:none;margin-top:1rem;padding:1.5rem;background:var(--bg2);border:1px solid var(--green);border-radius:10px;text-align:center;">
+      <div style="font-size:2rem;margin-bottom:0.5rem;">🎉</div>
+      <p style="color:var(--green);font-weight:bold;margin-bottom:0.4rem;">script submitted!</p>
+      <p style="color:var(--muted);font-size:0.85rem;">thanks for contributing. we'll review it and add it to the site if it's a good fit.</p>
+      <button onclick="resetForm()" style="margin-top:1rem;background:transparent;border:1px solid var(--border);color:var(--muted);padding:0.4rem 1rem;border-radius:6px;cursor:pointer;font-size:0.82rem;">submit another →</button>
     </div>
   </div>
 
-  <footer>
-    <p>scripthub &mdash; scripts for everything</p>
-  </footer>
+  <footer><p>scripthub &nbsp;·&nbsp; <a href="about.html">about</a></p></footer>
 
   <script>
-    const BAD_WORDS = [
-      "fuck","shit","ass","bitch","cunt","dick","cock","pussy","bastard","damn",
-      "asshole","motherfucker","faggot","nigger","nigga","whore","slut","retard",
-      "piss","crap","bollocks","wanker","twat","prick","arse","dumbass","jackass",
-      "dipshit","shithead","bullshit","douchebag","fucker","fuckhead","moron",
-      "idiot","stupid","hate","kill","murder","rape","porn","sex","nude","naked",
-      "xxx","hentai","drugs","weed","cocaine","meth","heroin","hack","exploit",
-      "cheat","bypass","crack","malware","virus","ddos","keylogger","phish"
-    ];
-
-    const ERROR_STYLES = `
-      border-color: #993535 !important;
-      background: #1a0d0d !important;
-    `;
-
-    function containsBadWord(text) {
-      const lower = text.toLowerCase().replace(/[^a-z0-9\s]/g, ' ');
-      return BAD_WORDS.some(word => {
-        const regex = new RegExp(`\\b${word}\\b`, 'i');
-        return regex.test(lower);
+    // Hamburger nav
+    const hamburger = document.getElementById('hamburger');
+    const navLinks  = document.querySelector('.nav-links');
+    if (hamburger && navLinks) {
+      hamburger.addEventListener('click', () => navLinks.classList.toggle('open'));
+      navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+      document.addEventListener('click', e => {
+        if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) navLinks.classList.remove('open');
       });
     }
 
-    function showError(inputId, msg) {
-      const el = document.getElementById(inputId);
-      el.style.cssText += ERROR_STYLES;
-      let err = el.parentElement.querySelector('.field-error');
-      if (!err) {
-        err = document.createElement('p');
-        err.className = 'field-error';
-        err.style.cssText = 'color:#ff6b6b;font-size:0.8rem;margin-top:5px;';
-        el.parentElement.appendChild(err);
-      }
-      err.textContent = msg;
+    // Pre-fill from generator
+    (function() {
+      const code = sessionStorage.getItem('gen-code');
+      const task = sessionStorage.getItem('gen-task');
+      if (code) { document.getElementById('s-code').value = code; sessionStorage.removeItem('gen-code'); }
+      if (task) { document.getElementById('s-desc').value = task; sessionStorage.removeItem('gen-task'); }
+    })();
+
+    // Theme
+    function toggleTheme() {
+      document.documentElement.classList.add('theme-transitioning');
+      const curr = document.documentElement.getAttribute('data-theme');
+      const next = curr==='dark'?'light':'dark';
+      document.documentElement.setAttribute('data-theme',next);
+      localStorage.setItem('sh-theme',next);
+      document.getElementById('theme-btn').textContent=next==='dark'?'🌙':'☀️';
+      setTimeout(()=>document.documentElement.classList.remove('theme-transitioning'),420);
+    }
+    document.getElementById('theme-btn').textContent=(localStorage.getItem('sh-theme')||'dark')==='dark'?'🌙':'☀️';
+
+    // Bad-word filter
+    const BAD_WORDS = [
+      "fuck","shit","bitch","cunt","dick","cock","pussy","bastard",
+      "asshole","motherfucker","faggot","nigger","nigga","whore","slut",
+      "piss","bollocks","wanker","twat","prick","arse","dumbass",
+      "dipshit","shithead","bullshit","douchebag","fucker","fuckhead",
+      "porn","xxx","hentai","malware","ddos","keylogger"
+    ];
+
+    function hasBadWord(text) {
+      const lower = text.toLowerCase().replace(/[^a-z0-9\s]/g, ' ');
+      return BAD_WORDS.some(w => new RegExp(`\\b${w}\\b`,'i').test(lower));
+    }
+
+    function setError(id, msg) {
+      const el = document.getElementById(id);
+      el.textContent = msg;
+      el.style.display = msg ? 'block' : 'none';
+      const input = el.previousElementSibling || document.getElementById(id.replace('err-','s-'));
+      if (input) input.style.borderColor = msg ? 'var(--red)' : '';
     }
 
     function clearErrors() {
-      document.querySelectorAll('.field-error').forEach(e => e.remove());
-      ['s-name','s-desc','s-code'].forEach(id => {
-        const el = document.getElementById(id);
-        el.style.borderColor = '';
-        el.style.background = '';
-      });
+      ['name','desc','code'].forEach(k => setError('err-'+k,''));
+      document.getElementById('submit-error').style.display = 'none';
     }
 
-    document.getElementById("submit-btn").addEventListener("click", () => {
+    function validate() {
+      const name = document.getElementById('s-name').value.trim();
+      const desc = document.getElementById('s-desc').value.trim();
+      const code = document.getElementById('s-code').value.trim();
+      let ok = true;
+
+      if (!name) { setError('err-name','script name is required.'); ok=false; }
+      else if (hasBadWord(name)) { setError('err-name','name contains flagged content.'); ok=false; }
+
+      if (!desc) { setError('err-desc','description is required.'); ok=false; }
+      else if (hasBadWord(desc)) { setError('err-desc','description contains flagged content.'); ok=false; }
+
+      if (!code) { setError('err-code','please paste your script code.'); ok=false; }
+      else if (code.length < 20) { setError('err-code','code seems too short.'); ok=false; }
+
+      return ok;
+    }
+
+    function resetForm() {
+      document.getElementById('submit-form').reset();
+      document.getElementById('submit-form').style.display = 'block';
+      document.getElementById('success-msg').style.display = 'none';
+      clearErrors();
+    }
+
+    document.getElementById('submit-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
       clearErrors();
 
-      const name = document.getElementById("s-name").value.trim();
-      const desc = document.getElementById("s-desc").value.trim();
-      const code = document.getElementById("s-code").value.trim();
+      if (!validate()) return;
 
-      let hasError = false;
+      const btn = document.getElementById('submit-btn');
+      btn.textContent = 'sending...';
+      btn.disabled = true;
 
-      if (!name) {
-        showError("s-name", "please enter a script name.");
-        hasError = true;
-      } else if (containsBadWord(name)) {
-        showError("s-name", "script name contains inappropriate content.");
-        hasError = true;
+      const data = new FormData(this);
+
+      try {
+        const res = await fetch('https://formspree.io/f/mdajgwgy', {
+          method: 'POST',
+          body: data,
+          headers: { 'Accept': 'application/json' }
+        });
+
+        if (res.ok) {
+          document.getElementById('submit-form').style.display = 'none';
+          document.getElementById('success-msg').style.display = 'block';
+        } else {
+          const json = await res.json().catch(()=>({}));
+          const msg = json.errors ? json.errors.map(e=>e.message).join(', ') : 'submission failed. please try again.';
+          const errEl = document.getElementById('submit-error');
+          errEl.textContent = '⚠️  ' + msg;
+          errEl.style.display = 'block';
+        }
+      } catch (err) {
+        const errEl = document.getElementById('submit-error');
+        errEl.textContent = '⚠️  network error — check your connection and try again.';
+        errEl.style.display = 'block';
+      } finally {
+        btn.textContent = 'submit script →';
+        btn.disabled = false;
       }
-
-      if (!desc) {
-        showError("s-desc", "please enter a description.");
-        hasError = true;
-      } else if (containsBadWord(desc)) {
-        showError("s-desc", "description contains inappropriate content.");
-        hasError = true;
-      }
-
-      if (!code) {
-        showError("s-code", "please paste your script code.");
-        hasError = true;
-      } else if (containsBadWord(code)) {
-        showError("s-code", "script contains inappropriate content or flagged keywords.");
-        hasError = true;
-      }
-
-      if (hasError) return;
-
-      document.getElementById("form-wrap").style.display = "none";
-      document.getElementById("success-msg").style.display = "block";
     });
   </script>
 </body>

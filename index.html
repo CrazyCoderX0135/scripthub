@@ -30,11 +30,14 @@
   <nav>
     <a class="logo" href="index.html">script<span>hub</span>.dev</a>
     <div class="nav-right">
+      <button class="hamburger" id="hamburger" aria-label="Menu">☰</button>
       <div class="nav-links">
         <a href="index.html" class="active">browse</a>
         <a href="beginner.html">🔰 beginner</a>
         <a href="leaderboard.html">🏆 top</a>
         <a href="collections.html">📦 collections</a>
+        <a href="favorites.html">⭐ favorites</a>
+        <a href="generate.html">✨ generate</a>
         <a href="submit.html">submit</a>
         <a href="about.html">about</a>
         <a href="changelog.html">changelog</a>
@@ -72,13 +75,24 @@
       <button class="tag" data-tag="data">📊 data</button>
       <button class="tag" data-tag="python-tricks">🐍 python tricks</button>
     </div>
+    <div class="diff-filter">
+      <button class="diff-btn active" data-diff="all">all levels</button>
+      <button class="diff-btn" data-diff="beginner">🟢 beginner</button>
+      <button class="diff-btn" data-diff="intermediate">🟡 intermediate</button>
+      <button class="diff-btn" data-diff="advanced">🔴 advanced</button>
+    </div>
     <div class="hero-btns">
       <button class="how-btn" onclick="openGuide()">❓ how do i run a script?</button>
-      <button class="random-btn" onclick="goRandom()">🎲 surprise me</button>
+      <button class="random-btn" onclick="goRandom()">🎲 surprise me <span style="opacity:0.45;font-size:0.7rem;">[R]</span></button>
+      <a class="how-btn" href="favorites.html" style="text-decoration:none;">⭐ favorites</a>
     </div>
   </header>
 
   <main>
+    <div id="rv-section" style="display:none;margin-bottom:1.5rem;">
+      <div class="section-label">🕑 recently viewed</div>
+      <div class="rv-scroll" id="rv-scroll"></div>
+    </div>
     <div id="sotd-section" style="margin-bottom:1.5rem;">
       <div class="section-label">⭐ script of the day</div>
       <div id="sotd-wrap"></div>

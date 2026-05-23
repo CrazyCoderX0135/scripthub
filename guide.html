@@ -72,9 +72,12 @@
 
   <nav>
     <a class="logo" href="index.html">script<span>hub</span>.dev</a>
-    <div class="nav-links">
+    <button class="hamburger" id="hamburger" aria-label="Menu">☰</button>
+      <div class="nav-links">
       <a href="index.html">browse</a>
-      <a href="submit.html">submit</a>
+      <a href="favorites.html">⭐ favorites</a>
+        <a href="generate.html">✨ generate</a>
+        <a href="submit.html">submit</a>
       <a href="guide.html" style="color:#3fb950;">guide</a>
     </div>
   </nav>
@@ -294,6 +297,17 @@
       document.querySelectorAll('.os-tab').forEach(t => t.classList.remove('active'));
       document.getElementById('os-' + os).classList.add('active');
       btn.classList.add('active');
+    }
+  
+    // Hamburger nav
+    const hamburger = document.getElementById('hamburger');
+    const navLinks  = document.querySelector('.nav-links');
+    if (hamburger && navLinks) {
+      hamburger.addEventListener('click', () => navLinks.classList.toggle('open'));
+      navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+      document.addEventListener('click', e => {
+        if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) navLinks.classList.remove('open');
+      });
     }
   </script>
 </body>
