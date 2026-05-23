@@ -15,14 +15,22 @@
       <button class="hamburger" id="hamburger" aria-label="Menu">☰</button>
       <div class="nav-links">
         <a href="index.html">browse</a>
-        <a href="beginner.html">🔰 beginner</a>
-        <a href="leaderboard.html">🏆 top</a>
-        <a href="collections.html">📦 collections</a>
         <a href="favorites.html">⭐ favorites</a>
         <a href="generate.html">✨ generate</a>
+        <a href="stats.html">📊 stats</a>
         <a href="submit.html" class="active">submit</a>
-        <a href="about.html">about</a>
-        <a href="changelog.html">changelog</a>
+        <div class="more-menu" id="more-menu">
+          <button class="more-trigger" id="more-trigger">explore ▾</button>
+          <div class="more-dropdown">
+          <a href="beginner.html">🔰 beginner</a>
+          <a href="leaderboard.html">🏆 top scripts</a>
+          <a href="collections.html">📦 collections</a>
+          <hr>
+          <a href="about.html">about</a>
+          <a href="changelog.html">changelog</a>
+          <a href="request.html">request a script</a>
+          </div>
+        </div>
       </div>
       <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
     </div>
@@ -126,7 +134,17 @@
       navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
       document.addEventListener('click', e => {
         if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) navLinks.classList.remove('open');
-      });
+      }
+
+    // ── MORE DROPDOWN ─────────────────────────────────────────
+    (function() {
+      const menu = document.getElementById('more-menu');
+      const trigger = document.getElementById('more-trigger');
+      if (!menu || !trigger) return;
+      trigger.addEventListener('click', e => { e.stopPropagation(); menu.classList.toggle('open'); });
+      document.addEventListener('click', e => { if (!menu.contains(e.target)) menu.classList.remove('open'); });
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') menu.classList.remove('open'); });
+    })(););
     }
 
     // Pre-fill from generator
@@ -207,6 +225,15 @@
 
       if (!validate()) return;
 
+      // Formspree doesn't allow submissions from file:// (local files).
+      // The form only works when hosted on GitHub Pages or a web server.
+      if (window.location.protocol === 'file:') {
+        const errEl = document.getElementById('submit-error');
+        errEl.innerHTML = '⚠️  <b>testing locally?</b> Formspree only works when the site is hosted. Push to GitHub Pages and it will work fine there.';
+        errEl.style.display = 'block';
+        return;
+      }
+
       const btn = document.getElementById('submit-btn');
       btn.textContent = 'sending...';
       btn.disabled = true;
@@ -225,20 +252,6 @@
           document.getElementById('success-msg').style.display = 'block';
         } else {
           const json = await res.json().catch(()=>({}));
-          const msg = json.errors ? json.errors.map(e=>e.message).join(', ') : 'submission failed. please try again.';
-          const errEl = document.getElementById('submit-error');
-          errEl.textContent = '⚠️  ' + msg;
-          errEl.style.display = 'block';
-        }
-      } catch (err) {
-        const errEl = document.getElementById('submit-error');
-        errEl.textContent = '⚠️  network error — check your connection and try again.';
-        errEl.style.display = 'block';
-      } finally {
-        btn.textContent = 'submit script →';
-        btn.disabled = false;
-      }
-    });
-  </script>
-</body>
-</html>
+          let msg = 'submission failed. please try again.';
+          if (json.errors) msg = json.errors.map(e=>e.message).join(', ');
+          else if (res.s

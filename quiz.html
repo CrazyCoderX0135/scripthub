@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-mode="">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Script Quiz — ScriptHub</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
+  <script>(function(){var t=localStorage.getItem('sh-theme')||'dark';var m=localStorage.getItem('sh-mode')||'';document.documentElement.setAttribute('data-theme',t);document.documentElement.setAttribute('data-mode',m);})();</script>
+  <style>
+    /* ── QUIZ STYLES ── */
+    .quiz-wrap {
+      max-width: 740px; margin: 0 auto; padding: 2rem 2rem 5rem;
+    }
+    .quiz-topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 10px; margin-bottom: 1.5rem;
+    }
+    .quiz-stat {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.4rem 1rem;
+      font-size: 0.78rem; color: var(--muted);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .quiz-stat b { color: var(--text); font-size: 1rem; }
+    .quiz-stat.streak b { color: var(--yellow); }
+    .quiz-stat.hi b    { color: var(--green); }
+
+    .quiz-progress {
+      height: 3px; background: var(--border); border-radius: 2px;
+      margin-bottom: 1.5rem; overflow: hidden;
+    }
+    .quiz-progress-bar {
+      height: 100%; background: var(--green);
+      border-radius: 2px; transition: width 0.4s ease;
+    }
+
+    .quiz-code-wrap {
+      background: var(--code-bg); border: 1px solid var(--code-border);
+      border-radius: 8px; overflow: hidden; margin-bottom: 1.25rem;
+    }
+    .quiz-code-toolbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.45rem 1rem; background: var(--code-bg2);
+      border-bottom: 1px solid var(--code-border);
+      font-size: 0.73rem; color: #8b949e;
+    }
+    .quiz-code-toolbar .qlang { font-size: 0.73rem; color: #8b949e; }
+    .quiz-code-toolbar .qhint-btn {
+      background: none; border: 1px solid #333; color: #8b949e;
+      font-family: var(--font); font-size: 0.7rem; padding: 2px 9px;
+      border-radius: 4px; cursor: pointer; transition: all 0.15s;
+    }
+    .quiz-code-toolbar .qhint-btn:hover { border-color: var(--yellow); color: var(--yellow); }
+    .quiz-code-toolbar .qhint-btn:disabled { opacity: 0.35; cursor: default; }
+    .quiz-code-wrap pre {
+      padding: 1rem 1.25rem; overflow-x: auto;
+      font-size: 0.78rem; line-height: 1.65;
+      max-height: 320px; overflow-y: auto;
+    }
+    .quiz-code-wrap pre code.hljs { padding: 0; background: none; }
+
+    .quiz-question {
+      font-size: 0.9rem; color: var(--muted); margin-bottom: 1rem;
+    }
+
+    .quiz-choices {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 9px; margin-bottom: 1.25rem;
+    }
+    @media (max-width: 540px) { .quiz-choices { grid-template-columns: 1fr; } }
+
+    .quiz-choice {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.75rem 1rem;
+      cursor: pointer; font-family: var(--font); font-size: 0.8rem;
+      color: var(--text); text-align: left; transition: all 0.15s;
+      display: flex; align-items: flex-start; gap: 9px; line-height: 1.5;
+    }
+    .quiz-choice:hover:not(:disabled) { border-color: var(--blue); color: var(--blue); }
+    .quiz-choice .qletter {
+      min-width: 20px; height: 20px; border-radius: 50%;
+      border: 1px solid var(--border); display: flex; align-items: center;
+      justify-content: center; font-size: 0.68rem; color: var(--muted);
+      flex-shrink: 0; margin-top: 1px; transition: all 0.15s;
+    }
+    .quiz-choice:hover:not(:disabled) .qletter { border-color: var(--blue); color: var(--blue); }
+
+    /* Result states */
+    .quiz-choice.correct {
+      border-color: var(--green); background: rgba(63,185,80,0.07); color: var(--green);
+    }
+    .quiz-choice.correct .qletter { border-color: var(--green); color: var(--green); background: rgba(63,185,80,0.15); }
+    .quiz-choice.wrong {
+      border-color: var(--red); background: rgba(255,107,107,0.07); color: var(--red);
+    }
+    .quiz-choice.wrong .qletter { border-color: var(--red); color: var(--red); background: rgba(255,107,107,0.15); }
+    .quiz-choice.dim { opacity: 0.38; }
+    .quiz-choice:disabled { cursor: default; }
+
+    .quiz-feedback {
+      display: none; border-radius: 8px; padding: 0.85rem 1rem;
+      font-size: 0.82rem; line-height: 1.6; margin-bottom: 1.25rem;
+      border: 1px solid var(--border);
+    }
+    .quiz-feedback.show { display: block; }
+    .quiz-feedback.correct-fb { border-color: var(--green); background: rgba(63,185,80,0.06); }
+    .quiz-feedback.wrong-fb   { border-color: var(--red);   background: rgba(255,107,107,0.06); }
+    .quiz-feedback .fb-title { font-size: 1rem; margin-bottom: 0.3rem; }
+    .quiz-feedback a { color: var(--blue); text-decoration: none; }
+    .quiz-feedback a:hover { text-decoration: underline; }
+
+    .quiz-actions {
+      display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+    }
+    .quiz-next-btn {
+      background: var(--green); color: #0d1117; border: none;
+      border-radius: 6px; font-family: var(--font); font-size: 0.85rem;
+      font-weight: bold; padding: 0.55rem 1.5rem; cursor: pointer;
+      transition: opacity 0.15s; display: none;
+    }
+    .quiz-next-btn.show { display: inline-block; }
+    .quiz-next-btn:hover { opacity: 0.85; }
+    .quiz-skip-btn {
+      background: none; border: 1px solid var(--border); color: var(--muted);
+      font-family: var(--font); font-size: 0.78rem; padding: 0.5rem 1rem;
+      border-radius: 6px; cursor: pointer; transition: all 0.15s;
+    }
+    .quiz-skip-btn:hover { border-color: var(--muted); color: var(--text); }
+    .quiz-skip-btn.hide { display: none; }
+
+    .diff-selector {
+      display: flex; gap: 7px; align-items: center;
+      font-size: 0.75rem; color: var(--muted);
+    }
+    .diff-sel-btn {
+      background: var(--bg2); border: 1px solid var(--border); color: var(--muted);
+      font-family: var(--font); font-size: 0.72rem; padding: 3px 10px;
+      border-radius: 20px; cursor: pointer; transition: all 0.15s;
+    }
+    .diff-sel-btn:hover { border-color: var(--blue); color: var(--blue); }
+    .diff-sel-btn.active { border-color: var(--green); color: var(--green); }
+
+    /* Game over screen */
+    .quiz-gameover {
+      display: none; text-align: center; padding: 3rem 1rem;
+    }
+    .quiz-gameover.show { display: block; }
+    .quiz-gameover-score {
+      font-size: clamp(3rem, 12vw, 5rem); font-weight: bold;
+      color: var(--green); font-family: var(--font); line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+    .quiz-gameover-label { color: var(--muted); font-size: 0.88rem; margin-bottom: 0.5rem; }
+    .quiz-gameover-grade { font-size: 1.1rem; margin-bottom: 2rem; }
+    .quiz-play-again {
+      background: var(--green); color: #0d1117; border: none;
+      border-radius: 8px; font-family: var(--font); font-size: 0.9rem;
+      font-weight: bold; padding: 0.65rem 2rem; cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .quiz-play-again:hover { opacity: 0.85; }
+
+    /* Hint toast */
+    #hint-toast {
+      display: none; background: var(--bg2); border: 1px solid var(--yellow);
+      border-radius: 8px; padding: 0.65rem 1rem; font-size: 0.8rem;
+      color: var(--yellow); margin-bottom: 1rem; line-height: 1.55;
+    }
+    #hint-toast.show { display: block; }
+
+    /* Streak animation */
+    @keyframes streakPop {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(1.35); }
+      100% { transform: scale(1); }
+    }
+    .streak-pop { animation: streakPop 0.35s ease; }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a class="logo" href="index.html">script<span>hub</span>.dev</a>
+    <div class="nav-right">
+      <button class="hamburger" id="hamburger" aria-label="Menu">☰</button>
+      <div class="nav-links">
+        <a href="index.html">browse</a>
+        <a href="favorites.html">⭐ favorites</a>
+        <a href="generate.html">✨ generate</a>
+        <a href="stats.html">📊 stats</a>
+        <a href="submit.html">submit</a>
+        <div class="more-menu" id="more-menu">
+          <button class="more-trigger" id="more-trigger">explore ▾</button>
+          <div class="more-dropdown">
+          <a href="beginner.html">🔰 beginner</a>
+          <a href="leaderboard.html">🏆 top scripts</a>
+          <a href="collections.html">📦 collections</a>
+          <hr>
+          <a href="about.html">about</a>
+          <a href="changelog.html">changelog</a>
+          <a href="request.html">request a script</a>
+          </div>
+        </div>
+      </div>
+      <button class="terminal-btn" id="terminal-btn" onclick="toggleTerminal()">💻</button>
+      <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
+    </div>
+  </nav>
+
+  <div class="quiz-wrap">
+    <a class="back-link" href="index.html">← back to browse</a>
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;margin-bottom:1.25rem;">
+      <div>
+        <h1 style="font-size:1.55rem;margin-bottom:0.2rem;">🧠 script <span class="green">quiz</span></h1>
+        <p style="color:var(--muted);font-size:0.83rem;">guess what each script does from the code alone.</p>
+      </div>
+      <div class="diff-selector">
+        <span>difficulty:</span>
+        <button class="diff-sel-btn active" data-diff="all">all</button>
+        <button class="diff-sel-btn" data-diff="beginner">🟢</button>
+        <button class="diff-sel-btn" data-diff="intermediate">🟡</button>
+        <button class="diff-sel-btn" data-diff="advanced">🔴</button>
+      </div>
+    </div>
+
+    <!-- STATS BAR -->
+    <div class="quiz-topbar">
+      <div class="quiz-stat">
+        question <b id="q-num">1</b> / <b id="q-total">10</b>
+      </div>
+      <div class="quiz-stat">
+        score <b id="q-score">0</b>
+      </div>
+      <div class="quiz-stat streak">
+        streak <b id="q-streak">0</b> 🔥
+      </div>
+      <div class="quiz-stat hi">
+        best <b id="q-hi">0</b>
+      </div>
+    </div>
+
+    <!-- PROGRESS BAR -->
+    <div class="quiz-progress">
+      <div class="quiz-progress-bar" id="q-progress" style="width:0%"></div>
+    </div>
+
+    <!-- MAIN QUIZ AREA -->
+    <div id="quiz-area">
+      <!-- CODE BLOCK -->
+      <div class="quiz-code-wrap">
+        <div class="quiz-code-toolbar">
+          <span class="qlang" id="q-lang">python</span>
+          <button class="qhint-btn" id="hint-btn" onclick="useHint()">💡 hint (3 left)</button>
+        </div>
+        <pre><code id="q-code" class="language-python"></code></pre>
+      </div>
+
+      <!-- HINT TOAST -->
+      <div id="hint-toast"></div>
+
+      <!-- QUESTION -->
+      <p class="quiz-question">what does this script do?</p>
+
+      <!-- CHOICES -->
+      <div class="quiz-choices" id="q-choices"></div>
+
+      <!-- FEEDBACK -->
+      <div class="quiz-feedback" id="q-feedback">
+        <div class="fb-title" id="fb-title"></div>
+        <div id="fb-body"></div>
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="quiz-actions">
+        <button class="quiz-next-btn" id="next-btn" onclick="nextQuestion()">next question →</button>
+        <button class="quiz-skip-btn" id="skip-btn" onclick="skipQuestion()">skip this one</button>
+      </div>
+    </div>
+
+    <!-- GAME OVER SCREEN -->
+    <div class="quiz-gameover" id="gameover">
+      <div class="quiz-gameover-score" id="go-score">0/10</div>
+      <div class="quiz-gameover-label">final score</div>
+      <div class="quiz-gameover-grade" id="go-grade"></div>
+      <div style="color:var(--muted);font-size:0.8rem;margin-bottom:1.75rem;" id="go-hi"></div>
+      <button class="quiz-play-again" onclick="startQuiz()">play again →</button>
+    </div>
+  </div>
+
+  <button id="back-top">↑ top</button>
+  <footer><p>scripthub &nbsp;·&nbsp; <a href="about.html">about</a></p></footer>
+
+  <script src="scripts.js"></script>
+  <script src="meta.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <script>
+    // ── THEME + NAV ───────────────────────────────────────────
+    function toggleTheme() {
+      document.documentElement.classList.add('theme-transitioning');
+      const curr = document.documentElement.getAttribute('data-theme');
+      const next = curr==='dark'?'light':'dark';
+      document.documentElement.setAttribute('data-theme',next);
+      localStorage.setItem('sh-theme',next);
+      document.getElementById('theme-btn').textContent=next==='dark'?'🌙':'☀️';
+      setTimeout(()=>document.documentElement.classList.remove('theme-transitioning'),420);
+    }
+    function toggleTerminal() {
+      const curr = document.documentElement.getAttribute('data-mode');
+      const next = curr==='terminal'?'':'terminal';
+      document.documentElement.setAttribute('data-mode',next);
+      localStorage.setItem('sh-mode',next);
+      document.getElementById('terminal-btn').classList.toggle('active',next==='terminal');
+    }
+    document.getElementById('theme-btn').textContent=(localStorage.getItem('sh-theme')||'dark')==='dark'?'🌙':'☀️';
+    document.getElementById('terminal-btn').classList.toggle('active',(localStorage.getItem('sh-mode')||'')==='terminal');
+
+    const hamburger = document.getElementById('hamburger');
+    const navLinks  = document.querySelector('.nav-links');
+    if (hamburger && navLinks) {
+      hamburger.addEventListener('click', () => navLinks.classList.toggle('open'));
+      navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+      document.addEventListener('click', e => {
+        if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) navLinks.classList.remove('open');
+      }
+
+    // ── MORE DROPDOWN ─────────────────────────────────────────
+    (function() {
+      const menu = document.getElementById('more-menu');
+      const trigger = document.getElementById('more-trigger');
+      if (!menu || !trigger) return;
+      trigger.addEventListener('click', e => { e.stopPropagation(); menu.classList.toggle('open'); });
+      document.addEventListener('click', e => { if (!menu.contains(e.target)) menu.classList.remove('open'); });
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') menu.classList.remove('open'); });
+    })(););
+    }
+
+    const bt = document.getElementById('back-top');
+    if (bt) {
+      window.addEventListener('scroll', () => bt.classList.toggle('visible', window.scrollY>400));
+      bt.addEventListener('click', () => window.scrollTo({top:0,behavior:'smooth'}));
+    }
+
+    // ── QUIZ STATE ────────────────────────────────────────────
+    const QUESTIONS_PER_GAME = 10;
+    const langMap = {python:'python',javascript:'javascript',shell:'bash',powershell:'powershell'};
+
+    let pool       = [];      // scripts available for this game
+    let queue      = [];      // ordered question scripts for this game
+    let current    = null;    // current script object
+    let qIndex     = 0;       // 0-based question counter
+    let score      = 0;
+    let streak     = 0;
+    let hintsLeft  = 3;
+    let answered   = false;
+    let diffFilter = 'all';
+
+    function getHiScore() { return parseInt(localStorage.getItem('sh-quiz-hi')||'0'); }
+    function setHiScore(n) { localStorage.setItem('sh-quiz-hi', n); }
+
+    // Difficulty filter buttons
+    document.querySelectorAll('.diff-sel-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.diff-sel-btn').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        diffFilter = btn.dataset.diff;
+        startQuiz();
+      });
+    });
+
+    // ── SHUFFLE HELPER ────────────────────────────────────────
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length-1; i > 0; i--) {
+        const j = Math.floor(Math.random()*(i+1));
+        [a[i],a[j]] = [a[j],a[i]];
+      }
+      return a;
+    }
+
+    // ── BUILD DISTRACTOR OPTIONS ──────────────────────────────
+    // Returns 4 choices: 1 correct + 3 wrong, shuffled
+    function buildChoices(correct, allScripts) {
+      // pick 3 distractors: different tag preferred, always different id
+      const sameTag   = allScripts.filter(s=>s.id!==correct.id && s.tag===correct.tag);
+      const diffTag   = allScripts.filter(s=>s.id!==correct.id && s.tag!==correct.tag);
+      const distPool  = shuffle([...sameTag, ...diffTag]);
+      const distractors = distPool.slice(0, 3);
+      return shuffle([correct, ...distractors]);
+    }
+
+    // ── BUILD HINT ────────────────────────────────────────────
+    function buildHint(script) {
+      const meta = (SCRIPT_META&&SCRIPT_META[script.id])||{};
+      const hints = [];
+      if (meta.difficulty) hints.push(`difficulty: ${meta.difficulty}`);
+      if (meta.requires && meta.requires.length > 0)
+        hints.push(`uses: ${meta.requires.slice(0,2).join(', ')}`);
+      hints.push(`category: ${script.tag}`);
+      const lineCount = script.code.split('\n').length;
+      hints.push(`~${lineCount} lines of ${script.lang}`);
+      return hints.join(' · ');
+    }
+
+    // ── RENDER QUESTION ───────────────────────────────────────
+    function renderQuestion() {
+      answered  = false;
+      hintsLeft = 3;
+
+      // Update counters
+      document.getElementById('q-num').textContent    = qIndex + 1;
+      document.getElementById('q-total').textContent  = QUESTIONS_PER_GAME;
+      document.getElementById('q-score').textContent  = score;
+      document.getElementById('q-streak').textContent = streak;
+      document.getElementById('q-hi').textContent     = getHiScore();
+      document.getElementById('q-progress').style.width = (qIndex / QUESTIONS_PER_GAME * 100) + '%';
+
+      // Hint button
+      const hintBtn = document.getElementById('hint-btn');
+      hintBtn.textContent = `💡 hint (${hintsLeft} left)`;
+      hintBtn.disabled = false;
+      document.getElementById('hint-toast').classList.remove('show');
+
+      // Code block
+      current = queue[qIndex];
+      const codeEl = document.getElementById('q-code');
+      codeEl.className = `language-${langMap[current.lang]||'python'}`;
+      // Show first 25 lines max to keep it challenging but readable
+      const lines = current.code.split('\n').slice(0, 25);
+      const truncated = lines.length < current.code.split('\n').length;
+      codeEl.textContent = lines.join('\n') + (truncated ? '\n# ... (truncated)' : '');
+      document.getElementById('q-lang').textContent = current.lang;
+      hljs.highlightElement(codeEl);
+
+      // Choices
+      const choices = buildChoices(current, SCRIPTS);
+      const letters = ['A','B','C','D'];
+      const choicesEl = document.getElementById('q-choices');
+      choicesEl.innerHTML = '';
+      choices.forEach((s, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-choice';
+        btn.innerHTML = `<span class="qletter">${letters[i]}</span><span>${escHtml(s.desc)}</span>`;
+        btn.dataset.id = s.id;
+        btn.addEventListener('click', () => checkAnswer(s.id, choices, btn));
+        choicesEl.appendChild(btn);
+      });
+
+      // Reset feedback + actions
+      const fb = document.getElementById('q-feedback');
+      fb.className = 'quiz-feedback';
+      document.getElementById('next-btn').classList.remove('show');
+      document.getElementById('skip-btn').classList.remove('hide');
+    }
+
+    // ── CHECK ANSWER ──────────────────────────────────────────
+    function checkAnswer(chosenId, choices, clickedBtn) {
+      if (answered) return;
+      answered = true;
+
+      document.getElementById('skip-btn').classList.add('hide');
+
+      const correct = chosenId === current.id;
+      const choiceBtns = document.querySelectorAll('.quiz-choice');
+
+      choiceBtns.forEach(btn => {
+        btn.disabled = true;
+        if (btn.dataset.id === current.id) {
+          btn.classList.add('correct');
+        } else if (btn === clickedBtn && !correct) {
+          btn.classList.add('wrong');
+        } else {
+          btn.classList.add('dim');
+        }
+      });
+
+      // Feedback box
+      const fb = document.getElementById('q-feedback');
+      const fbTitle = document.getElementById('fb-title');
+      const fbBody  = document.getElementById('fb-body');
+
+      if (correct) {
+        score++;
+        streak++;
+        fb.className = 'quiz-feedback correct-fb show';
+        const exclaims = ['✓ correct!','✓ nailed it!','✓ nice one!','✓ you got it!','✓ spot on!'];
+        fbTitle.textContent = exclaims[Math.floor(Math.random()*exclaims.length)];
+        fbBody.innerHTML = `<b style="color:var(--text)">${escHtml(current.name)}</b> — ${escHtml(current.desc)} <a href="script.html?id=${current.id}" target="_blank">view script →</a>`;
+
+        // Streak pop animation
+        const streakEl = document.getElementById('q-streak');
+        streakEl.textContent = streak;
+        streakEl.classList.remove('streak-pop');
+        void streakEl.offsetWidth;
+        streakEl.classList.add('streak-pop');
+      } else {
+        streak = 0;
+        fb.className = 'quiz-feedback wrong-fb show';
+        const wrongMsgs = ['✗ not quite.','✗ nope!','✗ wrong this time.','✗ close, but no.'];
+        fbTitle.textContent = wrongMsgs[Math.floor(Math.random()*wrongMsgs.length)];
+        fbBody.innerHTML = `it was <b style="color:var(--text)">${escHtml(current.name)}</b> — ${escHtml(current.desc)} <a href="script.html?id=${current.id}" target="_blank">view script →</a>`;
+        document.getElementById('q-streak').textContent = 0;
+      }
+
+      document.getElementById('q-score').textContent = score;
+      document.getElementById('next-btn').classList.add('show');
+
+      // Update high score
+      if (score > getHiScore()) setHiScore(score);
+      document.getElementById('q-hi').textContent = getHiScore();
+    }
+
+    // ── HINT ──────────────────────────────────────────────────
+    function useHint() {
+      if (answered || hintsLeft <= 0) return;
+      hintsLeft--;
+      const hintBtn = document.getElementById('hint-btn');
+      hintBtn.textContent = `💡 hint (${hintsLeft} left)`;
+      if (hintsLeft === 0) hintBtn.disabled = true;
+
+      const toast = document.getElementById('hint-toast');
+      toast.textContent = '💡 ' + buildHint(current);
+      toast.classList.add('show');
+    }
+
+    // ── SKIP ──────────────────────────────────────────────────
+    function skipQuestion() {
+      if (answered) return;
+      answered = true;
+      streak = 0;
+      document.getElementById('q-streak').textContent = 0;
+
+      // Show answer passively
+      document.querySelectorAll('.quiz-choice').forEach(btn => {
+        btn.disabled = true;
+        if (btn.dataset.id === current.id) btn.classList.add('correct');
+        else btn.classList.add('dim');
+      });
+
+      const fb = document.getElementById('q-feedback');
+      document.getElementById('fb-title').textContent = '↷ skipped.';
+      document.getElementById('fb-body').innerHTML = `it was <b style="color:var(--text)">${escHtml(current.name)}</b> — ${escHtml(current.desc)} <a href="script.html?id=${current.id}" target="_blank">view script →</a>`;
+      fb.className = 'quiz-feedback show';
+
+      document.getElementById('skip-btn').classList.add('hide');
+      document.getElementById('next-btn').classList.add('show');
+    }
+
+    // ── NEXT QUESTION ─────────────────────────────────────────
+    function nextQuestion() {
+      qIndex++;
+      if (qIndex >= QUESTIONS_PER_GAME) {
+        showGameOver();
+      } else {
+        renderQuestion();
+        window.scrollTo({top: 0, behavior: 'smooth'});
+      }
+    }
+
+    // ── GAME OVER ─────────────────────────────────────────────
+    function showGameOver() {
+      document.getElementById('quiz-area').style.display = 'none';
+      const go = document.getElementById('gameover');
+      go.classList.add('show');
+
+      document.getElementById('q-progress').style.width = '100%';
+      document.getElementById('go-score').textContent = `${score}/${QUESTIONS_PER_GAME}`;
+
+      const pct = score / QUESTIONS_PER_GAME;
+      let grade, gradeColor;
+      if      (pct === 1)   { grade = '🏆 perfect score! you\'re a code detective.'; gradeColor = 'var(--yellow)'; }
+      else if (pct >= 0.8)  { grade = '🌟 excellent — you know your scripts!'; gradeColor = 'var(--green)'; }
+      else if (pct >= 0.6)  { grade = '👍 pretty good — keep browsing to get better.'; gradeColor = 'var(--blue)'; }
+      else if (pct >= 0.4)  { grade = '🤔 not bad for a warm-up.'; gradeColor = 'var(--muted)'; }
+      else                  { grade = '📚 browse more scripts and try again!'; gradeColor = 'var(--red)'; }
+
+      const gradeEl = document.getElementById('go-grade');
+      gradeEl.textContent = grade;
+      gradeEl.style.color = gradeColor;
+
+      const hi = getHiScore();
+      const hiEl = document.getElementById('go-hi');
+      if (score >= hi) {
+        hiEl.innerHTML = `<span style="color:var(--green)">✦ new high score!</span>`;
+      } else {
+        hiEl.textContent = `best score: ${hi}/${QUESTIONS_PER_GAME}`;
+      }
+    }
+
+    // ── START / RESTART QUIZ ──────────────────────────────────
+    function startQuiz() {
+      // Build pool filtered by difficulty
+      let candidates = SCRIPTS.filter(s => s.code && s.code.length > 50);
+      if (diffFilter !== 'all') {
+        const filtered = candidates.filter(s =>
+          SCRIPT_META && SCRIPT_META[s.id] && SCRIPT_META[s.id].difficulty === diffFilter
+        );
+        // Fall back to all if not enough scripts for chosen difficulty
+        if (filtered.length >= QUESTIONS_PER_GAME) candidates = filtered;
+      }
+
+      pool  = shuffle(candidates);
+      queue = pool.slice(0, QUESTIONS_PER_GAME);
+      qIndex = 0;
+      score  = 0;
+      streak = 0;
+
+      document.getElementById('q-score').textContent  = 0;
+      document.getElementById('q-streak').textContent = 0;
+      document.getElementById('q-hi').textContent     = getHiScore();
+      document.getElementById('quiz-area').style.display = 'block';
+      document.getElementById('gameover').classList.remove('show');
+
+      renderQuestion();
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+
+    function escHtml(s) {
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', e => {
+      const tag = document.activeElement?.tagName;
+      if (tag==='INPUT'||tag==='TEXTAREA') return;
+      const map = {'1':'A','2':'B','3':'C','4':'D'};
+      const letter = e.key >= '1' && e.key <= '4' ? map[e.key] : null;
+      if (letter && !answered) {
+        const btns = document.querySelectorAll('.quiz-choice');
+        btns.forEach(btn => {
+          if (btn.querySelector('.qletter')?.textContent === letter) btn.click();
+        });
+      }
+      if ((e.key === 'Enter' || e.key === ' ') && answered) {
+        const nb = document.getElementById('next-btn');
+        if (nb.classList.contains('show')) nextQuestion();
+      }
+      if (e.key === 'h' || e.key === 'H') useHint();
+    });
+
+    // ── BOOT ──────────────────────────────────────────────────
+    startQuiz();
+  </script>
+</body>
+</html>

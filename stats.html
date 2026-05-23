@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-mode="">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stats — ScriptHub</title>
+  <link rel="stylesheet" href="style.css" />
+  <script>(function(){var t=localStorage.getItem('sh-theme')||'dark';var m=localStorage.getItem('sh-mode')||'';document.documentElement.setAttribute('data-theme',t);document.documentElement.setAttribute('data-mode',m);})();</script>
+  <style>
+    /* ── STATS PAGE ── */
+    .stats-wrap { max-width: 860px; margin: 0 auto; padding: 2rem 2rem 5rem; }
+
+    /* Summary cards */
+    .stat-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 10px; margin-bottom: 2.5rem;
+    }
+    .stat-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 10px; padding: 1.1rem 1.25rem;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .stat-card-label {
+      font-size: 0.72rem; color: var(--muted); text-transform: lowercase;
+      letter-spacing: 0.5px;
+    }
+    .stat-card-value {
+      font-size: 2rem; font-weight: bold; color: var(--text);
+      font-family: var(--font); line-height: 1;
+    }
+    .stat-card-sub {
+      font-size: 0.72rem; color: var(--muted); margin-top: 2px;
+    }
+    .stat-card.green-accent { border-left: 3px solid var(--green); }
+    .stat-card.blue-accent  { border-left: 3px solid var(--blue); }
+    .stat-card.yellow-accent{ border-left: 3px solid var(--yellow); }
+    .stat-card.red-accent   { border-left: 3px solid var(--red); }
+
+    /* Section */
+    .stats-section { margin-bottom: 2.5rem; }
+    .stats-section-title {
+      font-size: 0.78rem; color: var(--muted); margin-bottom: 1rem;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .stats-section-title::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    /* Bar chart */
+    .bar-chart { display: flex; flex-direction: column; gap: 7px; }
+    .bar-row {
+      display: grid;
+      grid-template-columns: 130px 1fr 42px;
+      align-items: center; gap: 10px;
+    }
+    @media (max-width: 500px) {
+      .bar-row { grid-template-columns: 90px 1fr 38px; }
+    }
+    .bar-label {
+      font-size: 0.75rem; color: var(--muted); text-align: right;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .bar-track {
+      height: 18px; background: var(--bg3); border-radius: 4px;
+      overflow: hidden; position: relative;
+    }
+    .bar-fill {
+      height: 100%; border-radius: 4px;
+      transition: width 0.8s cubic-bezier(.22,1,.36,1);
+      width: 0;
+    }
+    .bar-count {
+      font-size: 0.73rem; color: var(--muted); font-family: var(--font);
+    }
+
+    /* Language pills chart */
+    .lang-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 10px;
+    }
+    .lang-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.9rem 1rem;
+    }
+    .lang-card-top {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 0.6rem;
+    }
+    .lang-card-name { font-size: 0.8rem; font-weight: bold; }
+    .lang-card-count { font-size: 1.4rem; font-weight: bold; font-family: var(--font); }
+    .lang-bar-track {
+      height: 5px; background: var(--bg3); border-radius: 3px; overflow: hidden;
+    }
+    .lang-bar-fill {
+      height: 100%; border-radius: 3px;
+      transition: width 0.9s cubic-bezier(.22,1,.36,1); width: 0;
+    }
+
+    /* Difficulty donut-style bars */
+    .diff-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+    }
+    .diff-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 1rem 1.1rem; text-align: center;
+    }
+    .diff-card-count {
+      font-size: 2rem; font-weight: bold; font-family: var(--font);
+      line-height: 1; margin-bottom: 4px;
+    }
+    .diff-card-label { font-size: 0.75rem; color: var(--muted); }
+    .diff-card-pct {
+      font-size: 0.72rem; color: var(--muted); margin-top: 4px;
+    }
+    .diff-track {
+      height: 4px; background: var(--bg3); border-radius: 2px;
+      overflow: hidden; margin-top: 8px;
+    }
+    .diff-fill {
+      height: 100%; border-radius: 2px;
+      transition: width 0.9s cubic-bezier(.22,1,.36,1); width: 0;
+    }
+
+    /* Top liked */
+    .top-liked-list { display: flex; flex-direction: column; gap: 8px; }
+    .liked-row {
+      display: flex; align-items: center; gap: 12px;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.7rem 1rem;
+      text-decoration: none; color: inherit;
+      transition: border-color 0.15s, transform 0.1s;
+    }
+    .liked-row:hover { border-color: var(--blue); transform: translateX(3px); }
+    .liked-rank {
+      font-size: 1rem; font-weight: bold; color: var(--yellow);
+      min-width: 24px; text-align: center;
+    }
+    .liked-icon { font-size: 1.2rem; }
+    .liked-name { font-size: 0.88rem; font-weight: bold; flex: 1; }
+    .liked-desc { font-size: 0.75rem; color: var(--muted); flex: 2; }
+    .liked-count {
+      font-size: 0.8rem; color: var(--red);
+      white-space: nowrap;
+    }
+    @media (max-width: 560px) {
+      .liked-desc { display: none; }
+    }
+
+    /* Fun fact ticker */
+    .fun-facts-wrap {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 10px; padding: 1.1rem 1.25rem;
+      margin-top: 2rem; font-size: 0.82rem; color: var(--muted);
+      min-height: 52px; line-height: 1.65;
+    }
+    .fun-fact-label {
+      font-size: 0.7rem; color: var(--green); margin-bottom: 4px;
+      letter-spacing: 0.5px;
+    }
+    #fun-fact-text { color: var(--text); transition: opacity 0.3s; }
+
+    /* Count-up animation */
+    @keyframes countUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    .count-up { animation: countUp 0.4s ease forwards; }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a class="logo" href="index.html">script<span>hub</span>.dev</a>
+    <div class="nav-right">
+      <button class="hamburger" id="hamburger" aria-label="Menu">☰</button>
+      <div class="nav-links">
+        <a href="index.html">browse</a>
+        <a href="favorites.html">⭐ favorites</a>
+        <a href="generate.html">✨ generate</a>
+        <a href="stats.html" class="active">📊 stats</a>
+        <a href="submit.html">submit</a>
+        <div class="more-menu" id="more-menu">
+          <button class="more-trigger" id="more-trigger">explore ▾</button>
+          <div class="more-dropdown">
+          <a href="beginner.html">🔰 beginner</a>
+          <a href="leaderboard.html">🏆 top scripts</a>
+          <a href="collections.html">📦 collections</a>
+          <hr>
+          <a href="about.html">about</a>
+          <a href="changelog.html">changelog</a>
+          <a href="request.html">request a script</a>
+          </div>
+        </div>
+      </div>
+      <button class="terminal-btn" id="terminal-btn" onclick="toggleTerminal()">💻</button>
+      <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
+    </div>
+  </nav>
+
+  <div class="stats-wrap">
+    <a class="back-link" href="index.html">← back to browse</a>
+    <h1 style="font-size:1.55rem;margin-bottom:0.25rem;">📊 scripthub <span class="green">stats</span></h1>
+    <p style="color:var(--muted);font-size:0.83rem;margin-bottom:1.75rem;">everything by the numbers — computed live from the script database.</p>
+
+    <!-- SUMMARY CARDS -->
+    <div class="stat-cards" id="summary-cards">
+      <div class="stat-card green-accent">
+        <div class="stat-card-label">total scripts</div>
+        <div class="stat-card-value" id="s-total">—</div>
+        <div class="stat-card-sub" id="s-total-sub"></div>
+      </div>
+      <div class="stat-card blue-accent">
+        <div class="stat-card-label">categories</div>
+        <div class="stat-card-value" id="s-cats">—</div>
+        <div class="stat-card-sub" id="s-cats-sub"></div>
+      </div>
+      <div class="stat-card yellow-accent">
+        <div class="stat-card-label">languages</div>
+        <div class="stat-card-value" id="s-langs">—</div>
+        <div class="stat-card-sub">python · js · shell · ps</div>
+      </div>
+      <div class="stat-card red-accent">
+        <div class="stat-card-label">your total likes</div>
+        <div class="stat-card-value" id="s-likes">—</div>
+        <div class="stat-card-sub" id="s-likes-sub"></div>
+      </div>
+    </div>
+
+    <!-- SCRIPTS PER CATEGORY -->
+    <div class="stats-section">
+      <div class="stats-section-title">scripts per category</div>
+      <div class="bar-chart" id="cat-chart"></div>
+    </div>
+
+    <!-- SCRIPTS PER LANGUAGE -->
+    <div class="stats-section">
+      <div class="stats-section-title">scripts per language</div>
+      <div class="lang-grid" id="lang-chart"></div>
+    </div>
+
+    <!-- DIFFICULTY BREAKDOWN -->
+    <div class="stats-section">
+      <div class="stats-section-title">difficulty breakdown</div>
+      <div class="diff-grid" id="diff-chart"></div>
+    </div>
+
+    <!-- TOP LIKED -->
+    <div class="stats-section">
+      <div class="stats-section-title">your most liked scripts</div>
+      <div class="top-liked-list" id="top-liked"></div>
+    </div>
+
+    <!-- FUN FACTS -->
+    <div class="fun-facts-wrap">
+      <div class="fun-fact-label">✦ fun fact</div>
+      <div id="fun-fact-text">computing...</div>
+    </div>
+  </div>
+
+  <button id="back-top">↑ top</button>
+  <footer><p>scripthub &nbsp;·&nbsp; <a href="about.html">about</a></p></footer>
+
+  <script src="scripts.js"></script>
+  <script src="meta.js"></script>
+
+  <script>
+    function toggleTheme() {
+      document.documentElement.classList.add('theme-transitioning');
+      const curr = document.documentElement.getAttribute('data-theme');
+      const next = curr==='dark'?'light':'dark';
+      document.documentElement.setAttribute('data-theme',next);
+      localStorage.setItem('sh-theme',next);
+      document.getElementById('theme-btn').textContent=next==='dark'?'🌙':'☀️';
+      setTimeout(()=>document.documentElement.classList.remove('theme-transitioning'),420);
+    }
+    function toggleTerminal() {
+      const curr = document.documentElement.getAttribute('data-mode');
+      const next = curr==='terminal'?'':'terminal';
+      document.documentElement.setAttribute('data-mode',next);
+      localStorage.setItem('sh-mode',next);
+      document.getElementById('terminal-btn').classList.toggle('active',next==='terminal');
+    }
+    document.getElementById('theme-btn').textContent=(localStorage.getItem('sh-theme')||'dark')==='dark'?'🌙':'☀️';
+    document.getElementById('terminal-btn').classList.toggle('active',(localStorage.getItem('sh-mode')||'')==='terminal');
+
+    const hamburger = document.getElementById('hamburger');
+    const navLinks  = document.querySelector('.nav-links');
+    if (hamburger && navLinks) {
+      hamburger.addEventListener('click', () => navLinks.classList.toggle('open'));
+      navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+      document.addEventListener('click', e => {
+        if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) navLinks.classList.remove('open');
+      }
+
+    // ── MORE DROPDOWN ─────────────────────────────────────────
+    (function() {
+      const menu = document.getElementById('more-menu');
+      const trigger = document.getElementById('more-trigger');
+      if (!menu || !trigger) return;
+      trigger.addEventListener('click', e => { e.stopPropagation(); menu.classList.toggle('open'); });
+      document.addEventListener('click', e => { if (!menu.contains(e.target)) menu.classList.remove('open'); });
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') menu.classList.remove('open'); });
+    })(););
+    }
+
+    const bt = document.getElementById('back-top');
+    if (bt) {
+      window.addEventListener('scroll', () => bt.classList.toggle('visible', window.scrollY>400));
+      bt.addEventListener('click', () => window.scrollTo({top:0,behavior:'smooth'}));
+    }
+
+    // ── COLORS ────────────────────────────────────────────────
+    const CAT_COLORS = {
+      'automation':   '#58a6ff',
+      'utilities':    '#3fb950',
+      'web':          '#e3b341',
+      'file tools':   '#c792ea',
+      'games':        '#ff6b6b',
+      'math':         '#58a6ff',
+      'science':      '#3fb950',
+      'productivity': '#e3b341',
+      'security':     '#ff6b6b',
+      'data':         '#c792ea',
+      'python-tricks':'#58a6ff',
+    };
+    const LANG_COLORS = {
+      python:     { fill:'#58a6ff', bg:'#0d2137', border:'#1f3a5f' },
+      javascript: { fill:'#e3b341', bg:'#2a1f00', border:'#4a3800' },
+      shell:      { fill:'#3fb950', bg:'#0d2110', border:'#1a3a1f' },
+      powershell: { fill:'#c792ea', bg:'#1e0d37', border:'#3a1f5f' },
+    };
+    const DIFF_COLORS = {
+      beginner:     { color:'#3fb950', bg:'#0d2110' },
+      intermediate: { color:'#e3b341', bg:'#2a1f00' },
+      advanced:     { color:'#ff6b6b', bg:'#2a0d0d' },
+    };
+
+    // ── COMPUTE STATS ─────────────────────────────────────────
+    const total = SCRIPTS.length;
+
+    // Category counts
+    const catCounts = {};
+    SCRIPTS.forEach(s => { catCounts[s.tag] = (catCounts[s.tag]||0) + 1; });
+    const catSorted = Object.entries(catCounts).sort((a,b)=>b[1]-a[1]);
+
+    // Language counts
+    const langCounts = {};
+    SCRIPTS.forEach(s => { langCounts[s.lang] = (langCounts[s.lang]||0) + 1; });
+
+    // Difficulty counts
+    const diffCounts = { beginner:0, intermediate:0, advanced:0, unknown:0 };
+    SCRIPTS.forEach(s => {
+      const d = SCRIPT_META&&SCRIPT_META[s.id]?SCRIPT_META[s.id].difficulty:'unknown';
+      diffCounts[d] = (diffCounts[d]||0) + 1;
+    });
+
+    // Likes from localStorage
+    let totalLikes = 0;
+    const likedScripts = [];
+    SCRIPTS.forEach(s => {
+      const n = parseInt(localStorage.getItem(`sh-likes-${s.id}`)||'0');
+      totalLikes += n;
+      if (n > 0) likedScripts.push({ script:s, likes:n });
+    });
+    likedScripts.sort((a,b)=>b.likes-a.likes);
+
+    // Average lines of code
+    const avgLines = Math.round(SCRIPTS.reduce((sum,s)=>sum+s.code.split('\n').length,0)/total);
+
+    // Longest script
+    const longest = SCRIPTS.reduce((best,s)=>s.code.length>best.code.length?s:best, SCRIPTS[0]);
+
+    // Most common category
+    const topCat = catSorted[0];
+
+    // Favorites count
+    let favCount = 0;
+    try { favCount = JSON.parse(localStorage.getItem('sh-favs')||'[]').length; } catch{}
+
+    // ── FILL SUMMARY CARDS ────────────────────────────────────
+    function animateCount(el, target, duration=600) {
+      const start = performance.now();
+      function step(now) {
+        const p = Math.min((now-start)/duration, 1);
+        el.textContent = Math.round(p * target).toLocaleString();
+        el.classList.add('count-up');
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    animateCount(document.getElementById('s-total'), total);
+    document.getElementById('s-total-sub').textContent = `across ${Object.keys(catCounts).length} categories`;
+
+    animateCount(document.getElementById('s-cats'), Object.keys(catCounts).length);
+    document.getElementById('s-cats-sub').textContent = `#1: ${topCat[0]} (${topCat[1]})`;
+
+    animateCount(document.getElementById('s-langs'), Object.keys(langCounts).length);
+
+    animateCount(document.getElementById('s-likes'), totalLikes);
+    document.getElementById('s-likes-sub').textContent = favCount > 0
+      ? `${favCount} saved to favorites`
+      : 'like scripts to track them';
+
+    // ── CATEGORY BAR CHART ────────────────────────────────────
+    const maxCat = catSorted[0][1];
+    const catChart = document.getElementById('cat-chart');
+    catSorted.forEach(([tag, count]) => {
+      const pct = (count / maxCat * 100).toFixed(1);
+      const color = CAT_COLORS[tag] || '#8b949e';
+      const row = document.createElement('div');
+      row.className = 'bar-row';
+      row.innerHTML = `
+        <div class="bar-label">${tag}</div>
+        <div class="bar-track">
+          <div class="bar-fill" data-pct="${pct}" style="background:${color};"></div>
+        </div>
+        <div class="bar-count">${count}</div>`;
+      catChart.appendChild(row);
+    });
+
+    // ── LANGUAGE CARDS ────────────────────────────────────────
+    const maxLang = Math.max(...Object.values(langCounts));
+    const langChart = document.getElementById('lang-chart');
+    const langOrder = ['python','javascript','shell','powershell'];
+    langOrder.forEach(lang => {
+      if (!langCounts[lang]) return;
+      const count = langCounts[lang];
+      const pct   = (count/maxLang*100).toFixed(1);
+      const c     = LANG_COLORS[lang] || { fill:'#8b949e', bg:'var(--bg2)', border:'var(--border)' };
+      const div = document.createElement('div');
+      div.className = 'lang-card';
+      div.style.borderLeft = `3px solid ${c.fill}`;
+      div.innerHTML = `
+        <div class="lang-card-top">
+          <span class="lang-card-name" style="color:${c.fill}">${lang}</span>
+          <span class="lang-card-count" style="color:${c.fill}">${count}</span>
+        </div>
+        <div style="font-size:0.71rem;color:var(--muted);margin-bottom:7px;">
+          ${(count/total*100).toFixed(1)}% of all scripts
+        </div>
+        <div class="lang-bar-track">
+          <div class="lang-bar-fill" data-pct="${pct}" style="background:${c.fill};"></div>
+        </div>`;
+      langChart.appendChild(div);
+    });
+
+    // ── DIFFICULTY CARDS ──────────────────────────────────────
+    const diffChart = document.getElementById('diff-chart');
+    const diffLabels = { beginner:'🟢 beginner', intermediate:'🟡 intermediate', advanced:'🔴 advanced' };
+    ['beginner','intermediate','advanced'].forEach(d => {
+      const count = diffCounts[d]||0;
+      const pct   = (count/total*100).toFixed(1);
+      const c     = DIFF_COLORS[d];
+      const div   = document.createElement('div');
+      div.className = 'diff-card';
+      div.innerHTML = `
+        <div class="diff-card-count" style="color:${c.color}">${count}</div>
+        <div class="diff-card-label">${diffLabels[d]}</div>
+        <div class="diff-card-pct">${pct}% of scripts</div>
+        <div class="diff-track">
+          <div class="diff-fill" data-pct="${pct}" style="background:${c.color};"></div>
+        </div>`;
+      diffChart.appendChild(div);
+    });
+
+    // ── TOP LIKED ─────────────────────────────────────────────
+    const topLikedEl = document.getElementById('top-liked');
+    if (likedScripts.length === 0) {
+      topLikedEl.innerHTML = `<p style="color:var(--muted);font-size:0.83rem;padding:1rem 0;">you haven't liked any scripts yet — hit ♥ on any script page and they'll show up here.</p>`;
+    } else {
+      const rankEmoji = ['🥇','🥈','🥉','4.','5.','6.','7.','8.','9.','10.'];
+      likedScripts.slice(0, 10).forEach((item, i) => {
+        const a = document.createElement('a');
+        a.className = 'liked-row';
+        a.href = `script.html?id=${item.script.id}`;
+        a.innerHTML = `
+          <span class="liked-rank">${rankEmoji[i]||i+1}</span>
+          <span class="liked-icon">${item.script.icon}</span>
+          <span class="liked-name">${item.script.name}</span>
+          <span class="liked-desc">${item.script.desc}</span>
+          <span class="liked-count">♥ ${item.likes}</span>`;
+        topLikedEl.appendChild(a);
+      });
+    }
+
+    // ── FUN FACTS ─────────────────────────────────────────────
+    const totalLines = SCRIPTS.reduce((s,sc)=>s+sc.code.split('\n').length,0);
+    const totalChars = SCRIPTS.reduce((s,sc)=>s+sc.code.length,0);
+    const pyCount    = langCounts['python']||0;
+    const rvCount    = (() => { try { return JSON.parse(localStorage.getItem('sh-rv')||'[]').length; } catch { return 0; } })();
+
+    const facts = [
+      `there are <b style="color:var(--green)">${totalLines.toLocaleString()}</b> total lines of code across all scripts.`,
+      `the average script is <b style="color:var(--blue)">${avgLines}</b> lines long.`,
+      `the longest script is <b style="color:var(--yellow)">${longest.name}</b> at ${longest.code.split('\n').length} lines.`,
+      `<b style="color:var(--green)">${(pyCount/total*100).toFixed(0)}%</b> of all scripts are written in Python.`,
+      `all scripts together contain <b style="color:var(--blue)">${(totalChars/1000).toFixed(0)}k</b> characters of code.`,
+      `the most popular category is <b style="color:var(--yellow)">${topCat[0]}</b> with ${topCat[1]} scripts.`,
+      rvCount > 0
+        ? `you've viewed <b style="color:var(--green)">${rvCount}</b> scripts recently — nice browsing!`
+        : `press <b style="color:var(--blue)">/</b> anywhere to jump straight to search.`,
+      `there are <b style="color:var(--yellow)">${diffCounts.beginner}</b> beginner scripts — great for learning.`,
+      `ScriptHub has scripts in <b style="color:var(--green)">${Object.keys(catCounts).length}</b> different categories.`,
+      `hit <b style="color:var(--blue)">R</b> anywhere on the site to jump to a random script.`,
+    ];
+
+    let factIndex = 0;
+    function rotateFact() {
+      const el = document.getElementById('fun-fact-text');
+      el.style.opacity = '0';
+      setTimeout(() => {
+        el.innerHTML = facts[factIndex % facts.length];
+        el.style.opacity = '1';
+        factIndex++;
+      }, 300);
+    }
+    rotateFact();
+    setInterval(rotateFact, 5000);
+
+    // ── ANIMATE BARS ON SCROLL ────────────────────────────────
+    // Trigger bar fill animations when they scroll into view
+    const allFills = document.querySelectorAll('.bar-fill, .lang-bar-fill, .diff-fill');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const el  = entry.target;
+          const pct = el.dataset.pct;
+          setTimeout(() => { el.style.width = pct + '%'; }, 80);
+          observer.unobserve(el);
+        }
+      });
+    }, { threshold: 0.1 });
+    allFills.forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>

@@ -74,12 +74,24 @@
     <a class="logo" href="index.html">script<span>hub</span>.dev</a>
     <button class="hamburger" id="hamburger" aria-label="Menu">☰</button>
       <div class="nav-links">
-      <a href="index.html">browse</a>
-      <a href="favorites.html">⭐ favorites</a>
+        <a href="index.html">browse</a>
+        <a href="favorites.html">⭐ favorites</a>
         <a href="generate.html">✨ generate</a>
+        <a href="stats.html">📊 stats</a>
         <a href="submit.html">submit</a>
-      <a href="guide.html" style="color:#3fb950;">guide</a>
-    </div>
+        <div class="more-menu" id="more-menu">
+          <button class="more-trigger" id="more-trigger">explore ▾</button>
+          <div class="more-dropdown">
+          <a href="beginner.html">🔰 beginner</a>
+          <a href="leaderboard.html">🏆 top scripts</a>
+          <a href="collections.html">📦 collections</a>
+          <hr>
+          <a href="about.html">about</a>
+          <a href="changelog.html">changelog</a>
+          <a href="request.html">request a script</a>
+          </div>
+        </div>
+      </div>
   </nav>
 
   <div class="guide-wrap">
@@ -307,7 +319,17 @@
       navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
       document.addEventListener('click', e => {
         if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) navLinks.classList.remove('open');
-      });
+      }
+
+    // ── MORE DROPDOWN ─────────────────────────────────────────
+    (function() {
+      const menu = document.getElementById('more-menu');
+      const trigger = document.getElementById('more-trigger');
+      if (!menu || !trigger) return;
+      trigger.addEventListener('click', e => { e.stopPropagation(); menu.classList.toggle('open'); });
+      document.addEventListener('click', e => { if (!menu.contains(e.target)) menu.classList.remove('open'); });
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') menu.classList.remove('open'); });
+    })(););
     }
   </script>
 </body>
