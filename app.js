@@ -1,5 +1,5 @@
 const langBadge = { python:"badge-py", javascript:"badge-js", shell:"badge-sh", powershell:"badge-ps" };
-let activeTag = "all", searchVal = "", activeDiff = "all";
+let activeTag = "all", searchVal = "", activeDiff = "all", activeLang = "all", activeSort = "default";
 
 // ── CARD BUILDER ─────────────────────────────────────────────
 function makeCard(s, featured) {
@@ -86,14 +86,26 @@ function renderGrid() {
   if (!grid) return;
 
   const filtered = SCRIPTS.filter(s => {
-    const matchTag = activeTag === 'all' || s.tag === activeTag;
+    const matchTag  = activeTag  === 'all' || s.tag  === activeTag;
+    const matchLang = activeLang === 'all' || s.lang === activeLang;
     const matchSearch = s.name.toLowerCase().includes(searchVal) || s.desc.toLowerCase().includes(searchVal);
     const matchDiff = activeDiff === 'all' ||
       (SCRIPT_META && SCRIPT_META[s.id] && SCRIPT_META[s.id].difficulty === activeDiff);
-    return matchTag && matchSearch && matchDiff;
+    return matchTag && matchLang && matchSearch && matchDiff;
   });
 
-  const isFiltering = activeTag !== 'all' || searchVal !== '' || activeDiff !== 'all';
+  // ── SORT ──────────────────────────────────────────────────────
+  let display = [...filtered];
+  if (activeSort === 'az')    display.sort((a, b) => a.name.localeCompare(b.name));
+  else if (activeSort === 'za')    display.sort((a, b) => b.name.localeCompare(a.name));
+  else if (activeSort === 'liked') display.sort((a, b) =>
+    (parseInt(localStorage.getItem(`sh-likes-${b.id}`) || '0')) -
+    (parseInt(localStorage.getItem(`sh-likes-${a.id}`) || '0')));
+  else if (activeSort === 'views') display.sort((a, b) =>
+    (parseInt(localStorage.getItem(`sh-views-${b.id}`) || '0')) -
+    (parseInt(localStorage.getItem(`sh-views-${a.id}`) || '0')));
+
+  const isFiltering = activeTag !== 'all' || searchVal !== '' || activeDiff !== 'all' || activeLang !== 'all';
   if (featSec) featSec.style.display = isFiltering ? 'none' : 'block';
   if (sotdSec) sotdSec.style.display = isFiltering ? 'none' : 'block';
   if (allLabel) allLabel.style.display = isFiltering ? 'none' : 'flex';
@@ -101,9 +113,9 @@ function renderGrid() {
   else if (rvSec && !isFiltering) renderRecentlyViewed();
 
   grid.innerHTML = '';
-  if (filtered.length === 0) { noRes.style.display = 'block'; return; }
+  if (display.length === 0) { noRes.style.display = 'block'; return; }
   noRes.style.display = 'none';
-  filtered.forEach(s => grid.appendChild(makeCard(s, false)));
+  display.forEach(s => grid.appendChild(makeCard(s, false)));
 }
 
 function updateCount() {
@@ -130,6 +142,25 @@ document.querySelectorAll('.diff-btn').forEach(btn => {
     renderGrid();
   });
 });
+
+// ── LANGUAGE FILTER ───────────────────────────────────────────
+document.querySelectorAll('.lang-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeLang = btn.dataset.lang;
+    renderGrid();
+  });
+});
+
+// ── SORT ──────────────────────────────────────────────────────
+const sortSel = document.getElementById('sort-select');
+if (sortSel) {
+  sortSel.addEventListener('change', () => {
+    activeSort = sortSel.value;
+    renderGrid();
+  });
+}
 
 // ── SEARCH + HISTORY ──────────────────────────────────────────
 const si = document.getElementById('search');

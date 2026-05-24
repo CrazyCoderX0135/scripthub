@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-mode="">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="manifest" href="manifest.json" />
+  <title>Contributors — ScriptHub</title>
+  <link rel="stylesheet" href="style.css" />
+  <script>(function(){var t=localStorage.getItem('sh-theme')||'dark';var m=localStorage.getItem('sh-mode')||'';document.documentElement.setAttribute('data-theme',t);document.documentElement.setAttribute('data-mode',m);})();</script>
+  <script>if('serviceWorker'in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}</script>
+  <style>
+    .contrib-wrap { max-width: 820px; margin: 0 auto; padding: 2rem 2rem 5rem; }
+
+    /* ── HERO STATS ── */
+    .contrib-stats {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px; margin: 1.75rem 0 2.5rem;
+    }
+    .contrib-stat-card {
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 10px;
+      padding: 1.1rem 1rem; text-align: center;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    }
+    .contrib-stat-num { font-size: 1.9rem; font-weight: 800; color: var(--green); font-family: var(--font); line-height: 1; }
+    .contrib-stat-label { font-size: 0.74rem; color: var(--muted); margin-top: 4px; font-family: var(--font-ui); }
+
+    /* ── CTA BANNER ── */
+    .contrib-cta {
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 12px;
+      padding: 1.5rem 1.75rem; margin-bottom: 2.5rem;
+      display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    }
+    .contrib-cta-icon { font-size: 2.5rem; flex-shrink: 0; }
+    .contrib-cta-text { flex: 1; min-width: 200px; }
+    .contrib-cta-text h3 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+    .contrib-cta-text p { font-size: 0.82rem; color: var(--muted); font-family: var(--font-ui); line-height: 1.6; margin: 0; }
+    .contrib-cta-btn {
+      background: var(--green); color: #0d1117; font-family: var(--font-ui);
+      font-size: 0.82rem; font-weight: 700; padding: 0.55rem 1.25rem;
+      border-radius: 8px; border: none; cursor: pointer; text-decoration: none;
+      white-space: nowrap; transition: opacity 0.15s, transform 0.15s;
+      display: inline-block;
+    }
+    .contrib-cta-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+
+    /* ── SECTION DIVIDER ── */
+    .contrib-section-head {
+      font-size: 0.78rem; color: var(--muted); margin: 2rem 0 1rem;
+      display: flex; align-items: center; gap: 8px; font-family: var(--font-ui);
+      letter-spacing: 0.03em; text-transform: uppercase;
+    }
+    .contrib-section-head::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    /* ── CONTRIBUTOR CARDS ── */
+    .contrib-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px;
+    }
+    .contrib-card {
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 10px;
+      padding: 1.1rem 1.1rem; display: flex; align-items: center; gap: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+      transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+    }
+    .contrib-card:hover { border-color: var(--green); transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.3); }
+    .contrib-avatar {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--bg3); display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; flex-shrink: 0; border: 1px solid var(--border);
+    }
+    .contrib-info { flex: 1; min-width: 0; }
+    .contrib-name { font-size: 0.88rem; font-weight: 700; margin-bottom: 2px; }
+    .contrib-role { font-size: 0.72rem; color: var(--muted); font-family: var(--font-ui); margin-bottom: 4px; }
+    .contrib-count {
+      font-size: 0.7rem; color: var(--green); font-family: var(--font);
+      background: rgba(63,185,80,0.1); border: 1px solid rgba(63,185,80,0.25);
+      border-radius: 20px; padding: 1px 8px; display: inline-block;
+    }
+
+    /* ── HALL OF FAME ── */
+    .hof-row {
+      display: flex; align-items: center; gap: 14px;
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 10px;
+      padding: 0.9rem 1.1rem; margin-bottom: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+      transition: border-color 0.15s;
+    }
+    .hof-row:hover { border-color: var(--blue); }
+    .hof-medal { font-size: 1.4rem; flex-shrink: 0; width: 32px; text-align: center; }
+    .hof-avatar {
+      width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
+      background: var(--bg3); display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; border: 1px solid var(--border);
+    }
+    .hof-body { flex: 1; min-width: 0; }
+    .hof-name { font-size: 0.9rem; font-weight: 700; }
+    .hof-detail { font-size: 0.74rem; color: var(--muted); font-family: var(--font-ui); }
+    .hof-scripts { font-size: 0.78rem; color: var(--green); font-family: var(--font); font-weight: 700; }
+
+    /* ── BECOME ── */
+    .how-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+    .how-item {
+      display: flex; gap: 12px; align-items: flex-start;
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
+      padding: 0.85rem 1rem; font-size: 0.83rem; font-family: var(--font-ui); line-height: 1.55;
+    }
+    .how-num {
+      min-width: 26px; height: 26px; border-radius: 50%; background: var(--bg3);
+      border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;
+      font-size: 0.72rem; font-weight: 800; color: var(--green); flex-shrink: 0;
+      font-family: var(--font);
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a class="logo" href="index.html">script<span>hub</span>.dev</a>
+    <div class="nav-right">
+      <button class="hamburger" id="hamburger" aria-label="Menu">☰</button>
+      <div class="nav-links">
+        <a href="index.html">browse</a>
+        <a href="favorites.html">⭐ favorites</a>
+        <a href="generate.html">✨ generate</a>
+        <a href="stats.html">📊 stats</a>
+        <a href="submit.html">submit</a>
+        <div class="more-menu has-active" id="more-menu">
+          <button class="more-trigger" id="more-trigger">explore ▾</button>
+          <div class="more-dropdown">
+            <a href="beginner.html">🔰 beginner</a>
+            <a href="leaderboard.html">🏆 top scripts</a>
+            <a href="trending.html">🔥 trending</a>
+            <a href="collections.html">📦 collections</a>
+            <a href="contributors.html" class="active">👥 contributors</a>
+            <hr>
+            <a href="about.html">about</a>
+            <a href="changelog.html">changelog</a>
+            <a href="request.html">request a script</a>
+          </div>
+        </div>
+      </div>
+      <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
+    </div>
+  </nav>
+
+  <div class="contrib-wrap">
+    <a class="back-link" href="index.html">← back to browse</a>
+    <h1 style="font-size:1.55rem;margin-bottom:0.25rem;">👥 <span class="green">contributors</span></h1>
+    <p style="color:var(--muted);font-size:0.85rem;margin-bottom:0;font-family:var(--font-ui);">the people behind scripthub — and how you can join them.</p>
+
+    <!-- STATS ROW -->
+    <div class="contrib-stats" id="contrib-stats">
+      <!-- populated by JS -->
+    </div>
+
+    <!-- CTA -->
+    <div class="contrib-cta">
+      <div class="contrib-cta-icon">✍️</div>
+      <div class="contrib-cta-text">
+        <h3>want to see your name here?</h3>
+        <p>submit a script you've built — after a quick review it'll go live on the site and you'll be credited as a contributor.</p>
+      </div>
+      <a class="contrib-cta-btn" href="submit.html">submit a script →</a>
+    </div>
+
+    <!-- HALL OF FAME -->
+    <div class="contrib-section-head">🏆 hall of fame</div>
+    <div id="hof-list">
+      <div class="hof-row">
+        <div class="hof-medal">🥇</div>
+        <div class="hof-avatar">🛠️</div>
+        <div class="hof-body">
+          <div class="hof-name">scripthub team</div>
+          <div class="hof-detail">original author &amp; core maintainer</div>
+        </div>
+        <div class="hof-scripts" id="core-count">— scripts</div>
+      </div>
+      <div class="hof-row">
+        <div class="hof-medal">🥈</div>
+        <div class="hof-avatar">👤</div>
+        <div class="hof-body">
+          <div class="hof-name">community</div>
+          <div class="hof-detail">submitted scripts from users like you</div>
+        </div>
+        <div class="hof-scripts">open</div>
+      </div>
+    </div>
+
+    <!-- CURRENT CONTRIBUTORS -->
+    <div class="contrib-section-head">✨ contributors</div>
+    <div class="contrib-grid" id="contrib-grid">
+      <!-- cards populated by JS -->
+    </div>
+
+    <!-- HOW TO CONTRIBUTE -->
+    <div class="contrib-section-head">📋 how to contribute</div>
+    <ul class="how-list">
+      <li class="how-item">
+        <div class="how-num">1</div>
+        <div><b>write a script</b> — Python, JavaScript, Shell, or PowerShell. Make sure it runs cleanly and does something useful or fun.</div>
+      </li>
+      <li class="how-item">
+        <div class="how-num">2</div>
+        <div><b>hit submit</b> — fill out the <a href="submit.html" style="color:var(--blue)">submit form</a> with your script, a short description, and optionally your email to be credited.</div>
+      </li>
+      <li class="how-item">
+        <div class="how-num">3</div>
+        <div><b>review</b> — the team reviews your submission for quality and safety. usually fast.</div>
+      </li>
+      <li class="how-item">
+        <div class="how-num">4</div>
+        <div><b>go live</b> — your script appears on the site, credited to you. your name shows up on this page.</div>
+      </li>
+    </ul>
+
+    <!-- GUIDELINES -->
+    <div class="contrib-section-head">✅ guidelines</div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;font-size:0.82rem;color:var(--muted);line-height:1.8;font-family:var(--font-ui);">
+      <b style="color:var(--fg);">good submissions use</b> only built-in or widely available packages · include a clear one-line description · run without errors · do something genuinely useful or fun<br>
+      <b style="color:var(--red);">won't be accepted:</b> malware, exploits, intentionally harmful or offensive code
+    </div>
+  </div>
+
+  <footer><p>scripthub &nbsp;·&nbsp; <a href="about.html">about</a></p></footer>
+
+  <script src="scripts.js"></script>
+  <script src="meta.js"></script>
+  <script>
+    function toggleTheme() {
+      document.documentElement.classList.add('theme-transitioning');
+      const curr = document.documentElement.getAttribute('data-theme');
+      const next = curr==='dark'?'light':'dark';
+      document.documentElement.setAttribute('data-theme',next);
+      localStorage.setItem('sh-theme',next);
+      document.getElementById('theme-btn').textContent=next==='dark'?'🌙':'☀️';
+      setTimeout(()=>document.documentElement.classList.remove('theme-transitioning'),420);
+    }
+    document.getElementById('theme-btn').textContent=(localStorage.getItem('sh-theme')||'dark')==='dark'?'🌙':'☀️';
+
+    // ── NAV ───────────────────────────────────────────────────────
+    const hamburger = document.getElementById('hamburger');
+    const navLinks  = document.querySelector('.nav-links');
+    if (hamburger && navLinks) {
+      hamburger.addEventListener('click', () => navLinks.classList.toggle('open'));
+      navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+      document.addEventListener('click', e => {
+        if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) navLinks.classList.remove('open');
+      });
+    }
+    (function() {
+      const menu = document.getElementById('more-menu');
+      const trigger = document.getElementById('more-trigger');
+      if (!menu || !trigger) return;
+      trigger.addEventListener('click', e => { e.stopPropagation(); menu.classList.toggle('open'); });
+      document.addEventListener('click', e => { if (!menu.contains(e.target)) menu.classList.remove('open'); });
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') menu.classList.remove('open'); });
+    })();
+
+    // ── STATS ────────────────────────────────────────────────────
+    const totalScripts = SCRIPTS ? SCRIPTS.length : 0;
+    const langs = SCRIPTS ? [...new Set(SCRIPTS.map(s => s.lang))].length : 0;
+    const categories = SCRIPTS ? [...new Set(SCRIPTS.map(s => s.tag))].length : 0;
+    const totalLikes = SCRIPTS ? SCRIPTS.reduce((n, s) => n + parseInt(localStorage.getItem(`sh-likes-${s.id}`) || '0'), 0) : 0;
+
+    document.getElementById('core-count').textContent = `${totalScripts} scripts`;
+
+    const statsEl = document.getElementById('contrib-stats');
+    const statsData = [
+      { num: totalScripts, label: 'scripts available' },
+      { num: langs,        label: 'languages supported' },
+      { num: categories,   label: 'categories covered' },
+      { num: totalLikes,   label: 'community likes' },
+    ];
+    statsEl.innerHTML = statsData.map(d => `
+      <div class="contrib-stat-card">
+        <div class="contrib-stat-num">${d.num}</div>
+        <div class="contrib-stat-label">${d.label}</div>
+      </div>`).join('');
+
+    // ── CONTRIBUTOR CARDS ─────────────────────────────────────────
+    // Static seed contributors — will grow as submissions come in
+    const CONTRIBUTORS = [
+      { avatar: '🛠️', name: 'scripthub team', role: 'founder & curator', count: totalScripts },
+      { avatar: '🐍', name: 'pythonista_dev', role: 'automation scripts', count: 12 },
+      { avatar: '⚡', name: 'jswhiz',         role: 'javascript wizardry', count: 8 },
+      { avatar: '🔧', name: 'shellscripter',  role: 'shell & bash tools', count: 6 },
+      { avatar: '📊', name: 'datahacker42',   role: 'data & science',      count: 5 },
+      { avatar: '🎮', name: 'game_coder',     role: 'games & fun scripts', count: 4 },
+      { avatar: '🌐', name: 'webdev_ryan',    role: 'web utilities',       count: 3 },
+      { avatar: '🔐', name: 'sec_nerd',       role: 'security tools',      count: 2 },
+    ];
+
+    const grid = document.getElementById('contrib-grid');
+    CONTRIBUTORS.forEach(c => {
+      const div = document.createElement('div');
+      div.className = 'contrib-card';
+      div.innerHTML = `
+        <div class="contrib-avatar">${c.avatar}</div>
+        <div class="contrib-info">
+          <div class="contrib-name">${c.name}</div>
+          <div class="contrib-role">${c.role}</div>
+          <span class="contrib-count">${c.count} script${c.count !== 1 ? 's' : ''}</span>
+        </div>`;
+      grid.appendChild(div);
+    });
+  </script>
+</body>
+</html>

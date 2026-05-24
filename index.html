@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="manifest" href="manifest.json" />
   <title>ScriptHub — scripts for everything</title>
   <link rel="stylesheet" href="style.css" />
   <script>
@@ -12,6 +13,11 @@
       document.documentElement.setAttribute('data-theme',t);
       document.documentElement.setAttribute('data-mode',m);
     })();
+  </script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
+    }
   </script>
 </head>
 <body>
@@ -42,7 +48,9 @@
           <div class="more-dropdown">
           <a href="beginner.html">🔰 beginner</a>
           <a href="leaderboard.html">🏆 top scripts</a>
+          <a href="trending.html">🔥 trending</a>
           <a href="collections.html">📦 collections</a>
+          <a href="contributors.html">👥 contributors</a>
           <hr>
           <a href="about.html">about</a>
           <a href="changelog.html">changelog</a>
@@ -88,6 +96,13 @@
       <button class="diff-btn" data-diff="intermediate">🟡 intermediate</button>
       <button class="diff-btn" data-diff="advanced">🔴 advanced</button>
     </div>
+    <div class="lang-filter" id="lang-filter">
+      <button class="lang-btn active" data-lang="all">all languages</button>
+      <button class="lang-btn" data-lang="python">🐍 python</button>
+      <button class="lang-btn" data-lang="javascript">☕ js</button>
+      <button class="lang-btn" data-lang="shell">🐚 shell</button>
+      <button class="lang-btn" data-lang="powershell">💙 powershell</button>
+    </div>
     <div class="hero-btns">
       <button class="how-btn" onclick="openGuide()">❓ how do i run a script?</button>
       <button class="random-btn" onclick="goRandom()">🎲 surprise me <span style="opacity:0.45;font-size:0.7rem;">[R]</span></button>
@@ -108,7 +123,19 @@
       <div class="section-label">🔥 featured</div>
       <div class="grid" id="featured-grid"></div>
     </div>
-    <div class="section-label" id="all-label">all scripts</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.75rem;">
+      <div class="section-label" id="all-label" style="margin-bottom:0;">all scripts</div>
+      <div class="sort-wrap">
+        <label style="font-size:0.72rem;color:var(--muted);margin-right:4px;">sort:</label>
+        <select id="sort-select" class="sort-select">
+          <option value="default">default</option>
+          <option value="az">A → Z</option>
+          <option value="za">Z → A</option>
+          <option value="liked">most liked</option>
+          <option value="views">most viewed</option>
+        </select>
+      </div>
+    </div>
     <div class="grid" id="grid"></div>
     <p class="no-results" id="no-results" style="display:none;">no scripts found — try a different search</p>
   </main>

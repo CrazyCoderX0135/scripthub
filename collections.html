@@ -3,9 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="manifest" href="manifest.json" />
   <title>Collections — ScriptHub</title>
   <link rel="stylesheet" href="style.css" />
   <script>(function(){var t=localStorage.getItem('sh-theme')||'dark';var m=localStorage.getItem('sh-mode')||'';document.documentElement.setAttribute('data-theme',t);document.documentElement.setAttribute('data-mode',m);})();</script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
+    }
+  </script>
 </head>
 <body>
   <nav>
@@ -23,7 +29,9 @@
           <div class="more-dropdown">
           <a href="beginner.html">🔰 beginner</a>
           <a href="leaderboard.html">🏆 top scripts</a>
+          <a href="trending.html">🔥 trending</a>
           <a href="collections.html" class="active">📦 collections</a>
+          <a href="contributors.html">👥 contributors</a>
           <hr>
           <a href="about.html">about</a>
           <a href="changelog.html">changelog</a>
@@ -48,6 +56,7 @@
   <script src="scripts.js"></script>
   <script src="meta.js"></script>
   <script src="collections.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script>
     // Hamburger nav
     const hamburger = document.getElementById('hamburger');
@@ -100,8 +109,9 @@
               <h2>${coll.name}</h2>
             </div>
             <p>${coll.desc}</p>
-            <div style="margin-top:0.5rem;">
+            <div style="margin-top:0.75rem;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
               <span class="coll-count">${scripts.length} scripts</span>
+              <button id="zip-btn" onclick="downloadZip()" style="background:var(--bg3);border:1px solid var(--border);color:var(--fg);font-family:var(--font-ui);font-size:0.76rem;padding:4px 12px;border-radius:6px;cursor:pointer;transition:border-color 0.15s,color 0.15s;" onmouseover="this.style.borderColor='var(--green)';this.style.color='var(--green)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--fg)'">⬇ download all (.zip)</button>
             </div>
           </div>
           <div class="grid" id="coll-script-grid"></div>`;
@@ -133,22 +143,3 @@
       grid.className = 'coll-grid';
 
       COLLECTIONS.forEach(coll => {
-        const count = coll.ids.filter(id=>SCRIPTS.find(s=>s.id===id)).length;
-        const a = document.createElement('a');
-        a.className = 'coll-card';
-        a.href = `collections.html?id=${coll.id}`;
-        a.innerHTML = `
-          <div class="coll-card-top">
-            <span class="coll-icon">${coll.icon}</span>
-            <span class="coll-name">${coll.name}</span>
-          </div>
-          <div class="coll-desc">${coll.desc}</div>
-          <span class="coll-count">${count} scripts</span>`;
-        grid.appendChild(a);
-      });
-
-      view.appendChild(grid);
-    }
-  </script>
-</body>
-</html>

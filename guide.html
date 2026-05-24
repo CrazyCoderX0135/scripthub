@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="manifest" href="manifest.json" />
   <title>How to Run Scripts — ScriptHub</title>
   <link rel="stylesheet" href="style.css" />
   <style>
@@ -67,6 +68,11 @@
     .faq-item code { color: #58a6ff; }
     .faq-item a { color: #58a6ff; text-decoration: none; }
   </style>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
+    }
+  </script>
 </head>
 <body>
 
@@ -84,7 +90,9 @@
           <div class="more-dropdown">
           <a href="beginner.html">🔰 beginner</a>
           <a href="leaderboard.html">🏆 top scripts</a>
+          <a href="trending.html">🔥 trending</a>
           <a href="collections.html">📦 collections</a>
+          <a href="contributors.html">👥 contributors</a>
           <hr>
           <a href="about.html">about</a>
           <a href="changelog.html">changelog</a>

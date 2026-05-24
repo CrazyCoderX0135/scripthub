@@ -3,9 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="manifest" href="manifest.json" />
   <title>Submit a Script — ScriptHub</title>
   <link rel="stylesheet" href="style.css" />
   <script>(function(){var t=localStorage.getItem('sh-theme')||'dark';var m=localStorage.getItem('sh-mode')||'';document.documentElement.setAttribute('data-theme',t);document.documentElement.setAttribute('data-mode',m);})();</script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
+    }
+  </script>
 </head>
 <body>
 
@@ -24,7 +30,9 @@
           <div class="more-dropdown">
           <a href="beginner.html">🔰 beginner</a>
           <a href="leaderboard.html">🏆 top scripts</a>
+          <a href="trending.html">🔥 trending</a>
           <a href="collections.html">📦 collections</a>
+          <a href="contributors.html">👥 contributors</a>
           <hr>
           <a href="about.html">about</a>
           <a href="changelog.html">changelog</a>
@@ -47,18 +55,27 @@
       <b style="color:var(--red);">❌ Won't be accepted:</b> malware, exploits, or intentionally harmful code
     </div>
 
+    <!-- FORM PROGRESS BAR -->
+    <div class="form-progress"><div class="form-progress-fill" id="form-progress-fill"></div></div>
+
     <form id="submit-form">
 
       <div class="form-group">
         <label for="s-name">script name <span style="color:var(--red)">*</span></label>
-        <input type="text" id="s-name" name="Script Name" placeholder="e.g. bulk-rename (lowercase, hyphenated)" autocomplete="off" />
-        <span class="field-error" id="err-name"></span>
+        <input type="text" id="s-name" name="Script Name" placeholder="e.g. bulk-rename (lowercase, hyphenated)" autocomplete="off" maxlength="60" />
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span class="field-error" id="err-name"></span>
+          <span class="form-counter" id="cnt-name">0 / 60</span>
+        </div>
       </div>
 
       <div class="form-group">
         <label for="s-desc">description <span style="color:var(--red)">*</span></label>
-        <input type="text" id="s-desc" name="Description" placeholder="what does it do? (one clear sentence)" />
-        <span class="field-error" id="err-desc"></span>
+        <input type="text" id="s-desc" name="Description" placeholder="what does it do? (one clear sentence)" maxlength="120" />
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span class="field-error" id="err-desc"></span>
+          <span class="form-counter" id="cnt-desc">0 / 120</span>
+        </div>
       </div>
 
       <div style="display:flex;gap:1rem;flex-wrap:wrap;">
@@ -93,7 +110,10 @@
       <div class="form-group">
         <label for="s-code">paste your code <span style="color:var(--red)">*</span></label>
         <textarea id="s-code" name="Code" placeholder="# paste your full script here..." style="min-height:220px;font-family:monospace;font-size:0.82rem;"></textarea>
-        <span class="field-error" id="err-code"></span>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span class="field-error" id="err-code"></span>
+          <span class="form-counter" id="cnt-code" style="white-space:nowrap;">0 lines</span>
+        </div>
       </div>
 
       <div class="form-group">
@@ -115,11 +135,21 @@
     </form>
 
     <!-- SUCCESS STATE -->
-    <div id="success-msg" style="display:none;margin-top:1rem;padding:1.5rem;background:var(--bg2);border:1px solid var(--green);border-radius:10px;text-align:center;">
-      <div style="font-size:2rem;margin-bottom:0.5rem;">🎉</div>
-      <p style="color:var(--green);font-weight:bold;margin-bottom:0.4rem;">script submitted!</p>
-      <p style="color:var(--muted);font-size:0.85rem;">thanks for contributing. we'll review it and add it to the site if it's a good fit.</p>
-      <button onclick="resetForm()" style="margin-top:1rem;background:transparent;border:1px solid var(--border);color:var(--muted);padding:0.4rem 1rem;border-radius:6px;cursor:pointer;font-size:0.82rem;">submit another →</button>
+    <div id="success-msg" style="display:none;">
+      <div class="submit-success-wrap">
+        <svg class="success-check-svg" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg">
+          <circle class="success-check-circle" cx="26" cy="26" r="25" fill="none"/>
+          <path class="success-check-path" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+        </svg>
+        <h2 class="success-title">script submitted!</h2>
+        <p class="success-sub">thanks for contributing. we'll review it and add it to the site if it's a good fit.</p>
+        <p class="success-redirect">taking you back to browse in <b id="countdown">5</b>…</p>
+        <div class="success-countdown-bar"><div class="success-countdown-fill" id="countdown-fill"></div></div>
+        <div class="success-actions">
+          <button onclick="resetForm()">submit another →</button>
+          <a href="index.html">go browse →</a>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -150,8 +180,9 @@
     (function() {
       const code = sessionStorage.getItem('gen-code');
       const task = sessionStorage.getItem('gen-task');
-      if (code) { document.getElementById('s-code').value = code; sessionStorage.removeItem('gen-code'); }
+      if (code) { document.getElementById('s-code').value = code; sessionStorage.removeItem('gen-code'); updateLineCount(); }
       if (task) { document.getElementById('s-desc').value = task; sessionStorage.removeItem('gen-task'); }
+      updateProgress();
     })();
 
     // Theme
@@ -166,7 +197,38 @@
     }
     document.getElementById('theme-btn').textContent=(localStorage.getItem('sh-theme')||'dark')==='dark'?'🌙':'☀️';
 
-    // Bad-word filter
+    // ── CHARACTER / LINE COUNTERS ─────────────────────────────
+    function updateLineCount() {
+      const code = document.getElementById('s-code').value;
+      const lines = code.trim() === '' ? 0 : code.split('\n').length;
+      const el = document.getElementById('cnt-code');
+      el.textContent = lines + ' line' + (lines === 1 ? '' : 's');
+    }
+
+    function updateCounter(inputId, counterId, max) {
+      const val = document.getElementById(inputId).value.length;
+      const el  = document.getElementById(counterId);
+      el.textContent = `${val} / ${max}`;
+      el.className = 'form-counter' + (val > max * 0.9 ? ' warn' : '') + (val >= max ? ' over' : '');
+    }
+
+    document.getElementById('s-name').addEventListener('input', () => { updateCounter('s-name','cnt-name',60); updateProgress(); });
+    document.getElementById('s-desc').addEventListener('input', () => { updateCounter('s-desc','cnt-desc',120); updateProgress(); });
+    document.getElementById('s-code').addEventListener('input', () => { updateLineCount(); updateProgress(); });
+    document.getElementById('s-email').addEventListener('input', updateProgress);
+
+    // ── FORM PROGRESS ─────────────────────────────────────────
+    function updateProgress() {
+      const name  = document.getElementById('s-name').value.trim();
+      const desc  = document.getElementById('s-desc').value.trim();
+      const code  = document.getElementById('s-code').value.trim();
+      const email = document.getElementById('s-email').value.trim();
+      const filled = [name,desc,code].filter(Boolean).length + (email ? 0.5 : 0);
+      const pct = Math.min(100, Math.round((filled / 3.5) * 100));
+      document.getElementById('form-progress-fill').style.width = pct + '%';
+    }
+
+    // ── BAD-WORD FILTER ───────────────────────────────────────
     const BAD_WORDS = [
       "fuck","shit","bitch","cunt","dick","cock","pussy","bastard",
       "asshole","motherfucker","faggot","nigger","nigga","whore","slut",
@@ -174,83 +236,7 @@
       "dipshit","shithead","bullshit","douchebag","fucker","fuckhead",
       "porn","xxx","hentai","malware","ddos","keylogger"
     ];
-
     function hasBadWord(text) {
       const lower = text.toLowerCase().replace(/[^a-z0-9\s]/g, ' ');
       return BAD_WORDS.some(w => new RegExp(`\\b${w}\\b`,'i').test(lower));
     }
-
-    function setError(id, msg) {
-      const el = document.getElementById(id);
-      el.textContent = msg;
-      el.style.display = msg ? 'block' : 'none';
-      const input = el.previousElementSibling || document.getElementById(id.replace('err-','s-'));
-      if (input) input.style.borderColor = msg ? 'var(--red)' : '';
-    }
-
-    function clearErrors() {
-      ['name','desc','code'].forEach(k => setError('err-'+k,''));
-      document.getElementById('submit-error').style.display = 'none';
-    }
-
-    function validate() {
-      const name = document.getElementById('s-name').value.trim();
-      const desc = document.getElementById('s-desc').value.trim();
-      const code = document.getElementById('s-code').value.trim();
-      let ok = true;
-
-      if (!name) { setError('err-name','script name is required.'); ok=false; }
-      else if (hasBadWord(name)) { setError('err-name','name contains flagged content.'); ok=false; }
-
-      if (!desc) { setError('err-desc','description is required.'); ok=false; }
-      else if (hasBadWord(desc)) { setError('err-desc','description contains flagged content.'); ok=false; }
-
-      if (!code) { setError('err-code','please paste your script code.'); ok=false; }
-      else if (code.length < 20) { setError('err-code','code seems too short.'); ok=false; }
-
-      return ok;
-    }
-
-    function resetForm() {
-      document.getElementById('submit-form').reset();
-      document.getElementById('submit-form').style.display = 'block';
-      document.getElementById('success-msg').style.display = 'none';
-      clearErrors();
-    }
-
-    document.getElementById('submit-form').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      clearErrors();
-
-      if (!validate()) return;
-
-      // Formspree doesn't allow submissions from file:// (local files).
-      // The form only works when hosted on GitHub Pages or a web server.
-      if (window.location.protocol === 'file:') {
-        const errEl = document.getElementById('submit-error');
-        errEl.innerHTML = '⚠️  <b>testing locally?</b> Formspree only works when the site is hosted. Push to GitHub Pages and it will work fine there.';
-        errEl.style.display = 'block';
-        return;
-      }
-
-      const btn = document.getElementById('submit-btn');
-      btn.textContent = 'sending...';
-      btn.disabled = true;
-
-      const data = new FormData(this);
-
-      try {
-        const res = await fetch('https://formspree.io/f/mdajgwgy', {
-          method: 'POST',
-          body: data,
-          headers: { 'Accept': 'application/json' }
-        });
-
-        if (res.ok) {
-          document.getElementById('submit-form').style.display = 'none';
-          document.getElementById('success-msg').style.display = 'block';
-        } else {
-          const json = await res.json().catch(()=>({}));
-          let msg = 'submission failed. please try again.';
-          if (json.errors) msg = json.errors.map(e=>e.message).join(', ');
-          else if (res.s

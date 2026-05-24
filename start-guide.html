@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="manifest" href="manifest.json" />
   <title>Beginner's Guide — ScriptHub</title>
   <link rel="stylesheet" href="style.css" />
   <script>(function(){var t=localStorage.getItem('sh-theme')||'dark';var m=localStorage.getItem('sh-mode')||'';document.documentElement.setAttribute('data-theme',t);document.documentElement.setAttribute('data-mode',m);})();</script>
@@ -156,6 +157,11 @@
 
     .divider { border:none; border-top:1px solid var(--border); margin:2.5rem 0; }
   </style>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
+    }
+  </script>
 </head>
 <body>
   <nav>
@@ -173,7 +179,9 @@
           <div class="more-dropdown">
           <a href="beginner.html">🔰 beginner</a>
           <a href="leaderboard.html">🏆 top scripts</a>
+          <a href="trending.html">🔥 trending</a>
           <a href="collections.html">📦 collections</a>
+          <a href="contributors.html">👥 contributors</a>
           <hr>
           <a href="about.html">about</a>
           <a href="changelog.html">changelog</a>

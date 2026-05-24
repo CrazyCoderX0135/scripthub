@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="manifest" href="manifest.json" />
   <title>ScriptHub</title>
 
   <!-- og:meta (defaults; updated by JS after script loads) -->
@@ -26,6 +27,11 @@
       document.documentElement.setAttribute('data-mode',m);
     })();
   </script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
+    }
+  </script>
 </head>
 <body>
 
@@ -44,7 +50,9 @@
           <div class="more-dropdown">
           <a href="beginner.html">🔰 beginner</a>
           <a href="leaderboard.html">🏆 top scripts</a>
+          <a href="trending.html">🔥 trending</a>
           <a href="collections.html">📦 collections</a>
+          <a href="contributors.html">👥 contributors</a>
           <hr>
           <a href="about.html">about</a>
           <a href="changelog.html">changelog</a>
@@ -155,7 +163,7 @@
       setTimeout(() => URL.revokeObjectURL(url), 1000);
     }
 
-    // ── RECENTLY VIEWED ───────────────────────────────────────
+    // ── RECENTLY VIEWED + VIEW TRACKING ──────────────────────
     function trackRecentlyViewed(id) {
       try {
         let rv = JSON.parse(localStorage.getItem('sh-rv') || '[]');
@@ -163,6 +171,13 @@
         rv.unshift(id);
         rv = rv.slice(0, 8);
         localStorage.setItem('sh-rv', JSON.stringify(rv));
+      } catch(e) {}
+    }
+    function trackView(id) {
+      try {
+        const key = `sh-views-${id}`;
+        const n = parseInt(localStorage.getItem(key) || '0') + 1;
+        localStorage.setItem(key, n);
       } catch(e) {}
     }
 
@@ -248,6 +263,125 @@
 
     function replayDemo() { runTermDemo(); }
 
+    // ── TUTORIAL BUILDER ──────────────────────────────────────
+    function buildTutorial(script, meta) {
+      const ext = script.lang==='python'?'py':script.lang==='javascript'?'js':script.lang==='powershell'?'ps1':'sh';
+      const filename = `${script.id}.${ext}`;
+      let runCmd = '';
+      if (script.lang==='python')          runCmd = `python ${filename}`;
+      else if (script.lang==='javascript') runCmd = `node ${filename}`;
+      else if (script.lang==='shell')      runCmd = `bash ${filename}`;
+      else if (script.lang==='powershell') runCmd = `.\\${filename}`;
+
+      const steps = [];
+
+      // Step 1 – copy
+      steps.push({
+        icon:'📋', title:'copy the code',
+        text:`Click the <b>copy code</b> button above to grab the full script.`,
+      });
+
+      // Step 2 – install deps (only if required)
+      if (meta.requires && meta.requires.length > 0) {
+        const pkgStr = meta.requires.join(' ');
+        steps.push({
+          icon:'📦', title:'install dependencies',
+          text:`This script needs extra packages. Open a terminal and run:`,
+          cmd:`pip install ${pkgStr}`,
+        });
+      }
+
+      // Step 3 – save file
+      steps.push({
+        icon:'💾', title:`save as ${filename}`,
+        text: script.lang==='python'
+          ? `Open Notepad (Windows) or any text editor, paste the code, then <b>Save As</b> → set "Save as type" to <b>All Files</b> → name it <code>${filename}</code>.`
+          : `Paste the code into a text editor and save as <code>${filename}</code>.`,
+      });
+
+      // Step 4 – run
+      steps.push({
+        icon:'▶', title:'run it',
+        text:`Open a terminal / command prompt, <code>cd</code> to where you saved the file, then run:`,
+        cmd: runCmd,
+        tip: script.lang==='python'
+          ? `No Python? Download it free at python.org/downloads — check "Add Python to PATH" during install.`
+          : script.lang==='javascript'
+          ? `No Node.js? Get it free at nodejs.org.`
+          : null,
+      });
+
+      // Custom tips from meta.js
+      if (meta.tips && meta.tips.length > 0) {
+        meta.tips.forEach(tip => {
+          steps.push({ icon:'💡', title:'pro tip', text: tip });
+        });
+      }
+
+      const stepsHtml = steps.map((s, i) => `
+        <div class="tut-step">
+          <div class="tut-step-num">${i+1}</div>
+          <div class="tut-step-body">
+            <div class="tut-step-title">${s.icon} ${s.title}</div>
+            <div class="tut-step-text">
+              ${s.text}
+              ${s.cmd ? `<div class="tut-cmd"><span>$ ${escHtml(s.cmd)}</span><button class="tut-copy-cmd" onclick="copyTutCmd(this,${JSON.stringify(s.cmd)})">copy</button></div>` : ''}
+              ${s.tip ? `<div class="tut-tip">💡 ${s.tip}</div>` : ''}
+            </div>
+          </div>
+        </div>`).join('');
+
+      return `
+        <div class="tutorial-section open" id="tutorial-section">
+          <div class="tutorial-header" onclick="document.getElementById('tutorial-section').classList.toggle('open')">
+            <div class="tutorial-header-left">📖 how to run this script</div>
+            <span class="tutorial-chevron">▾</span>
+          </div>
+          <div class="tutorial-body">
+            <div class="tutorial-steps">${stepsHtml}</div>
+          </div>
+        </div>`;
+    }
+
+    function copyTutCmd(btn, cmd) {
+      navigator.clipboard.writeText(cmd).then(() => {
+        btn.textContent = '✓ copied';
+        setTimeout(() => btn.textContent = 'copy', 2000);
+      });
+    }
+
+    // ── CODE THEME PICKER ─────────────────────────────────────
+    const CODE_THEMES = [
+      { id:'github-dark',       label:'GitHub Dark',    url:'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css' },
+      { id:'monokai',           label:'Monokai',        url:'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/monokai.min.css' },
+      { id:'dracula',           label:'Dracula',        url:'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/dracula.min.css' },
+      { id:'atom-one-dark',     label:'Atom One Dark',  url:'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css' },
+      { id:'vs2015',            label:'VS 2015',        url:'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs2015.min.css' },
+      { id:'github',            label:'GitHub Light',   url:'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css' },
+    ];
+    let currentTheme = localStorage.getItem('sh-code-theme') || 'github-dark';
+
+    function applyCodeTheme(themeId) {
+      const t = CODE_THEMES.find(x => x.id === themeId) || CODE_THEMES[0];
+      const existing = document.getElementById('hljs-theme');
+      if (existing) existing.href = t.url;
+      currentTheme = themeId;
+      localStorage.setItem('sh-code-theme', themeId);
+    }
+
+    // Apply saved theme before render
+    (function() {
+      const saved = localStorage.getItem('sh-code-theme');
+      if (saved && saved !== 'github-dark') {
+        const el = document.querySelector('link[href*="highlight.js"]');
+        const t  = CODE_THEMES.find(x => x.id === saved);
+        if (el && t) { el.id = 'hljs-theme'; el.href = t.url; }
+      } else {
+        const el = document.querySelector('link[href*="highlight.js"]');
+        if (el) el.id = 'hljs-theme';
+      }
+    })();
+
     const langMap   = {python:'python',javascript:'javascript',shell:'bash',powershell:'powershell'};
     const langBadge = {python:'badge-py',javascript:'badge-js',shell:'badge-sh',powershell:'badge-ps'};
 
@@ -269,8 +403,9 @@
       document.querySelector('meta[name="twitter:title"]').setAttribute('content', `${script.name} — ScriptHub`);
       document.querySelector('meta[name="twitter:description"]').setAttribute('content', script.desc);
 
-      // Track recently viewed
+      // Track recently viewed + views
       trackRecentlyViewed(script.id);
+      trackView(script.id);
 
       const meta     = (SCRIPT_META&&SCRIPT_META[script.id])||{difficulty:'beginner',requires:[],version:'1.0'};
       const likeKey  = `sh-likes-${script.id}`;
@@ -322,7 +457,8 @@
           <span>was this useful?</span>
           <button class="like-btn ${liked?'liked':''}" id="like-btn">♥ <span id="like-count">${likes}</span> likes</button>
           <button class="star-btn ${isFav?'starred':''}" id="star-btn">${isFav?'★ saved':'☆ save'}</button>
-          <button class="link-btn" id="link-btn" style="margin-left:auto;">🔗 copy link</button>
+          <button class="link-btn" id="link-btn" style="margin-left:auto;">🔗 share</button>
+          <button class="embed-btn" id="embed-btn">&lt;/&gt; embed</button>
           <button class="print-btn" onclick="window.print()">🖨 print</button>
           <button class="bug-btn" onclick="openBug()">🐛 bug?</button>
         </div>
@@ -331,6 +467,13 @@
           <div class="code-toolbar">
             <span class="code-lang">${script.lang}</span>
             <div class="code-toolbar-right">
+              <div class="theme-picker-wrap" id="theme-picker-wrap">
+                <button class="theme-picker-btn" id="theme-picker-btn" title="syntax theme">🎨</button>
+                <div class="theme-picker-dropdown" id="theme-picker-dropdown">
+                  ${CODE_THEMES.map(t=>`<button class="theme-opt${t.id===currentTheme?' active':''}" data-theme="${t.id}">${t.label}</button>`).join('')}
+                </div>
+              </div>
+              ${script.lang==='javascript'?`<button class="run-btn" id="run-btn">▶ run</button>`:''}
               <button class="dl-btn" id="dl-btn">⬇ download</button>
               <button class="copy-btn" id="copy-btn">copy code</button>
             </div>
@@ -338,10 +481,112 @@
           <pre><code class="language-${langMap[script.lang]||'python'}" id="code-el">${escHtml(script.code)}</code></pre>
         </div>
 
-        <div class="usage-tip" style="margin-bottom:1.5rem;">
-          <b>how to use:</b> copy the code, save it as <code style="color:var(--blue)">${filename}</code>, then run it from your terminal.
-          <a href="index.html#guide" onclick="localStorage.setItem('open-guide','1')" style="color:var(--blue);">need help? see the guide →</a>
+        ${script.lang==='javascript'?`
+        <div class="run-panel" id="run-panel" style="display:none;">
+          <div class="run-panel-bar">
+            <span>▶ output</span>
+            <button class="run-clear-btn" onclick="clearRunner()">✕ clear</button>
+          </div>
+          <div class="run-output" id="run-output"></div>
+        </div>`:''}
+
+        <!-- EMBED MODAL -->
+        <div class="embed-modal" id="embed-modal" style="display:none;">
+          <div class="embed-modal-inner">
+            <div class="embed-modal-bar">
+              <span>&lt;/&gt; embed this script</span>
+              <button onclick="closeEmbed()">✕</button>
+            </div>
+            <p style="font-size:0.78rem;color:var(--muted);margin-bottom:0.75rem;font-family:var(--font-ui);">Copy this snippet to embed a card for <b>${script.name}</b> anywhere.</p>
+            <textarea class="embed-code-box" id="embed-code-box" readonly></textarea>
+            <button class="copy-btn" id="embed-copy-btn" style="width:100%;margin-top:0.5rem;">copy embed code</button>
+          </div>
         </div>
+
+        ${buildTutorial(script, meta)}
+
+        ${buildTermDemo(meta, script)}
+
+        ${simHtml}
+
+        <div class="comments-section">
+          <h3>💬 comments</h3>
+          <script src="https://utteranc.es/client.js"
+            repo="crazycoderx0135/scripthub"
+            issue-term="og:title"
+            theme="github-dark"
+            crossorigin="anonymous"
+            async>
+          <\/script>
+        </div>
+      `;
+
+      // Syntax highlight
+      document.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
+
+      // Run terminal demo
+      runTermDemo();
+
+      // Copy code
+      document.getElementById('cop
+            <span class="badge" style="color:var(--muted);border-color:var(--border);background:transparent;">${script.tag}</span>
+            <span class="badge diff-${meta.difficulty}">${meta.difficulty}</span>
+            <span class="badge badge-ver">v${meta.version||'1.0'}</span>
+          </div>
+        </div>
+
+        ${reqHtml}
+
+        <div class="rating-box">
+          <span>was this useful?</span>
+          <button class="like-btn ${liked?'liked':''}" id="like-btn">♥ <span id="like-count">${likes}</span> likes</button>
+          <button class="star-btn ${isFav?'starred':''}" id="star-btn">${isFav?'★ saved':'☆ save'}</button>
+          <button class="link-btn" id="link-btn" style="margin-left:auto;">🔗 share</button>
+          <button class="embed-btn" id="embed-btn">&lt;/&gt; embed</button>
+          <button class="print-btn" onclick="window.print()">🖨 print</button>
+          <button class="bug-btn" onclick="openBug()">🐛 bug?</button>
+        </div>
+
+        <div class="code-block">
+          <div class="code-toolbar">
+            <span class="code-lang">${script.lang}</span>
+            <div class="code-toolbar-right">
+              <div class="theme-picker-wrap" id="theme-picker-wrap">
+                <button class="theme-picker-btn" id="theme-picker-btn" title="syntax theme">🎨</button>
+                <div class="theme-picker-dropdown" id="theme-picker-dropdown">
+                  ${CODE_THEMES.map(t=>`<button class="theme-opt${t.id===currentTheme?' active':''}" data-theme="${t.id}">${t.label}</button>`).join('')}
+                </div>
+              </div>
+              ${script.lang==='javascript'?`<button class="run-btn" id="run-btn">▶ run</button>`:''}
+              <button class="dl-btn" id="dl-btn">⬇ download</button>
+              <button class="copy-btn" id="copy-btn">copy code</button>
+            </div>
+          </div>
+          <pre><code class="language-${langMap[script.lang]||'python'}" id="code-el">${escHtml(script.code)}</code></pre>
+        </div>
+
+        ${script.lang==='javascript'?`
+        <div class="run-panel" id="run-panel" style="display:none;">
+          <div class="run-panel-bar">
+            <span>▶ output</span>
+            <button class="run-clear-btn" onclick="clearRunner()">✕ clear</button>
+          </div>
+          <div class="run-output" id="run-output"></div>
+        </div>`:''}
+
+        <div class="embed-modal" id="embed-modal" style="display:none;">
+          <div class="embed-modal-inner">
+            <div class="embed-modal-bar">
+              <span>&lt;/&gt; embed this script</span>
+              <button onclick="closeEmbed()">✕</button>
+            </div>
+            <p style="font-size:0.78rem;color:var(--muted);margin-bottom:0.75rem;font-family:var(--font-ui);">Copy this snippet to embed a card for <b>${script.name}</b> anywhere.</p>
+            <textarea class="embed-code-box" id="embed-code-box" readonly></textarea>
+            <button class="copy-btn" id="embed-copy-btn" style="width:100%;margin-top:0.5rem;">copy embed code</button>
+          </div>
+        </div>
+
+        ${buildTutorial(script, meta)}
 
         ${buildTermDemo(meta, script)}
 
@@ -382,12 +627,12 @@
         setTimeout(()=>btn.textContent='⬇ download',2000);
       });
 
-      // Copy link
+      // Share / copy link
       document.getElementById('link-btn').addEventListener('click', () => {
         navigator.clipboard.writeText(window.location.href).then(() => {
           const btn = document.getElementById('link-btn');
           btn.textContent='✓ copied!';
-          setTimeout(()=>btn.textContent='🔗 copy link',2000);
+          setTimeout(()=>btn.textContent='🔗 share',2000);
         });
       });
 
@@ -418,26 +663,40 @@
           setTimeout(() => { toast.style.opacity='0'; setTimeout(()=>toast.remove(),500); }, 2000);
         }
       });
-    }
 
-    // Bug modal
-    function openBug()  { document.getElementById('bug-modal').classList.add('open'); document.body.style.overflow='hidden'; }
-    function closeBug() { document.getElementById('bug-modal').classList.remove('open'); document.body.style.overflow=''; }
-    function submitBug() {
-      const desc = document.getElementById('bug-desc').value.trim();
-      if (!desc) { alert('please describe the bug.'); return; }
-      document.getElementById('bug-form').style.display='none';
-      document.getElementById('bug-thanks').style.display='block';
-    }
+      // ── THEME PICKER ────────────────────────────────────────
+      const tpBtn  = document.getElementById('theme-picker-btn');
+      const tpDrop = document.getElementById('theme-picker-dropdown');
+      if (tpBtn && tpDrop) {
+        tpBtn.addEventListener('click', e => { e.stopPropagation(); tpDrop.classList.toggle('open'); });
+        document.addEventListener('click', () => tpDrop.classList.remove('open'));
+        tpDrop.querySelectorAll('.theme-opt').forEach(btn => {
+          btn.addEventListener('click', e => {
+            e.stopPropagation();
+            applyCodeTheme(btn.dataset.theme);
+            tpDrop.querySelectorAll('.theme-opt').forEach(b => b.classList.toggle('active', b===btn));
+            document.querySelectorAll('pre code').forEach(el => { el.removeAttribute('data-highlighted'); hljs.highlightElement(el); });
+            tpDrop.classList.remove('open');
+          });
+        });
+      }
 
-    // Keyboard shortcuts
-    document.addEventListener('keydown', e => {
-      const tag = document.activeElement?.tagName;
-      const isTyping = tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT';
-      if (isTyping) return;
-      if (e.key==='Escape') { closeBug(); return; }
-      if (e.key==='r'||e.key==='R') { goRandom(); return; }
-    });
-  </script>
-</body>
-</html>
+      // ── JS RUNNER ───────────────────────────────────────────
+      const runBtn = document.getElementById('run-btn');
+      if (runBtn) {
+        runBtn.addEventListener('click', () => {
+          const panel  = document.getElementById('run-panel');
+          const output = document.getElementById('run-output');
+          panel.style.display = 'block';
+          output.innerHTML = '<span style="color:var(--muted);font-size:0.75rem;">running…</span>';
+          runBtn.textContent = '↺ re-run';
+          const iframe = document.createElement('iframe');
+          iframe.sandbox = 'allow-scripts';
+          iframe.style.display = 'none';
+          document.body.appendChild(iframe);
+          const safeCode = `const _logs=[];console.log=(...a)=>{_logs.push(a.map(x=>typeof x==='object'?JSON.stringify(x,null,2):String(x)).join(' '))};console.error=(...a)=>{_logs.push('ERROR: '+a.join(' '))};console.warn=(...a)=>{_logs.push('WARN: '+a.join(' '))};try{${script.code.replace(/`/g,'\\`')}}catch(e){_logs.push('Runtime error: '+e.message)}parent.postMessage({type:'sh-run-result',logs:_logs},'*')`;
+          iframe.srcdoc = '<scr'+'ipt>'+safeCode+'<\/sc'+'ript>';
+          const handler = e => {
+            if (e.data&&e.data.type==='sh-run-result') {
+              window.removeEventListener('message', handler);
+          
