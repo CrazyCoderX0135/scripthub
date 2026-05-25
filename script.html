@@ -528,89 +528,6 @@
       runTermDemo();
 
       // Copy code
-      document.getElementById('cop
-            <span class="badge" style="color:var(--muted);border-color:var(--border);background:transparent;">${script.tag}</span>
-            <span class="badge diff-${meta.difficulty}">${meta.difficulty}</span>
-            <span class="badge badge-ver">v${meta.version||'1.0'}</span>
-          </div>
-        </div>
-
-        ${reqHtml}
-
-        <div class="rating-box">
-          <span>was this useful?</span>
-          <button class="like-btn ${liked?'liked':''}" id="like-btn">♥ <span id="like-count">${likes}</span> likes</button>
-          <button class="star-btn ${isFav?'starred':''}" id="star-btn">${isFav?'★ saved':'☆ save'}</button>
-          <button class="link-btn" id="link-btn" style="margin-left:auto;">🔗 share</button>
-          <button class="embed-btn" id="embed-btn">&lt;/&gt; embed</button>
-          <button class="print-btn" onclick="window.print()">🖨 print</button>
-          <button class="bug-btn" onclick="openBug()">🐛 bug?</button>
-        </div>
-
-        <div class="code-block">
-          <div class="code-toolbar">
-            <span class="code-lang">${script.lang}</span>
-            <div class="code-toolbar-right">
-              <div class="theme-picker-wrap" id="theme-picker-wrap">
-                <button class="theme-picker-btn" id="theme-picker-btn" title="syntax theme">🎨</button>
-                <div class="theme-picker-dropdown" id="theme-picker-dropdown">
-                  ${CODE_THEMES.map(t=>`<button class="theme-opt${t.id===currentTheme?' active':''}" data-theme="${t.id}">${t.label}</button>`).join('')}
-                </div>
-              </div>
-              ${script.lang==='javascript'?`<button class="run-btn" id="run-btn">▶ run</button>`:''}
-              <button class="dl-btn" id="dl-btn">⬇ download</button>
-              <button class="copy-btn" id="copy-btn">copy code</button>
-            </div>
-          </div>
-          <pre><code class="language-${langMap[script.lang]||'python'}" id="code-el">${escHtml(script.code)}</code></pre>
-        </div>
-
-        ${script.lang==='javascript'?`
-        <div class="run-panel" id="run-panel" style="display:none;">
-          <div class="run-panel-bar">
-            <span>▶ output</span>
-            <button class="run-clear-btn" onclick="clearRunner()">✕ clear</button>
-          </div>
-          <div class="run-output" id="run-output"></div>
-        </div>`:''}
-
-        <div class="embed-modal" id="embed-modal" style="display:none;">
-          <div class="embed-modal-inner">
-            <div class="embed-modal-bar">
-              <span>&lt;/&gt; embed this script</span>
-              <button onclick="closeEmbed()">✕</button>
-            </div>
-            <p style="font-size:0.78rem;color:var(--muted);margin-bottom:0.75rem;font-family:var(--font-ui);">Copy this snippet to embed a card for <b>${script.name}</b> anywhere.</p>
-            <textarea class="embed-code-box" id="embed-code-box" readonly></textarea>
-            <button class="copy-btn" id="embed-copy-btn" style="width:100%;margin-top:0.5rem;">copy embed code</button>
-          </div>
-        </div>
-
-        ${buildTutorial(script, meta)}
-
-        ${buildTermDemo(meta, script)}
-
-        ${simHtml}
-
-        <div class="comments-section">
-          <h3>💬 comments</h3>
-          <script src="https://utteranc.es/client.js"
-            repo="crazycoderx0135/scripthub"
-            issue-term="og:title"
-            theme="github-dark"
-            crossorigin="anonymous"
-            async>
-          <\/script>
-        </div>
-      `;
-
-      // Syntax highlight
-      document.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
-
-      // Run terminal demo
-      runTermDemo();
-
-      // Copy code
       document.getElementById('copy-btn').addEventListener('click', () => {
         navigator.clipboard.writeText(script.code).then(() => {
           const btn = document.getElementById('copy-btn');
@@ -697,6 +614,62 @@
           const safeCode = `const _logs=[];console.log=(...a)=>{_logs.push(a.map(x=>typeof x==='object'?JSON.stringify(x,null,2):String(x)).join(' '))};console.error=(...a)=>{_logs.push('ERROR: '+a.join(' '))};console.warn=(...a)=>{_logs.push('WARN: '+a.join(' '))};try{${script.code.replace(/`/g,'\\`')}}catch(e){_logs.push('Runtime error: '+e.message)}parent.postMessage({type:'sh-run-result',logs:_logs},'*')`;
           iframe.srcdoc = '<scr'+'ipt>'+safeCode+'<\/sc'+'ript>';
           const handler = e => {
-            if (e.data&&e.data.type==='sh-run-result') {
-              window.removeEventListener('message', handler);
-          
+              output.innerHTML = '';
+              if (e.data.logs.length === 0) {
+                output.innerHTML = '<span style="color:var(--muted);font-size:0.75rem;">✓ ran with no output</span>';
+              } else {
+                e.data.logs.forEach(log => {
+                  const div = document.createElement('div');
+                  const isErr  = log.startsWith('ERROR:');
+                  const isWarn = log.startsWith('WARN:');
+                  div.className = 'run-line' + (isErr?' run-err':isWarn?' run-warn':'');
+                  div.textContent = log;
+                  output.appendChild(div);
+                });
+              }
+              iframe.remove();
+            }
+          };
+          window.addEventListener('message', handler);
+        });
+      }
+
+      // ── EMBED ────────────────────────────────────────────
+      const embedBtn = document.getElementById('embed-btn');
+      if (embedBtn) {
+        embedBtn.addEventListener('click', () => {
+          const embedCode = `<a href="https://crazycoderx0135.github.io/scripthub/script.html?id=${script.id}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;text-decoration:none;background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:0.5rem 0.9rem;color:#e6edf3;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:0.82rem;" onmouseover="this.style.borderColor='#3fb950'" onmouseout="this.style.borderColor='#30363d'"><span>${script.icon}</span> <span>${script.name}</span> <span style="color:#8b949e;font-size:0.72rem;">scripthub.dev</span></a>`;
+          document.getElementById('embed-code-box').value = embedCode;
+          document.getElementById('embed-modal').style.display = 'flex';
+          document.getElementById('embed-copy-btn').onclick = () => {
+            navigator.clipboard.writeText(embedCode).then(() => {
+              const btn = document.getElementById('embed-copy-btn');
+              btn.textContent = '✓ copied!';
+              setTimeout(() => btn.textContent = 'copy embed code', 2000);
+            });
+          };
+        });
+      }
+    }
+
+    // ── BUG REPORT ────────────────────────────────────────────
+    function openBug()  { document.getElementById('bug-modal').classList.add('open'); document.body.style.overflow='hidden'; }
+    function closeBug() { document.getElementById('bug-modal').classList.remove('open'); document.body.style.overflow=''; }
+    function submitBug() {
+      const desc = document.getElementById('bug-desc').value.trim();
+      if (!desc) { alert('please describe the bug first'); return; }
+      const os   = document.getElementById('bug-os').value;
+      const body = encodeURIComponent(`**Script:** ${id}\n**OS:** ${os}\n\n**Description:**\n${desc}`);
+      window.open(`https://github.com/crazycoderx0135/scripthub/issues/new?title=Bug+in+${encodeURIComponent(id)}&body=${body}`, '_blank');
+      document.getElementById('bug-form').style.display = 'none';
+      document.getElementById('bug-thanks').style.display = 'block';
+    }
+
+    function closeEmbed() { document.getElementById('embed-modal').style.display = 'none'; }
+    function clearRunner() {
+      const o = document.getElementById('run-output');
+      if (o) o.innerHTML = '';
+    }
+  </script>
+</body>
+</html>

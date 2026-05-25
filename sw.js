@@ -1,4 +1,4 @@
-const CACHE = 'scripthub-v1';
+const CACHE = 'scripthub-v2';
 const PRECACHE = [
   './', './index.html', './style.css', './app.js', './scripts.js', './meta.js',
   './script.html', './favorites.html', './generate.html', './stats.html',

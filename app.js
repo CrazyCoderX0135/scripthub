@@ -401,3 +401,37 @@ renderSOTD();
 renderRecentlyViewed();
 renderGrid();
 updateCount();
+  navLinks.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => navLinks.classList.remove('open'));
+  });
+  // Close on outside click
+  document.addEventListener('click', e => {
+    if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) {
+      navLinks.classList.remove('open');
+    }
+  });
+}
+
+// ── GUIDE MODAL ───────────────────────────────────────────────
+function openGuide()  { document.getElementById('guide-modal')?.classList.add('open'); document.body.style.overflow='hidden'; }
+function closeGuide() { document.getElementById('guide-modal')?.classList.remove('open'); document.body.style.overflow=''; }
+function closeOnOverlay(e) { if (e.target === document.getElementById('guide-modal')) closeGuide(); }
+function switchOS(os, btn) {
+  document.querySelectorAll('.os-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.os-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('os-'+os)?.classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── RANDOM SCRIPT ─────────────────────────────────────────────
+function goRandom() {
+  const s = SCRIPTS[Math.floor(Math.random() * SCRIPTS.length)];
+  window.location.href = `script.html?id=${s.id}`;
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+renderFeatured();
+renderSOTD();
+renderRecentlyViewed();
+renderGrid();
+updateCount();

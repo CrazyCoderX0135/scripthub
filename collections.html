@@ -143,3 +143,53 @@
       grid.className = 'coll-grid';
 
       COLLECTIONS.forEach(coll => {
+        const count = coll.ids.filter(id=>SCRIPTS.find(s=>s.id===id)).length;
+        const a = document.createElement('a');
+        a.className = 'coll-card';
+        a.href = `collections.html?id=${coll.id}`;
+        a.innerHTML = `
+          <div class="coll-card-top">
+            <span class="coll-icon">${coll.icon}</span>
+            <span class="coll-name">${coll.name}</span>
+          </div>
+          <div class="coll-desc">${coll.desc}</div>
+          <span class="coll-count">${count} scripts</span>`;
+        grid.appendChild(a);
+      });
+
+      view.appendChild(grid);
+    }
+
+    // ── DOWNLOAD ZIP ─────────────────────────────────────────────
+    async function downloadZip() {
+      if (typeof JSZip === 'undefined') { alert('JSZip not loaded yet — try again in a moment.'); return; }
+      if (!collId) return;
+      const coll = COLLECTIONS.find(c => c.id === collId);
+      if (!coll) return;
+      const btn = document.getElementById('zip-btn');
+      if (btn) { btn.textContent = '⏳ building zip…'; btn.disabled = true; }
+      const ext = { python:'py', javascript:'js', shell:'sh', powershell:'ps1' };
+      const zip = new JSZip();
+      const folder = zip.folder(coll.id);
+      const readme = ['# ' + coll.name, coll.desc, '', 'Scripts in this collection:', ''];
+      coll.ids.forEach(id => {
+        const s = SCRIPTS.find(x => x.id === id);
+        if (!s) return;
+        const e = ext[s.lang] || 'txt';
+        folder.file(`${s.id}.${e}`, s.code);
+        readme.push(`- ${s.name} (${s.id}.${e}) — ${s.desc}`);
+      });
+      readme.push('', '---', 'Downloaded from scripthub.dev');
+      folder.file('README.md', readme.join('\n'));
+      const blob = await zip.generateAsync({ type: 'blob' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = `${coll.id}-scripthub.zip`;
+      document.body.appendChild(a); a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      if (btn) { btn.textContent = '✓ downloaded!'; setTimeout(() => { btn.textContent = '⬇ download all (.zip)'; btn.disabled = false; }, 2500); }
+    }
+  </script>
+</body>
+</html>

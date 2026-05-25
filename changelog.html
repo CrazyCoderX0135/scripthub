@@ -49,6 +49,44 @@
     <p class="subtitle">everything that's been added or updated</p>
 
     <div class="log-item">
+      <div class="log-date">v2.5 — May 2026</div>
+      <div class="log-title">🐛 bug fix patch — critical JS repairs</div>
+      <div class="log-desc">Fixed a cascade of file-truncation bugs that were silently breaking large parts of the site. app.js was cut off before its init calls, which caused the script grid to never render and the count badge to stay stuck on "loading…" — clicking any filter, tag, or difficulty button appeared to do nothing. script.html had a duplicate HTML block injected mid-JavaScript (from an old bad append) plus was truncated inside the iframe runner handler, leaving every script page stuck on "loading…" regardless of which script was opened or how you navigated there. submit.html was missing its entire closing section — the form submission handler, countdown redirect, and closing tags were all absent, which also caused the explore dropdown and theme toggle to silently break (the browser was eating the footer HTML as raw JavaScript). collections.html was cut off mid-function with null bytes appended, also causing a broken page. Service worker bumped to v2 to force all cached visitors to pick up the repaired files.</div>
+      <div class="log-tags">
+        <span class="badge diff-advanced">bug fix</span>
+      </div>
+    </div>
+
+    <div class="log-item">
+      <div class="log-date">v2.4 — May 2026</div>
+      <div class="log-title">✨ contributors page + collection zip downloads + language filter + sort</div>
+      <div class="log-desc">Added a Contributors page showing live site stats (total scripts, languages, categories, community likes), a hall of fame, contributor cards, and a step-by-step guide for submitting your own script. Collection detail pages now have a "download all (.zip)" button that bundles every script in the pack with a README using JSZip. The browse page gained a language filter row (all / python / js / shell / powershell) and a sort dropdown (default / A→Z / Z→A / most liked / most viewed) that all cooperate with the existing tag, difficulty, and search filters. 👥 contributors added to the explore dropdown on every page.</div>
+      <div class="log-tags">
+        <span class="badge diff-beginner">new feature</span>
+      </div>
+    </div>
+
+    <div class="log-item">
+      <div class="log-date">v2.3 — May 2026</div>
+      <div class="log-title">🔥 trending page + PWA + code theme picker + run in browser + embed</div>
+      <div class="log-desc">Trending page ranks scripts by views × 1 + likes × 3 with animated fill bars and a recently-viewed heat grid — all tracked locally in your browser. ScriptHub is now installable as a PWA (manifest + service worker with stale-while-revalidate caching). Script pages gained a 🎨 syntax theme picker (6 highlight.js themes), a ▶ run button for JavaScript scripts that executes code in a sandboxed iframe and streams console output, and an embed widget that generates a portable HTML card snippet. View tracking (sh-views-{id}) added site-wide.</div>
+      <div class="log-tags">
+        <span class="badge diff-beginner">new feature</span>
+        <span class="badge diff-intermediate">pwa</span>
+      </div>
+    </div>
+
+    <div class="log-item">
+      <div class="log-date">v2.2 — May 2026</div>
+      <div class="log-title">💅 professional redesign + tutorial steps + submit UX overhaul</div>
+      <div class="log-desc">Switched body font to system UI (the single biggest visual improvement — no more toy-website feel). Cards got deeper shadows, tighter hover states, and better typography hierarchy. Every script page now auto-generates a numbered tutorial with copy-able terminal commands, pip install steps, and pro tips from meta.js. The submit form was rebuilt with a live progress bar, per-field character counters, an animated SVG checkmark on success, and a 5-second countdown redirect back to browse. Nav reorganised into primary links + an "explore ▾" dropdown for secondary pages.</div>
+      <div class="log-tags">
+        <span class="badge diff-intermediate">redesign</span>
+        <span class="badge diff-beginner">new feature</span>
+      </div>
+    </div>
+
+    <div class="log-item">
       <div class="log-date">v2.0 — May 2026</div>
       <div class="log-title">🚀 major update — 30 scripts + full site redesign</div>
       <div class="log-desc">Launched with 30 scripts across 5 categories. Added light/dark mode, syntax highlighting, difficulty badges, library requirements, script ratings, copy link button, featured section, random script button, typing animation, and this changelog. Also added the about, request, and guide pages.</div>

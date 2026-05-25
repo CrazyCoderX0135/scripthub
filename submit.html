@@ -240,3 +240,81 @@
       const lower = text.toLowerCase().replace(/[^a-z0-9\s]/g, ' ');
       return BAD_WORDS.some(w => new RegExp(`\\b${w}\\b`,'i').test(lower));
     }
+    // ── FORM SUBMIT ───────────────────────────────────────────────
+    document.getElementById('submit-form').addEventListener('submit', async e => {
+      e.preventDefault();
+      const btn = document.getElementById('submit-btn');
+
+      // Clear previous errors
+      ['err-name','err-desc','err-code'].forEach(id => { document.getElementById(id).textContent = ''; });
+      document.getElementById('submit-error').style.display = 'none';
+
+      // Validate
+      const name  = document.getElementById('s-name').value.trim();
+      const desc  = document.getElementById('s-desc').value.trim();
+      const code  = document.getElementById('s-code').value.trim();
+      let valid = true;
+
+      if (!name) { document.getElementById('err-name').textContent = 'name is required'; valid = false; }
+      else if (hasBadWord(name)) { document.getElementById('err-name').textContent = 'contains inappropriate content'; valid = false; }
+
+      if (!desc) { document.getElementById('err-desc').textContent = 'description is required'; valid = false; }
+      else if (hasBadWord(desc)) { document.getElementById('err-desc').textContent = 'contains inappropriate content'; valid = false; }
+
+      if (!code) { document.getElementById('err-code').textContent = 'code is required'; valid = false; }
+      else if (code.split('\n').length < 3) { document.getElementById('err-code').textContent = 'script looks too short'; valid = false; }
+
+      if (!valid) return;
+
+      // Honeypot check
+      if (document.querySelector('[name="_gotcha"]').value) return;
+
+      btn.innerHTML = '<span class="spinner"></span>submitting…';
+      btn.disabled = true;
+
+      try {
+        const resp = await fetch('https://formspree.io/f/mdajgwgy', {
+          method: 'POST',
+          body: new FormData(document.getElementById('submit-form')),
+          headers: { Accept: 'application/json' }
+        });
+        if (resp.ok) {
+          document.getElementById('submit-form').style.display = 'none';
+          document.getElementById('success-msg').style.display = 'block';
+          startCountdown();
+        } else {
+          throw new Error('server error');
+        }
+      } catch(err) {
+        const errEl = document.getElementById('submit-error');
+        errEl.textContent = 'something went wrong — please try again.';
+        errEl.style.display = 'block';
+        btn.innerHTML = 'submit script →';
+        btn.disabled = false;
+      }
+    });
+
+    // ── COUNTDOWN REDIRECT ────────────────────────────────────────
+    let _cdTimer;
+    function startCountdown() {
+      let n = 5;
+      const el = document.getElementById('countdown');
+      _cdTimer = setInterval(() => {
+        n--;
+        if (el) el.textContent = n;
+        if (n <= 0) { clearInterval(_cdTimer); window.location.href = 'index.html'; }
+      }, 1000);
+    }
+
+    function resetForm() {
+      clearInterval(_cdTimer);
+      document.getElementById('submit-form').reset();
+      document.getElementById('submit-form').style.display = 'block';
+      document.getElementById('success-msg').style.display = 'none';
+      document.getElementById('submit-btn').innerHTML = 'submit script →';
+      document.getElementById('submit-btn').disabled = false;
+      updateProgress();
+    }
+  </script>
+</body>
+</html>
