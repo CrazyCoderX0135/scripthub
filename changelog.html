@@ -49,6 +49,15 @@
     <p class="subtitle">everything that's been added or updated</p>
 
     <div class="log-item">
+      <div class="log-date">v2.6 — May 2026</div>
+      <div class="log-title">🐛 bug fix patch — script.html final repair</div>
+      <div class="log-desc">Fixed a remaining truncation in script.html that was causing every script detail page to show "loading…". The file was cut off inside the clearRunner() function — missing its body, closing brace, and the closing &lt;/script&gt;&lt;/body&gt;&lt;/html&gt; tags. Also removed a spurious extra closing brace inside the iframe message handler (leftover from a previous repair attempt) and added a proper type guard + removeEventListener so the runner can't fire twice or crash on unrelated postMessage events. Service worker bumped to v3.</div>
+      <div class="log-tags">
+        <span class="badge diff-advanced">bug fix</span>
+      </div>
+    </div>
+
+    <div class="log-item">
       <div class="log-date">v2.5 — May 2026</div>
       <div class="log-title">🐛 bug fix patch — critical JS repairs</div>
       <div class="log-desc">Fixed a cascade of file-truncation bugs that were silently breaking large parts of the site. app.js was cut off before its init calls, which caused the script grid to never render and the count badge to stay stuck on "loading…" — clicking any filter, tag, or difficulty button appeared to do nothing. script.html had a duplicate HTML block injected mid-JavaScript (from an old bad append) plus was truncated inside the iframe runner handler, leaving every script page stuck on "loading…" regardless of which script was opened or how you navigated there. submit.html was missing its entire closing section — the form submission handler, countdown redirect, and closing tags were all absent, which also caused the explore dropdown and theme toggle to silently break (the browser was eating the footer HTML as raw JavaScript). collections.html was cut off mid-function with null bytes appended, also causing a broken page. Service worker bumped to v2 to force all cached visitors to pick up the repaired files.</div>

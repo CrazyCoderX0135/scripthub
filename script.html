@@ -614,6 +614,8 @@
           const safeCode = `const _logs=[];console.log=(...a)=>{_logs.push(a.map(x=>typeof x==='object'?JSON.stringify(x,null,2):String(x)).join(' '))};console.error=(...a)=>{_logs.push('ERROR: '+a.join(' '))};console.warn=(...a)=>{_logs.push('WARN: '+a.join(' '))};try{${script.code.replace(/`/g,'\\`')}}catch(e){_logs.push('Runtime error: '+e.message)}parent.postMessage({type:'sh-run-result',logs:_logs},'*')`;
           iframe.srcdoc = '<scr'+'ipt>'+safeCode+'<\/sc'+'ript>';
           const handler = e => {
+              if (!e.data || e.data.type !== 'sh-run-result') return;
+              window.removeEventListener('message', handler);
               output.innerHTML = '';
               if (e.data.logs.length === 0) {
                 output.innerHTML = '<span style="color:var(--muted);font-size:0.75rem;">✓ ran with no output</span>';
@@ -628,7 +630,6 @@
                 });
               }
               iframe.remove();
-            }
           };
           window.addEventListener('message', handler);
         });
@@ -668,6 +669,11 @@
     function closeEmbed() { document.getElementById('embed-modal').style.display = 'none'; }
     function clearRunner() {
       const o = document.getElementById('run-output');
+      if (o) o.innerHTML = '';
+    }
+  </script>
+</body>
+</html>      const o = document.getElementById('run-output');
       if (o) o.innerHTML = '';
     }
   </script>
